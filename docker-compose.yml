@@ -1,0 +1,74 @@
+version: '3.7'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: vbee-oms-db
+    restart: unless-stopped
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    volumes:
+      - ./mongo-data:/data/db
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    networks:
+      - vbee-oms-network
+
+  server:
+    build:
+      context: ./server
+      target: development
+    container_name: vbee-oms-server
+    working_dir: /usr/src/app
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    volumes:
+      - ./server:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+      - SERVER_PORT=${SERVER_PORT}
+
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT}
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DATABASE=${MONGO_DATABASE}
+
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_EXPIRES_TIME=${JWT_EXPIRES_TIME}
+    command: yarn dev
+    networks:
+      - vbee-oms-network
+
+  client:
+    build:
+      context: ./client
+      target: development
+    container_name: vbee-oms-client
+    working_dir: /usr/src/app
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client:/usr/src/app
+      - /usr/src/app/node_modules
+    command: yarn start
+    networks:
+      - vbee-oms-network
+
+networks:
+  vbee-oms-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
+  node_modules:
+  web-root:
+    driver: local
