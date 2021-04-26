@@ -1,0 +1,15 @@
+{
+  "short_name": "Vbee OMS",
+  "name": "Vbee OMS",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "500x500",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
