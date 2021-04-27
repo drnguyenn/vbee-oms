@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 
-export const GlobalStyles = createGlobalStyle`
+const GlobalStyles = createGlobalStyle`
   body {
     font-family: 'Ubuntu', sans-serif;
   }
@@ -49,3 +49,5 @@ export const GlobalStyles = createGlobalStyle`
     );
   }
 `;
+
+export default GlobalStyles;

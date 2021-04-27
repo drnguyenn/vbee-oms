@@ -18,7 +18,7 @@ import Sidebar from './components/sidebar/sidebar.component';
 import { getCurrentUser } from './redux/user/user.actions';
 import { switchTheme } from './redux/theme/theme.actions';
 
-import { GlobalStyles } from './global.styles';
+import GlobalStyles from './global.styles';
 
 const App = () => {
   const dispatch = useDispatch();
