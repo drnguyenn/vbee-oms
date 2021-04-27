@@ -27,7 +27,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true
     },
-    ecmaVersion: 2018,
+    ecmaVersion: 2020,
     sourceType: 'module'
   },
   plugins: ['react', 'prettier'],
@@ -41,6 +41,7 @@ module.exports = {
       2,
       { extensions: ['.js', '.jsx', '.ts', '.tsx'] }
     ],
+    'react/react-in-jsx-scope': 0,
     'import/prefer-default-export': 0,
     'import/no-extraneous-dependencies': 0,
     'import/extensions': [
