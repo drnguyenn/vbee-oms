@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 import { Switch, Redirect } from 'react-router-dom';
 
 import { Backdrop } from '@material-ui/core';

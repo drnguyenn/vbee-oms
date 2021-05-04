@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import { createRef, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -55,7 +55,7 @@ const App = () => {
     [type]
   );
 
-  const notistackRef = React.createRef();
+  const notistackRef = createRef();
   const dismissSnackbar = key => () => {
     notistackRef.current.closeSnackbar(key);
   };
