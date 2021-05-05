@@ -1,4 +1,4 @@
-const ServiceService = require('../services/service.service');
+const ServiceService = require('@services/service.service');
 
 const getService = async (req, res) => {
   const { id } = req.params;

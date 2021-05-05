@@ -1,5 +1,5 @@
-const RepositoryService = require('../services/repository.service');
-const GhAppInstallationService = require('../services/gh-app-installation.service');
+const RepositoryService = require('@services/repository.service');
+const GhAppInstallationService = require('@services/gh-app-installation.service');
 
 const ghAppInstallationToken = async (req, res, next) => {
   const { id } = req.params;

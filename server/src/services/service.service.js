@@ -3,13 +3,13 @@ const {
   Types: { ObjectId }
 } = require('mongoose');
 
-const CustomError = require('../errors/custom-error');
-const errorCodes = require('../errors/code');
+const CustomError = require('@errors/custom-error');
+const errorCodes = require('@errors/code');
 
-const ServiceDao = require('../daos/service.dao');
-const ServiceMemberDao = require('../daos/service-member.dao');
-const ClusterDao = require('../daos/cluster.dao');
-const ClusterMemberDao = require('../daos/cluster-member.dao');
+const ServiceDao = require('@daos/service.dao');
+const ServiceMemberDao = require('@daos/service-member.dao');
+const ClusterDao = require('@daos/cluster.dao');
+const ClusterMemberDao = require('@daos/cluster-member.dao');
 
 const UserService = require('./user.service');
 

@@ -1,15 +1,15 @@
 const router = require('express').Router();
 
-const asyncMiddleware = require('../middlewares/async.middlewares');
+const asyncMiddleware = require('@middlewares/async.middlewares');
 
-const { auth, systemAdminCheck } = require('../middlewares/user.middlewares');
+const { auth, systemAdminCheck } = require('@middlewares/user.middlewares');
 const {
   loginValidator,
   registerValidator,
   searchUsersValidator
-} = require('../validators/user.validators');
+} = require('@validators/user.validators');
 
-const UserController = require('../controllers/user.controller');
+const UserController = require('@controllers/user.controller');
 
 router.post(
   '/auth/register',

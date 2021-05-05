@@ -2,16 +2,16 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-const customAxios = require('../customs/axios.custom');
+const customAxios = require('@customs/axios.custom');
 
-const CustomError = require('../errors/custom-error');
-const errorCodes = require('../errors/code');
+const CustomError = require('@errors/custom-error');
+const errorCodes = require('@errors/code');
 
-const UserDao = require('../daos/user.dao');
-const { generateRandomString } = require('../utils/random.utils');
+const UserDao = require('@daos/user.dao');
+const { generateRandomString } = require('@utils/random.utils');
 
-const { JWT_SECRET_KEY, JWT_EXPIRES_TIME } = require('../configs');
-const { GITHUB_API } = require('../constants');
+const { JWT_SECRET_KEY, JWT_EXPIRES_TIME } = require('@configs');
+const { GITHUB_API } = require('@constants');
 
 const get = async (condition, projection) => {
   const user = await UserDao.findOne(condition, projection);

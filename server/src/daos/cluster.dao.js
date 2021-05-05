@@ -1,7 +1,7 @@
 const {
   Types: { ObjectId }
 } = require('mongoose');
-const ClusterModel = require('../models/cluster.model');
+const ClusterModel = require('@models/cluster.model');
 
 const create = async data => {
   const cluster = await ClusterModel.create(data);

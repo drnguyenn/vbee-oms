@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
-const { MONGO_URI } = require('../configs');
+const { MONGO_URI } = require('@configs');
 
 mongoose.connect(MONGO_URI, {
   autoIndex: false,

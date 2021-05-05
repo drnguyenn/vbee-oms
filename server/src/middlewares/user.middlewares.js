@@ -1,7 +1,7 @@
+const CustomError = require('@errors/custom-error');
+const errorCodes = require('@errors/code');
+const UserService = require('@services/user.service');
 const asyncMiddleware = require('./async.middlewares');
-const CustomError = require('../errors/custom-error');
-const errorCodes = require('../errors/code');
-const UserService = require('../services/user.service');
 
 const auth = async (req, res, next) => {
   const { authorization } = req.headers;

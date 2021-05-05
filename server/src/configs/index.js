@@ -11,7 +11,7 @@ const {
   JWT_EXPIRES_TIME
 } = process.env;
 
-const { A_WEEK } = require('../constants');
+const { A_WEEK } = require('@constants');
 
 module.exports = {
   SERVER_PORT: SERVER_PORT || 5000,

@@ -1,8 +1,8 @@
 const crypto = require('crypto');
 
+const CustomError = require('@errors/custom-error');
+const errorCodes = require('@errors/code');
 const asyncMiddleware = require('./async.middlewares');
-const CustomError = require('../errors/custom-error');
-const errorCodes = require('../errors/code');
 
 const signatureVerification = async (req, res, next) => {
   const { GITHUB_WEBHOOK_SECRET } = process.env;

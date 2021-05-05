@@ -1,4 +1,4 @@
-const { omitIsNil } = require('../utils/omit.utils');
+const { omitIsNil } = require('@utils/omit.utils');
 
 const omitReq = (req, res, next) => {
   req.body = omitIsNil(req.body, { deep: true });

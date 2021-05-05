@@ -1,20 +1,21 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
+require('module-alias/register');
 const express = require('express');
 const path = require('path');
 const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
 
-const camelCaseReq = require('./middlewares/camel-case-req.middlewares');
-const omitReq = require('./middlewares/omit-req.middlewares');
-const snakeCaseRes = require('./middlewares/snake-case-res.middlewares');
-const rawBodySaver = require('./middlewares/raw-body-saver.middlewares');
-const errorHandler = require('./middlewares/error-handler.middlewares');
+const camelCaseReq = require('@middlewares/camel-case-req.middlewares');
+const omitReq = require('@middlewares/omit-req.middlewares');
+const snakeCaseRes = require('@middlewares/snake-case-res.middlewares');
+const rawBodySaver = require('@middlewares/raw-body-saver.middlewares');
+const errorHandler = require('@middlewares/error-handler.middlewares');
 
-require('./models');
+require('@models');
 
-const { SERVER_PORT } = require('./configs');
+const { SERVER_PORT } = require('@configs');
 
 const app = express();
 
@@ -36,11 +37,11 @@ app.use(omitReq);
 app.use(snakeCaseRes());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-require('./routes')(app);
+require('@routes')(app);
 
 app.use(errorHandler);
 
-const initialSetup = require('./services');
+const initialSetup = require('@services');
 
 app.listen(SERVER_PORT, async () => {
   await initialSetup();

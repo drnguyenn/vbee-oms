@@ -6,12 +6,12 @@ const {
   updateServiceValidator,
   addMemberValidator,
   updateMemberValidator
-} = require('../validators/service.validators');
+} = require('@validators/service.validators');
 
-const asyncMiddleware = require('../middlewares/async.middlewares');
-const { auth, systemAdminCheck } = require('../middlewares/user.middlewares');
+const asyncMiddleware = require('@middlewares/async.middlewares');
+const { auth, systemAdminCheck } = require('@middlewares/user.middlewares');
 
-const ServiceController = require('../controllers/service.controller');
+const ServiceController = require('@controllers/service.controller');
 
 router.get(
   '/services/:id',

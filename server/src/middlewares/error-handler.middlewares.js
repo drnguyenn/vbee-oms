@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const snakecaseKeys = require('snakecase-keys');
-const codes = require('../errors/code');
-const getErrorMessage = require('../errors/message');
+const codes = require('@errors/code');
+const getErrorMessage = require('@errors/message');
 
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {

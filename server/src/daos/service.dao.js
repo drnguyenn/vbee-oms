@@ -1,7 +1,7 @@
 const {
   Types: { ObjectId }
 } = require('mongoose');
-const ServiceModel = require('../models/service.model');
+const ServiceModel = require('@models/service.model');
 
 const create = async data => {
   let service = await ServiceModel.create(data);

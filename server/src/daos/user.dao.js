@@ -1,7 +1,7 @@
 const {
   Types: { ObjectId }
 } = require('mongoose');
-const UserModel = require('../models/user.model');
+const UserModel = require('@models/user.model');
 
 const create = async data => {
   const user = await UserModel.create(data);

@@ -1,4 +1,4 @@
-const ClusterService = require('../services/cluster.service');
+const ClusterService = require('@services/cluster.service');
 
 const getCluster = async (req, res) => {
   const { id } = req.params;

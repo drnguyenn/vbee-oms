@@ -1,4 +1,4 @@
-const UserService = require('../services/user.service');
+const UserService = require('@services/user.service');
 
 const searchUsers = async (req, res) => {
   const users = await UserService.search(req.query);

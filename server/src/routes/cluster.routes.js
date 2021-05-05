@@ -6,12 +6,12 @@ const {
   updateClusterValidator,
   addMemberValidator,
   updateMemberValidator
-} = require('../validators/cluster.validators');
+} = require('@validators/cluster.validators');
 
-const asyncMiddleware = require('../middlewares/async.middlewares');
-const { auth, systemAdminCheck } = require('../middlewares/user.middlewares');
+const asyncMiddleware = require('@middlewares/async.middlewares');
+const { auth, systemAdminCheck } = require('@middlewares/user.middlewares');
 
-const ClusterController = require('../controllers/cluster.controller');
+const ClusterController = require('@controllers/cluster.controller');
 
 router.get(
   '/clusters/:id',
