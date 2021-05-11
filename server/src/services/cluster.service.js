@@ -45,36 +45,40 @@ const update = async (condition, data) => {
   // that is requested to be changed to, except the one that matched the condition
   let conditionAndException;
 
-  if (ObjectId.isValid(condition))
-    conditionAndException = {
-      name: data.name,
-      $and: [{ _id: { $ne: condition } }]
-    };
-  else if (typeof condition === 'object' && condition) {
-    const conditionAvailableKeys = ['id', 'name'];
+  if (data.name)
+    if (ObjectId.isValid(condition))
+      conditionAndException = {
+        name: data.name,
+        $and: [{ _id: { $ne: condition } }]
+      };
+    else if (typeof condition === 'object' && condition) {
+      const conditionAvailableKeys = ['id', 'name'];
 
-    Object.keys(condition).forEach(key => {
-      if (!conditionAvailableKeys.includes(key))
-        throw new CustomError(
-          errorCodes.BAD_REQUEST,
-          'Invalid cluster condition'
-        );
-    });
+      Object.keys(condition).forEach(key => {
+        if (!conditionAvailableKeys.includes(key))
+          throw new CustomError(
+            errorCodes.BAD_REQUEST,
+            'Invalid cluster condition'
+          );
+      });
 
-    conditionAndException = {
-      name: data.name,
-      $and: [
-        Object.keys(condition).reduce(
-          (accumulator, currentValue) => ({
-            ...accumulator,
-            [currentValue]: { $ne: condition[currentValue] }
-          }),
-          {}
-        )
-      ]
-    };
-  } else
-    throw new CustomError(errorCodes.BAD_REQUEST, 'Invalid cluster condition');
+      conditionAndException = {
+        name: data.name,
+        $and: [
+          Object.keys(condition).reduce(
+            (accumulator, currentValue) => ({
+              ...accumulator,
+              [currentValue]: { $ne: condition[currentValue] }
+            }),
+            {}
+          )
+        ]
+      };
+    } else
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        'Invalid cluster condition'
+      );
 
   if (await ClusterDao.findOne(conditionAndException))
     throw new CustomError(

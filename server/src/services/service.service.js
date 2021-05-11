@@ -50,36 +50,40 @@ const update = async (condition, { name, clusterId, ...rest }) => {
   // that is requested to be changed to, except the one that matched the condition
   let conditionAndException;
 
-  if (ObjectId.isValid(condition))
-    conditionAndException = {
-      name,
-      $and: [{ _id: { $ne: condition } }]
-    };
-  else if (typeof condition === 'object' && condition) {
-    const conditionAvailableKeys = ['id', 'name'];
+  if (name)
+    if (ObjectId.isValid(condition))
+      conditionAndException = {
+        name,
+        $and: [{ _id: { $ne: condition } }]
+      };
+    else if (typeof condition === 'object' && condition) {
+      const conditionAvailableKeys = ['id', 'name'];
 
-    Object.keys(condition).forEach(key => {
-      if (!conditionAvailableKeys.includes(key))
-        throw new CustomError(
-          errorCodes.BAD_REQUEST,
-          'Invalid service condition'
-        );
-    });
+      Object.keys(condition).forEach(key => {
+        if (!conditionAvailableKeys.includes(key))
+          throw new CustomError(
+            errorCodes.BAD_REQUEST,
+            'Invalid service condition'
+          );
+      });
 
-    conditionAndException = {
-      name,
-      $and: [
-        Object.keys(condition).reduce(
-          (accumulator, currentValue) => ({
-            ...accumulator,
-            [currentValue]: { $ne: condition[currentValue] }
-          }),
-          {}
-        )
-      ]
-    };
-  } else
-    throw new CustomError(errorCodes.BAD_REQUEST, 'Invalid service condition');
+      conditionAndException = {
+        name,
+        $and: [
+          Object.keys(condition).reduce(
+            (accumulator, currentValue) => ({
+              ...accumulator,
+              [currentValue]: { $ne: condition[currentValue] }
+            }),
+            {}
+          )
+        ]
+      };
+    } else
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        'Invalid service condition'
+      );
 
   if (await ServiceDao.findOne(conditionAndException))
     throw new CustomError(
