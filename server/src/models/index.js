@@ -7,7 +7,8 @@ mongoose.connect(MONGO_URI, {
   useFindAndModify: false,
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true
+  useCreateIndex: true,
+  ignoreUndefined: true
 });
 
 mongoose.connection.on('error', err => {
