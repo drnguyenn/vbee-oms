@@ -134,7 +134,7 @@ const addMember = async (clusterCondition, memberCondition, data) => {
   const member = await ClusterMemberDao.create({
     user: user._id,
     cluster: cluster._id,
-    data
+    ...data
   });
 
   return { member, statusCode: 201 };

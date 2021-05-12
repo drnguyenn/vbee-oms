@@ -143,7 +143,7 @@ const search = async (
   return services;
 };
 
-const addMember = async (serviceCondition, memberCondition, { role }) => {
+const addMember = async (serviceCondition, memberCondition, data) => {
   const service = await get(serviceCondition);
 
   const user = await UserService.get(memberCondition);
@@ -154,7 +154,7 @@ const addMember = async (serviceCondition, memberCondition, { role }) => {
   const member = await ServiceMemberDao.create({
     user: user._id,
     service: service._id,
-    role
+    ...data
   });
 
   await ClusterMemberDao.update({
@@ -165,14 +165,14 @@ const addMember = async (serviceCondition, memberCondition, { role }) => {
   return { member, statusCode: 201 };
 };
 
-const updateMember = async (serviceCondition, memberCondition, { role }) => {
+const updateMember = async (serviceCondition, memberCondition, data) => {
   const service = await get(serviceCondition);
 
   const user = await UserService.get(memberCondition);
 
   const member = await ServiceMemberDao.update(
     { user: user._id, service: service._id },
-    { role }
+    data
   );
 
   await ClusterMemberDao.update({

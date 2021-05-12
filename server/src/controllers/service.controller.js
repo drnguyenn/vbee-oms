@@ -38,11 +38,12 @@ const searchServices = async (req, res) => {
 
 const addMember = async (req, res) => {
   const { id, userId } = req.params;
-  const { role } = req.body;
 
-  const { member, statusCode } = await ServiceService.addMember(id, userId, {
-    role
-  });
+  const { member, statusCode } = await ServiceService.addMember(
+    id,
+    userId,
+    req.body
+  );
 
   return res.status(statusCode).json({
     status: statusCode < 400 ? 1 : 0,
@@ -52,11 +53,12 @@ const addMember = async (req, res) => {
 
 const updateMember = async (req, res) => {
   const { id, userId } = req.params;
-  const { role } = req.body;
 
-  const { member, statusCode } = await ServiceService.updateMember(id, userId, {
-    role
-  });
+  const { member, statusCode } = await ServiceService.updateMember(
+    id,
+    userId,
+    req.body
+  );
 
   return res.status(statusCode).json({
     status: statusCode < 400 ? 1 : 0,
