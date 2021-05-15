@@ -2,11 +2,17 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  TextField,
-  Fab,
   CircularProgress,
+  FormControl,
+  InputLabel,
+  InputAdornment,
+  IconButton,
+  Fab,
+  OutlinedInput,
+  TextField,
   makeStyles
 } from '@material-ui/core';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 import { emailSignInStart } from '../../redux/user/user.actions';
 
@@ -27,9 +33,25 @@ const SignIn = () => {
   });
   const { email, password } = userCredentials;
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const { isProcessing } = useSelector(state => state.user);
 
   const dispatch = useDispatch();
+
+  const handleChange = event => {
+    const { name, value } = event.target;
+
+    setUserCredentials({ ...userCredentials, [name]: value });
+  };
+
+  const handleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleMouseDownPassword = event => {
+    event.preventDefault();
+  };
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -37,36 +59,45 @@ const SignIn = () => {
     dispatch(emailSignInStart(email, password));
   };
 
-  const handleChange = event => {
-    const { name, value } = event.target;
-    setUserCredentials({ ...userCredentials, [name]: value });
-  };
-
   return (
     <SignInStyles>
       <form onSubmit={handleSubmit}>
         <TextField
+          required
           name='email'
           type='email'
           value={email}
           onChange={handleChange}
+          disabled={isProcessing}
           label='Email'
           variant='outlined'
           fullWidth
           margin='normal'
-          required
         />
-        <TextField
-          name='password'
-          type='password'
-          value={password}
-          onChange={handleChange}
-          label='Password'
-          variant='outlined'
-          fullWidth
-          margin='normal'
-          required
-        />
+        <FormControl variant='outlined' margin='normal' fullWidth>
+          <InputLabel htmlFor='password'>Password</InputLabel>
+          <OutlinedInput
+            required
+            id='password'
+            name='password'
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={handleChange}
+            disabled={isProcessing}
+            label='Password'
+            endAdornment={
+              <InputAdornment position='end'>
+                <IconButton
+                  onClick={handleShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge='end'
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+          />
+        </FormControl>
 
         <ActionStyles>
           <Fab
