@@ -10,15 +10,6 @@ module.exports = {
     browser: true,
     es6: true
   },
-  extends: [
-    'airbnb',
-    'prettier',
-    'plugin:react-hooks/recommended',
-    'eslint:recommended',
-    'plugin:import/errors',
-    'plugin:import/warnings',
-    'plugin:import/typescript'
-  ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly'
@@ -30,20 +21,26 @@ module.exports = {
     ecmaVersion: 2020,
     sourceType: 'module'
   },
+  extends: [
+    'airbnb',
+    'plugin:react-hooks/recommended',
+    'eslint:recommended',
+    'prettier'
+  ],
   plugins: ['react', 'prettier'],
   rules: {
     'prettier/prettier': ['error', prettierOptions],
-    'react/prop-types': 0,
-    'react/jsx-props-no-spreading': 0,
-    'react/jsx-one-expression-per-line': 0,
-    'react/jsx-curly-newline': 0,
+    'react/prop-types': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'react/jsx-one-expression-per-line': 'off',
+    'react/jsx-curly-newline': 'off',
     'react/jsx-filename-extension': [
       2,
       { extensions: ['.js', '.jsx', '.ts', '.tsx'] }
     ],
-    'react/react-in-jsx-scope': 0,
-    'import/prefer-default-export': 0,
-    'import/no-extraneous-dependencies': 0,
+    'react/react-in-jsx-scope': 'off',
+    'import/prefer-default-export': 'off',
+    'import/no-extraneous-dependencies': 'off',
     'import/extensions': [
       'error',
       'ignorePackages',
@@ -55,9 +52,9 @@ module.exports = {
         tsx: 'never'
       }
     ],
-    'jsx-a11y/click-events-have-key-events': 0,
-    'jsx-a11y/no-noninteractive-element-interactions': 0,
-    'no-unused-vars': 1,
-    'arrow-body-style': 1
+    'jsx-a11y/click-events-have-key-events': 'off',
+    'jsx-a11y/no-noninteractive-element-interactions': 'off',
+    'no-unused-vars': 'warn',
+    'prefer-arrow-callback': 'off'
   }
 };

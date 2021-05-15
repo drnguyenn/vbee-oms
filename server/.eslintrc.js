@@ -6,23 +6,23 @@ const prettierOptions = JSON.parse(
 );
 
 module.exports = {
-  extends: ['airbnb-base', 'prettier'],
-  plugins: ['prettier'],
   env: {
     browser: true,
     node: true,
     es6: true
   },
+  globals: {},
+  extends: ['airbnb-base', 'prettier'],
+  plugins: ['prettier'],
   rules: {
     'prettier/prettier': ['error', prettierOptions],
-    'no-underscore-dangle': 0,
-    'no-param-reassign': 0,
-    'no-await-in-loop': 0,
-    'no-use-before-define': 0,
-    'no-restricted-syntax': 0,
-    'global-require': 0
+    'no-underscore-dangle': 'off',
+    'no-param-reassign': 'warn',
+    'no-await-in-loop': 'off',
+    'no-use-before-define': 'off',
+    'no-restricted-syntax': 'off',
+    'global-require': 'off'
   },
-  globals: {},
   settings: {
     'import/resolver': {
       alias: {
