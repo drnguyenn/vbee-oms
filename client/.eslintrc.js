@@ -54,7 +54,8 @@ module.exports = {
     ],
     'jsx-a11y/click-events-have-key-events': 'off',
     'jsx-a11y/no-noninteractive-element-interactions': 'off',
-    'no-unused-vars': 'warn',
-    'prefer-arrow-callback': 'off'
+    'arrow-body-style': 'off',
+    'prefer-arrow-callback': 'off',
+    'no-unused-vars': 'warn'
   }
 };

@@ -16,6 +16,8 @@ module.exports = {
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': ['error', prettierOptions],
+    'arrow-body-style': 'off',
+    'prefer-arrow-callback': 'off',
     'no-underscore-dangle': 'off',
     'no-param-reassign': 'warn',
     'no-await-in-loop': 'off',
