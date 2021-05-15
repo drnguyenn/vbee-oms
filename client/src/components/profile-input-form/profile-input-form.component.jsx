@@ -18,14 +18,8 @@ const ProfileInputForm = () => {
 
   const [userInfo, setUserInfo] = useState(currentUser);
 
-  const {
-    email,
-    username,
-    fullName,
-    githubId,
-    githubUsername,
-    role
-  } = userInfo;
+  const { email, username, fullName, githubId, githubUsername, role } =
+    userInfo;
 
   const handleSubmit = async event => {
     event.preventDefault();
