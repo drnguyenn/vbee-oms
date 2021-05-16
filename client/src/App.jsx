@@ -5,7 +5,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { SnackbarProvider } from 'notistack';
 
-import { IconButton } from '@material-ui/core';
+import { Fade, IconButton } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 
 import Router from './router';
@@ -78,6 +78,7 @@ const App = () => {
             <Close fontSize='small' />
           </IconButton>
         )}
+        TransitionComponent={Fade}
       >
         <Notifications />
 
