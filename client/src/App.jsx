@@ -1,7 +1,11 @@
 import { createRef, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import {
+  createMuiTheme,
+  unstable_createMuiStrictModeTheme as unstableCreateMuiStrictModeTheme,
+  ThemeProvider
+} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { SnackbarProvider } from 'notistack';
 
@@ -19,6 +23,11 @@ import { getCurrentUser } from './redux/user/user.actions';
 import { switchTheme } from './redux/theme/theme.actions';
 
 import GlobalStyles from './global.styles';
+
+const createTheme =
+  process.env.NODE_ENV === 'production'
+    ? createMuiTheme
+    : unstableCreateMuiStrictModeTheme;
 
 const App = () => {
   const dispatch = useDispatch();
@@ -38,7 +47,7 @@ const App = () => {
   // const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = useMemo(
     () =>
-      createMuiTheme({
+      createTheme({
         palette: {
           // type: prefersDarkMode ? 'dark' : 'light'
           type,
