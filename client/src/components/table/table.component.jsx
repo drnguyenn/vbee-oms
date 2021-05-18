@@ -1,8 +1,17 @@
 import MUIDataTable from 'mui-datatables';
 
-import { LinearProgress } from '@material-ui/core';
+import { LinearProgress, makeStyles } from '@material-ui/core';
 
-const getInitialOptions = isLoading => ({
+import { TableStyles } from './table.styles';
+
+const useStyles = makeStyles({
+  linearProgress: {
+    position: 'absolute',
+    width: '100%'
+  }
+});
+
+const initialOptions = {
   filter: true,
   filterType: 'multiselect',
   responsive: 'standard',
@@ -12,10 +21,10 @@ const getInitialOptions = isLoading => ({
   jumpToPage: true,
   textLabels: {
     body: {
-      noMatch: isLoading ? <LinearProgress /> : 'No data found'
+      noMatch: 'No data found'
     }
   }
-});
+};
 
 const Table = ({
   title = '',
@@ -23,13 +32,20 @@ const Table = ({
   data = [],
   options = {},
   isLoading = false
-}) => (
-  <MUIDataTable
-    title={title}
-    columns={columns}
-    options={{ ...getInitialOptions(isLoading), ...options }}
-    data={data}
-  />
-);
+}) => {
+  const classes = useStyles();
+
+  return (
+    <TableStyles>
+      {isLoading && <LinearProgress className={classes.linearProgress} />}
+      <MUIDataTable
+        title={title}
+        columns={columns}
+        options={{ ...initialOptions, ...options }}
+        data={data}
+      />
+    </TableStyles>
+  );
+};
 
 export default Table;
