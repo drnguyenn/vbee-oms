@@ -72,6 +72,7 @@ const ClusterCreationModal = () => {
             fullWidth
           />
         </DialogContent>
+
         <DialogActions>
           <Button
             onClick={handleClose}

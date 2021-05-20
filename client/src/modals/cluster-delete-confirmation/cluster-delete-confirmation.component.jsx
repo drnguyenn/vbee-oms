@@ -157,6 +157,7 @@ const ClusterDeleteConfirmationModal = () => {
               fullWidth
             />
           </DialogContent>
+
           <DialogActions>
             <Button
               onClick={handleClose}
