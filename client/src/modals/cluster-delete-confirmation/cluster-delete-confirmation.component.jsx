@@ -85,6 +85,7 @@ const ClusterDeleteConfirmationModal = () => {
     return (
       <Dialog open={openClusterDeleteConfirmationModal} onClose={handleClose}>
         <Spinner open={isProcessing} backdropClasses={classes.spinner} />
+
         <DialogTitle>Delete cluster</DialogTitle>
         <form onSubmit={handleSubmit}>
           <DialogContent>
@@ -175,6 +176,7 @@ const ClusterDeleteConfirmationModal = () => {
                 !checkedServicesDelete ||
                 !checkedServersAndRepositoriesDelete ||
                 !checkedMembersRemove ||
+                !checkedDiagramRemove ||
                 currentCluster.name !== clusterName
               }
             >
