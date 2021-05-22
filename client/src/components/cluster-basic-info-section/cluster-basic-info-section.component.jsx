@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -28,48 +28,6 @@ const useStyles = makeStyles({
   }
 });
 
-const headerPropsAreEqual = (prevProps, nextProps) =>
-  prevProps.editMode === nextProps.editMode &&
-  prevProps.isUpdatingInfo === nextProps.isUpdatingInfo &&
-  prevProps.name === nextProps.name;
-
-const HeaderOptions = memo(
-  ({ editMode, isUpdatingInfo, name, handleEditClick, handleCancelClick }) => {
-    if (editMode)
-      return (
-        <div>
-          <Tooltip title='Cancel' arrow>
-            <IconButton onClick={handleCancelClick}>
-              <Close />
-            </IconButton>
-          </Tooltip>
-          {name.length ? (
-            <Tooltip title='Save' arrow>
-              <IconButton type='submit'>
-                <Check />
-              </IconButton>
-            </Tooltip>
-          ) : (
-            <IconButton disabled>
-              <Check />
-            </IconButton>
-          )}
-        </div>
-      );
-
-    return isUpdatingInfo ? (
-      <CircularProgress size={25} />
-    ) : (
-      <Tooltip title='Edit' arrow>
-        <IconButton onClick={handleEditClick}>
-          <Edit />
-        </IconButton>
-      </Tooltip>
-    );
-  },
-  headerPropsAreEqual
-);
-
 const ClusterBasicInfoSection = () => {
   const classes = useStyles();
 
@@ -94,7 +52,7 @@ const ClusterBasicInfoSection = () => {
       });
   }, [currentCluster, isFetchingCurrentCluster, isUpdatingInfo]);
 
-  const handleEditClick = () => setEditMode(!editMode);
+  const handleEditClick = () => setEditMode(true);
 
   const handleCancelClick = () => {
     setClusterInfo({
@@ -102,7 +60,7 @@ const ClusterBasicInfoSection = () => {
       description: currentCluster.description || '',
       version: currentCluster.version || ''
     });
-    setEditMode(!editMode);
+    setEditMode(false);
   };
 
   const handleChange = event => {
@@ -118,30 +76,50 @@ const ClusterBasicInfoSection = () => {
     setEditMode(false);
   };
 
+  const HeaderOptions = () => {
+    if (editMode)
+      return (
+        <div>
+          <Tooltip title='Cancel' arrow>
+            <IconButton onClick={handleCancelClick}>
+              <Close />
+            </IconButton>
+          </Tooltip>
+          {name.length ? (
+            <Tooltip title='Save' arrow>
+              <IconButton onClick={handleSubmit}>
+                <Check />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <IconButton disabled>
+              <Check />
+            </IconButton>
+          )}
+        </div>
+      );
+
+    return isUpdatingInfo ? (
+      <CircularProgress size={25} />
+    ) : (
+      <Tooltip title='Edit' arrow>
+        <IconButton onClick={handleEditClick}>
+          <Edit />
+        </IconButton>
+      </Tooltip>
+    );
+  };
+
   return (
-    <Section
-      title='Basic info'
-      headerOptions={
-        <HeaderOptions
-          {...{
-            editMode,
-            isUpdatingInfo,
-            name,
-            handleEditClick,
-            handleCancelClick
-          }}
-        />
-      }
-      onSubmit={handleSubmit}
-    >
+    <Section title='Basic info' headerOptions={<HeaderOptions />}>
       {editMode ? (
-        <>
+        <form onSubmit={handleSubmit}>
           <SectionRowStyles>
             <SectionRowTitleStyles>Name</SectionRowTitleStyles>
             <Fade in timeout={500}>
               <TextField
-                className={classes.textField}
                 required
+                className={classes.textField}
                 autoComplete='off'
                 name='name'
                 type='text'
@@ -170,7 +148,8 @@ const ClusterBasicInfoSection = () => {
               />
             </Fade>
           </SectionRowStyles>
-        </>
+          <input type='submit' hidden />
+        </form>
       ) : (
         <>
           <SectionRowStyles>
