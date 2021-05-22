@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { capitalize, kebabCase } from 'lodash';
 
@@ -109,8 +109,10 @@ const ClusterMembersSection = () => {
     if (targetRow.length) setMemberRole(targetRow[4]);
   }, [targetRow]);
 
-  const handleAddMemberClick = () =>
-    dispatch(toggleClusterMemberAdditionModal());
+  const handleAddMemberClick = useCallback(
+    () => dispatch(toggleClusterMemberAdditionModal()),
+    [dispatch]
+  );
 
   const handleCancelClick = () => setEditMode(false);
 
@@ -118,111 +120,133 @@ const ClusterMembersSection = () => {
     setMemberRole(event.target.value);
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    event => {
+      event.preventDefault();
 
-    dispatch(
-      updateClusterMemberStart(currentCluster.id, targetRow[0], {
-        role: memberRole
-      })
-    );
-
-    setEditMode(false);
-  };
-
-  const RoleColumn = (value, { rowData }) =>
-    editMode && rowData[0] === targetRow[0] ? (
-      <FormControl variant='outlined'>
-        <InputLabel>Role</InputLabel>
-        <Select value={memberRole} onChange={handleChange} label='Role'>
-          <MenuItem value='member'>Member</MenuItem>
-          <MenuItem value='admin'>Admin</MenuItem>
-        </Select>
-      </FormControl>
-    ) : (
-      capitalize(value)
-    );
-
-  const ActionsColumn = (value, { rowData }) => {
-    if (editMode && rowData[0] === targetRow[0])
-      return (
-        <div>
-          <Tooltip title='Cancel' arrow>
-            <IconButton onClick={handleCancelClick}>
-              <Close />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title='Save' arrow>
-            <IconButton onClick={handleSubmit}>
-              <Check />
-            </IconButton>
-          </Tooltip>
-        </div>
+      dispatch(
+        updateClusterMemberStart(currentCluster.id, targetRow[0], {
+          role: memberRole
+        })
       );
 
-    return (isUpdatingMembers && rowData[0] === targetRow[0]) ||
-      (isRemovingMembers && rowData[0] === targetRow[0]) ? (
-      <CircularProgress size={25} />
-    ) : (
-      <IconButton
-        onClick={event => {
-          handleMenu(event);
-          setTargetRow(rowData);
-        }}
-        disabled={editMode}
-      >
-        <MoreVert />
-      </IconButton>
-    );
-  };
+      setEditMode(false);
+    },
+    [dispatch, currentCluster.id, memberRole, targetRow]
+  );
 
-  const columns = [
-    {
-      name: 'id',
-      label: 'UID',
-      options: {
-        filter: true
+  const columns = useMemo(() => {
+    const RoleColumn = (value, { rowData }) =>
+      editMode && rowData[0] === targetRow[0] ? (
+        <FormControl variant='outlined'>
+          <InputLabel>Role</InputLabel>
+          <Select value={memberRole} onChange={handleChange} label='Role'>
+            <MenuItem value='member'>Member</MenuItem>
+            <MenuItem value='admin'>Admin</MenuItem>
+          </Select>
+        </FormControl>
+      ) : (
+        capitalize(value)
+      );
+
+    const ActionsColumn = (value, { rowData }) => {
+      if (editMode && rowData[0] === targetRow[0])
+        return (
+          <div>
+            <Tooltip title='Cancel' arrow>
+              <IconButton onClick={handleCancelClick}>
+                <Close />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title='Save' arrow>
+              <IconButton onClick={handleSubmit}>
+                <Check />
+              </IconButton>
+            </Tooltip>
+          </div>
+        );
+
+      return (isUpdatingMembers && rowData[0] === targetRow[0]) ||
+        (isRemovingMembers && rowData[0] === targetRow[0]) ? (
+        <CircularProgress size={25} />
+      ) : (
+        <IconButton
+          onClick={event => {
+            handleMenu(event);
+            setTargetRow(rowData);
+          }}
+          disabled={editMode}
+        >
+          <MoreVert />
+        </IconButton>
+      );
+    };
+
+    return [
+      {
+        name: 'id',
+        label: 'UID',
+        options: {
+          filter: true
+        }
+      },
+      {
+        name: 'fullName',
+        label: 'Full name',
+        options: {
+          filter: true
+        }
+      },
+      {
+        name: 'username',
+        label: 'Username',
+        options: {
+          filter: true
+        }
+      },
+      {
+        name: 'githubUsername',
+        label: 'GitHub username',
+        options: {
+          filter: true
+        }
+      },
+      {
+        name: 'role',
+        label: 'Role',
+        options: {
+          filter: true,
+          customBodyRender: RoleColumn
+        }
+      },
+      {
+        name: '',
+        options: {
+          filter: false,
+          sort: false,
+          empty: true,
+          customBodyRender: ActionsColumn
+        }
       }
-    },
-    {
-      name: 'fullName',
-      label: 'Full name',
-      options: {
-        filter: true
-      }
-    },
-    {
-      name: 'username',
-      label: 'Username',
-      options: {
-        filter: true
-      }
-    },
-    {
-      name: 'githubUsername',
-      label: 'GitHub username',
-      options: {
-        filter: true
-      }
-    },
-    {
-      name: 'role',
-      label: 'Role',
-      options: {
-        filter: true,
-        customBodyRender: RoleColumn
-      }
-    },
-    {
-      name: '',
-      options: {
-        filter: false,
-        sort: false,
-        empty: true,
-        customBodyRender: ActionsColumn
-      }
-    }
-  ];
+    ];
+  }, [
+    editMode,
+    handleSubmit,
+    isRemovingMembers,
+    isUpdatingMembers,
+    memberRole,
+    targetRow
+  ]);
+
+  const options = useMemo(
+    () => ({
+      downloadFilename: kebabCase(`${currentCluster.name}-members.csv`),
+      customToolbar: () => (
+        <CustomToolbar {...{ isAddingMembers, handleAddMemberClick }} />
+      )
+    }),
+    [currentCluster.name, handleAddMemberClick, isAddingMembers]
+  );
 
   return (
     <Section
@@ -235,12 +259,7 @@ const ClusterMembersSection = () => {
           role,
           ...rest
         }))}
-        options={{
-          downloadFilename: kebabCase(`${currentCluster.name}-members.csv`),
-          customToolbar: () => (
-            <CustomToolbar {...{ isAddingMembers, handleAddMemberClick }} />
-          )
-        }}
+        options={options}
       />
 
       <MemberActionMenu
