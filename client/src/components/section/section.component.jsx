@@ -11,11 +11,11 @@ import {
 
 const useStyles = makeStyles({
   paper: {
+    position: 'relative',
     background: 'none',
     width: '90%',
     margin: `${themes.lengthMd2} auto`,
     padding: themes.lengthSm3,
-    borderRadius: 20,
 
     '&:first-child': {
       marginTop: 0
@@ -26,21 +26,19 @@ const useStyles = makeStyles({
   }
 });
 
-const Section = ({ title, subtitle, headerOptions, onSubmit, children }) => {
+const Section = ({ title, subtitle, headerOptions, children }) => {
   const classes = useStyles();
 
   return (
     <Paper className={classes.paper} variant='outlined'>
-      <form onSubmit={onSubmit}>
-        <SectionHeaderStyles>
-          <SectionTitleAndSubtitleStyles>
-            <SectionTitleStyles>{title}</SectionTitleStyles>
-            <SectionSubtitleStyles>{subtitle}</SectionSubtitleStyles>
-          </SectionTitleAndSubtitleStyles>
-          {headerOptions}
-        </SectionHeaderStyles>
-        {children}
-      </form>
+      <SectionHeaderStyles>
+        <SectionTitleAndSubtitleStyles>
+          <SectionTitleStyles>{title}</SectionTitleStyles>
+          <SectionSubtitleStyles>{subtitle}</SectionSubtitleStyles>
+        </SectionTitleAndSubtitleStyles>
+        {headerOptions}
+      </SectionHeaderStyles>
+      {children}
     </Paper>
   );
 };
