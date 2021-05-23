@@ -24,7 +24,8 @@ const ServiceMemberSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    typePojoToMixed: false
+    typePojoToMixed: false,
+    autoIndex: true
   }
 );
 

@@ -23,7 +23,7 @@ const RepositorySchema = new mongoose.Schema(
         }
       }
     ],
-    githubId: { type: String },
+    githubId: { type: String, unique: true },
     ghAppInstallationId: { type: String },
     serviceId: { type: String }
   },

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const ClusterSchema = new mongoose.Schema(
   {
-    name: { type: String, require: true },
+    name: { type: String, require: true, unique: true },
     description: { type: String, default: '' },
     diagram: {
       type: mongoose.Types.ObjectId,

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const GhAppInstallationSchema = new mongoose.Schema(
   {
-    githubId: { type: String, require: true },
+    githubId: { type: String, require: true, unique: true },
     account: { type: String, require: true },
     status: {
       type: String,
@@ -21,7 +21,8 @@ const GhAppInstallationSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    typePojoToMixed: false
+    typePojoToMixed: false,
+    autoIndex: true
   }
 );
 

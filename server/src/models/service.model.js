@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const ServiceSchema = new mongoose.Schema(
   {
-    name: { type: String, require: true },
+    name: { type: String, require: true, unique: true },
     description: { type: String, default: '' },
     version: { type: String, default: '1.0.0' },
     status: {
@@ -10,21 +10,6 @@ const ServiceSchema = new mongoose.Schema(
       enum: ['healthy', 'unhealthy'],
       default: 'healthy'
     },
-    server: {
-      ipAddress: { type: String, default: '' },
-      domain: { type: String, default: '' },
-      ssl: {
-        lastPurchaseAt: { type: Date, default: Date.now() },
-        expiresAt: { type: Date, default: Date.now() }
-      }
-    },
-    docs: [
-      {
-        _id: { type: mongoose.Types.ObjectId, require: true },
-        name: { type: String, require: true },
-        url: { type: String, require: true }
-      }
-    ],
     cluster: { type: mongoose.Types.ObjectId, require: true, ref: 'Cluster' }
   },
   {
@@ -57,6 +42,13 @@ ServiceSchema.virtual('memberCount', {
   count: true
 });
 
+ServiceSchema.virtual('server', {
+  ref: 'Server',
+  localField: '_id',
+  foreignField: 'service',
+  justOne: true
+});
+
 ServiceSchema.pre('find', function populateMemberCount() {
   this.populate('memberCount');
 });
@@ -70,6 +62,7 @@ ServiceSchema.post('find', services => {
 ServiceSchema.pre('findOne', function populateMembersAndCluster() {
   this.populate('memberCount');
   this.populate({ path: 'members', select: 'role -_id -service' });
+  this.populate({ path: 'server', select: '_id' });
   this.populate({ path: 'cluster', select: 'name' });
 });
 
@@ -77,6 +70,7 @@ ServiceSchema.post('findOne', service => {
   if (service) {
     service._doc.memberCount = service.memberCount;
     service._doc.members = service.members;
+    service._doc.server = service.server;
   }
 });
 
