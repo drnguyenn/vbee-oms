@@ -151,7 +151,7 @@ function* removeMember({ payload: { clusterId, userId } }) {
     yield put(
       notify({
         type: 'success',
-        content: `Member removed`
+        content: 'Member removed'
       })
     );
   } catch (error) {
@@ -175,7 +175,7 @@ function* onCreateClusterStart() {
   yield takeLatest(ClusterActionTypes.CREATE_CLUSTER_START, createCluster);
 }
 
-function* onupdateClusterInfoStart() {
+function* onUpdateClusterInfoStart() {
   yield takeLatest(
     ClusterActionTypes.UPDATE_CLUSTER_INFO_START,
     updateClusterInfoStart
@@ -209,7 +209,7 @@ export default function* clusterSagas() {
     call(onFetchAllClustersStart),
     call(onFetchClusterStart),
     call(onCreateClusterStart),
-    call(onupdateClusterInfoStart),
+    call(onUpdateClusterInfoStart),
     call(onDeleteClusterStart),
     call(onAddMemberStart),
     call(onUpdateMemberStart),
