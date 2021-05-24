@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import MUIDataTable from 'mui-datatables';
 
 import { LinearProgress, makeStyles } from '@material-ui/core';
@@ -26,6 +27,13 @@ const initialOptions = {
   }
 };
 
+const propsAreEqual = (prevProps, nextProps) =>
+  prevProps.title === nextProps.title &&
+  prevProps.columns === nextProps.columns &&
+  prevProps.data === nextProps.data &&
+  prevProps.options === nextProps.options &&
+  prevProps.isLoading === nextProps.isLoading;
+
 const Table = ({
   title = '',
   columns = [],
@@ -48,4 +56,4 @@ const Table = ({
   );
 };
 
-export default Table;
+export default memo(Table, propsAreEqual);
