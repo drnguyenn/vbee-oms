@@ -147,6 +147,7 @@ const ClusterMemberAdditionModal = () => {
               <TextField
                 {...params}
                 required
+                autoFocus
                 label='Choose a member'
                 placeholder="Enter member's username, full name or GitHub username, etc."
                 variant='outlined'

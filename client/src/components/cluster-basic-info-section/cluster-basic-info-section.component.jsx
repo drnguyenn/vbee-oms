@@ -121,6 +121,7 @@ const ClusterBasicInfoSection = () => {
                 required
                 className={classes.textField}
                 autoComplete='off'
+                autoFocus
                 name='name'
                 type='text'
                 value={name}

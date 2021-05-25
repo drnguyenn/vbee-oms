@@ -47,6 +47,7 @@ const ClusterCreationModal = () => {
           <TextField
             required
             autoComplete='off'
+            autoFocus
             name='name'
             type='text'
             value={name}
