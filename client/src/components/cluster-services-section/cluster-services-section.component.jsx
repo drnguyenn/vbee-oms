@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -32,11 +31,22 @@ const useStyles = makeStyles({
   }
 });
 
-const headerPropsAreEqual = (prevProps, nextProps) =>
-  prevProps.isProcessing === nextProps.isProcessing;
+const HeaderOptions = () => {
+  const { isProcessing } = useSelector(state => state.service);
 
-const HeaderOptions = memo(
-  ({ isProcessing, handleDiagramClick, handleAddServiceClick }) => (
+  const { currentCluster } = useSelector(state => state.cluster);
+  const { id } = currentCluster;
+
+  const history = useHistory();
+
+  const dispatch = useDispatch();
+
+  const handleAddServiceClick = () => dispatch(toggleServiceCreationModal());
+
+  const handleDiagramClick = () =>
+    history.push(`${ROUTE_PATHS.CLUSTERS}/${id}/architecture`);
+
+  return (
     <div>
       <Tooltip title='Show architecture in diagram' arrow>
         <IconButton onClick={handleDiagramClick}>
@@ -53,9 +63,8 @@ const HeaderOptions = memo(
         </Tooltip>
       )}
     </div>
-  ),
-  headerPropsAreEqual
-);
+  );
+};
 
 const Subtitle = ({ serviceCount }) => (
   <span>
@@ -70,28 +79,14 @@ const ClusterServicesSection = () => {
   const classes = useStyles();
 
   const { currentCluster } = useSelector(state => state.cluster);
-  const { isProcessing } = useSelector(state => state.service);
 
-  const { id: clusterId, services = [], serviceCount = 0 } = currentCluster;
-
-  const history = useHistory();
-
-  const dispatch = useDispatch();
-
-  const handleAddServiceClick = () => dispatch(toggleServiceCreationModal());
-
-  const handleDiagramClick = () =>
-    history.push(`${ROUTE_PATHS.CLUSTERS}/${clusterId}/architecture`);
+  const { services = [], serviceCount = 0 } = currentCluster;
 
   return (
     <Section
       title='Services'
       subtitle={serviceCount ? <Subtitle serviceCount={serviceCount} /> : null}
-      headerOptions={
-        <HeaderOptions
-          {...{ isProcessing, handleDiagramClick, handleAddServiceClick }}
-        />
-      }
+      headerOptions={<HeaderOptions />}
     >
       <Grid className={classes.grid} container spacing={1}>
         {services.length ? (

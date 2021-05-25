@@ -54,11 +54,15 @@ const MemberActionMenu = memo(
   menuPropsAreEqual
 );
 
-const customToolbarPropsAreEqual = (prevProps, nextProps) =>
-  prevProps.isAddingMembers === nextProps.isAddingMembers;
-
-const CustomToolbar = memo(({ isAddingMembers, handleAddMemberClick }) => {
+const CustomToolbar = () => {
   const classes = useStyles();
+
+  const { isAddingMembers } = useSelector(state => state.cluster);
+
+  const dispatch = useDispatch();
+
+  const handleAddMemberClick = () =>
+    dispatch(toggleClusterMemberAdditionModal());
 
   return isAddingMembers ? (
     <Tooltip title='Processing...'>
@@ -71,7 +75,7 @@ const CustomToolbar = memo(({ isAddingMembers, handleAddMemberClick }) => {
       </IconButton>
     </Tooltip>
   );
-}, customToolbarPropsAreEqual);
+};
 
 const Subtitle = ({ memberCount }) => (
   <span>
@@ -94,12 +98,9 @@ const ClusterMembersSection = () => {
 
   const [memberRole, setMemberRole] = useState('member');
 
-  const {
-    currentCluster,
-    isAddingMembers,
-    isUpdatingMembers,
-    isRemovingMembers
-  } = useSelector(state => state.cluster);
+  const { currentCluster, isUpdatingMembers, isRemovingMembers } = useSelector(
+    state => state.cluster
+  );
 
   const { members = [], memberCount = 0 } = currentCluster;
 
@@ -108,11 +109,6 @@ const ClusterMembersSection = () => {
   useEffect(() => {
     if (targetRow.length) setMemberRole(targetRow[4]);
   }, [targetRow]);
-
-  const handleAddMemberClick = useCallback(
-    () => dispatch(toggleClusterMemberAdditionModal()),
-    [dispatch]
-  );
 
   const handleCancelClick = () => setEditMode(false);
 
@@ -241,11 +237,9 @@ const ClusterMembersSection = () => {
   const options = useMemo(
     () => ({
       downloadFilename: kebabCase(`${currentCluster.name}-members.csv`),
-      customToolbar: () => (
-        <CustomToolbar {...{ isAddingMembers, handleAddMemberClick }} />
-      )
+      customToolbar: () => <CustomToolbar />
     }),
-    [currentCluster.name, handleAddMemberClick, isAddingMembers]
+    [currentCluster.name]
   );
 
   return (
