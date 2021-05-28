@@ -43,13 +43,9 @@ function* fetchClusterDiagram({ payload }) {
   }
 }
 
-function* updateClusterDiagramElements({ payload: { diagramId, elements } }) {
+function* updateClusterDiagramElements({ payload: { elements } }) {
   try {
-    yield call(
-      DiagramService.updateClusterDiagramElements,
-      diagramId,
-      elements
-    );
+    yield call(DiagramService.updateClusterDiagramElements, elements);
 
     yield put(updateClusterDiagramElementsSuccess());
   } catch (error) {
@@ -58,15 +54,9 @@ function* updateClusterDiagramElements({ payload: { diagramId, elements } }) {
   }
 }
 
-function* removeClusterDiagramElements({
-  payload: { diagramId, elements, callback }
-}) {
+function* removeClusterDiagramElements({ payload: { elements, callback } }) {
   try {
-    yield call(
-      DiagramService.removeClusterDiagramElements,
-      diagramId,
-      elements
-    );
+    yield call(DiagramService.removeClusterDiagramElements, elements);
 
     yield call(callback);
     yield put(removeClusterDiagramElementsSuccess());
@@ -76,13 +66,9 @@ function* removeClusterDiagramElements({
   }
 }
 
-function* addClusterDiagramNode({ payload: { diagramId, node } }) {
+function* addClusterDiagramNode({ payload: { node } }) {
   try {
-    const diagramNode = yield call(
-      DiagramService.addClusterDiagramNode,
-      diagramId,
-      node
-    );
+    const diagramNode = yield call(DiagramService.addClusterDiagramNode, node);
 
     yield put(addClusterDiagramNodeSuccess(diagramNode));
   } catch (error) {
@@ -91,11 +77,10 @@ function* addClusterDiagramNode({ payload: { diagramId, node } }) {
   }
 }
 
-function* updateClusterDiagramNode({ payload: { diagramId, nodeId, data } }) {
+function* updateClusterDiagramNode({ payload: { nodeId, data } }) {
   try {
     const diagramNode = yield call(
       DiagramService.updateClusterDiagramNode,
-      diagramId,
       nodeId,
       data
     );
@@ -107,13 +92,10 @@ function* updateClusterDiagramNode({ payload: { diagramId, nodeId, data } }) {
   }
 }
 
-function* removeClusterDiagramNode({
-  payload: { diagramId, nodeId, callback }
-}) {
+function* removeClusterDiagramNode({ payload: { nodeId, callback } }) {
   try {
     const diagramNode = yield call(
       DiagramService.removeClusterDiagramNode,
-      diagramId,
       nodeId
     );
 
@@ -125,13 +107,9 @@ function* removeClusterDiagramNode({
   }
 }
 
-function* addClusterDiagramPort({ payload: { diagramId, port } }) {
+function* addClusterDiagramPort({ payload: { port } }) {
   try {
-    const diagramPort = yield call(
-      DiagramService.addClusterDiagramPort,
-      diagramId,
-      port
-    );
+    const diagramPort = yield call(DiagramService.addClusterDiagramPort, port);
 
     yield put(addClusterDiagramPortSuccess(diagramPort));
   } catch (error) {
@@ -140,11 +118,10 @@ function* addClusterDiagramPort({ payload: { diagramId, port } }) {
   }
 }
 
-function* updateClusterDiagramPort({ payload: { diagramId, portId, data } }) {
+function* updateClusterDiagramPort({ payload: { portId, data } }) {
   try {
     const diagramPort = yield call(
       DiagramService.updateClusterDiagramPort,
-      diagramId,
       portId,
       data
     );
@@ -156,13 +133,10 @@ function* updateClusterDiagramPort({ payload: { diagramId, portId, data } }) {
   }
 }
 
-function* removeClusterDiagramPort({
-  payload: { diagramId, portId, callback }
-}) {
+function* removeClusterDiagramPort({ payload: { portId, callback } }) {
   try {
     const diagramPort = yield call(
       DiagramService.removeClusterDiagramPort,
-      diagramId,
       portId
     );
 
@@ -174,13 +148,9 @@ function* removeClusterDiagramPort({
   }
 }
 
-function* addClusterDiagramLink({ payload: { diagramId, link, callback } }) {
+function* addClusterDiagramLink({ payload: { link, callback } }) {
   try {
-    const diagramLink = yield call(
-      DiagramService.addClusterDiagramLink,
-      diagramId,
-      link
-    );
+    const diagramLink = yield call(DiagramService.addClusterDiagramLink, link);
 
     yield call(callback);
     yield put(addClusterDiagramLinkSuccess(diagramLink));
@@ -190,11 +160,10 @@ function* addClusterDiagramLink({ payload: { diagramId, link, callback } }) {
   }
 }
 
-function* updateClusterDiagramLink({ payload: { diagramId, linkId, data } }) {
+function* updateClusterDiagramLink({ payload: { linkId, data } }) {
   try {
     const diagramLink = yield call(
       DiagramService.updateClusterDiagramLink,
-      diagramId,
       linkId,
       data
     );
@@ -206,13 +175,10 @@ function* updateClusterDiagramLink({ payload: { diagramId, linkId, data } }) {
   }
 }
 
-function* removeClusterDiagramLink({
-  payload: { diagramId, linkId, callback }
-}) {
+function* removeClusterDiagramLink({ payload: { linkId, callback } }) {
   try {
     const diagramLink = yield call(
       DiagramService.removeClusterDiagramLink,
-      diagramId,
       linkId
     );
 

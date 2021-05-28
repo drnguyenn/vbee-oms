@@ -25,9 +25,9 @@ export const setSelectedDiagramElements = elements => ({
   payload: elements
 });
 
-export const updateClusterDiagramElementsStart = (diagramId, elements) => ({
+export const updateClusterDiagramElementsStart = elements => ({
   type: DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_ELEMENTS_START,
-  payload: { diagramId, elements }
+  payload: { elements }
 });
 
 export const updateClusterDiagramElementsSuccess = () => ({
@@ -39,13 +39,9 @@ export const updateClusterDiagramElementsFailure = error => ({
   payload: error
 });
 
-export const removeClusterDiagramElementsStart = (
-  diagramId,
-  elements,
-  callback
-) => ({
+export const removeClusterDiagramElementsStart = (elements, callback) => ({
   type: DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_ELEMENTS_START,
-  payload: { diagramId, elements, callback }
+  payload: { elements, callback }
 });
 
 export const removeClusterDiagramElementsSuccess = () => ({
@@ -57,9 +53,9 @@ export const removeClusterDiagramElementsFailure = error => ({
   payload: error
 });
 
-export const addClusterDiagramNodeStart = (diagramId, node) => ({
+export const addClusterDiagramNodeStart = node => ({
   type: DiagramActionTypes.ADD_CLUSTER_DIAGRAM_NODE_START,
-  payload: { diagramId, node }
+  payload: { node }
 });
 
 export const addClusterDiagramNodeSuccess = node => ({
@@ -72,9 +68,9 @@ export const addClusterDiagramNodeFailure = error => ({
   payload: error
 });
 
-export const updateClusterDiagramNodeStart = (diagramId, nodeId, data) => ({
+export const updateClusterDiagramNodeStart = (nodeId, data) => ({
   type: DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_NODE_START,
-  payload: { diagramId, nodeId, data }
+  payload: { nodeId, data }
 });
 
 export const updateClusterDiagramNodeSuccess = node => ({
@@ -87,9 +83,9 @@ export const updateClusterDiagramNodeFailure = error => ({
   payload: error
 });
 
-export const removeClusterDiagramNodeStart = (diagramId, nodeId, callback) => ({
+export const removeClusterDiagramNodeStart = (nodeId, callback) => ({
   type: DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_NODE_START,
-  payload: { diagramId, nodeId, callback }
+  payload: { nodeId, callback }
 });
 
 export const removeClusterDiagramNodeSuccess = node => ({
@@ -102,9 +98,9 @@ export const removeClusterDiagramNodeFailure = error => ({
   payload: error
 });
 
-export const addClusterDiagramPortStart = (diagramId, port) => ({
+export const addClusterDiagramPortStart = port => ({
   type: DiagramActionTypes.ADD_CLUSTER_DIAGRAM_PORT_START,
-  payload: { diagramId, port }
+  payload: { port }
 });
 
 export const addClusterDiagramPortSuccess = port => ({
@@ -117,9 +113,9 @@ export const addClusterDiagramPortFailure = error => ({
   payload: error
 });
 
-export const updateClusterDiagramPortStart = (diagramId, portId, data) => ({
+export const updateClusterDiagramPortStart = (portId, data) => ({
   type: DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_PORT_START,
-  payload: { diagramId, portId, data }
+  payload: { portId, data }
 });
 
 export const updateClusterDiagramPortSuccess = port => ({
@@ -132,9 +128,9 @@ export const updateClusterDiagramPortFailure = error => ({
   payload: error
 });
 
-export const removeClusterDiagramPortStart = (diagramId, portId, callback) => ({
+export const removeClusterDiagramPortStart = (portId, callback) => ({
   type: DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_PORT_START,
-  payload: { diagramId, portId, callback }
+  payload: { portId, callback }
 });
 
 export const removeClusterDiagramPortSuccess = port => ({
@@ -147,9 +143,9 @@ export const removeClusterDiagramPortFailure = error => ({
   payload: error
 });
 
-export const addClusterDiagramLinkStart = (diagramId, link, callback) => ({
+export const addClusterDiagramLinkStart = (link, callback) => ({
   type: DiagramActionTypes.ADD_CLUSTER_DIAGRAM_LINK_START,
-  payload: { diagramId, link, callback }
+  payload: { link, callback }
 });
 
 export const addClusterDiagramLinkSuccess = link => ({
@@ -162,9 +158,9 @@ export const addClusterDiagramLinkFailure = error => ({
   payload: error
 });
 
-export const updateClusterDiagramLinkStart = (diagramId, linkId, data) => ({
+export const updateClusterDiagramLinkStart = (linkId, data) => ({
   type: DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_LINK_START,
-  payload: { diagramId, linkId, data }
+  payload: { linkId, data }
 });
 
 export const updateClusterDiagramLinkSuccess = link => ({
@@ -177,9 +173,9 @@ export const updateClusterDiagramLinkFailure = error => ({
   payload: error
 });
 
-export const removeClusterDiagramLinkStart = (diagramId, linkId, callback) => ({
+export const removeClusterDiagramLinkStart = (linkId, callback) => ({
   type: DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_LINK_START,
-  payload: { diagramId, linkId, callback }
+  payload: { linkId, callback }
 });
 
 export const removeClusterDiagramLinkSuccess = link => ({
