@@ -1,5 +1,15 @@
 const { Joi, validate } = require('express-validation');
 
+const {
+  Types: { ObjectId }
+} = require('mongoose');
+
+const mongodbObjectIdValidator = (value, helpers) => {
+  if (ObjectId.isValid(value)) return value;
+
+  return helpers.error('any.custom');
+};
+
 const searchServicesValidation = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
@@ -19,26 +29,10 @@ const createServiceValidation = {
         name: 'version'
       })
       .allow(''),
-    status: Joi.string().trim().valid('healthy', 'unhealthy'),
-    server: Joi.object({
-      ipAddress: Joi.string()
-        .trim()
-        .ip({
-          version: ['ipv4', 'ipv6']
-        })
-        .allow(''),
-      domain: Joi.string()
-        .trim()
-        .uri({
-          scheme: ['git', 'http', 'https', 'ftp', 'tcp', 'udp', 'smtp']
-        })
-        .allow(''),
-      ssl: Joi.object({
-        lastPurchaseAt: Joi.date(),
-        expiresAt: Joi.date()
-      }).unknown(false)
-    }).unknown(false),
-    clusterId: Joi.string().trim().required()
+    clusterId: Joi.string()
+      .trim()
+      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
+      .required()
   }).unknown(false)
 };
 
@@ -53,25 +47,9 @@ const updateServiceValidation = {
       })
       .allow(''),
     status: Joi.string().trim().valid('healthy', 'unhealthy'),
-    server: Joi.object({
-      ipAddress: Joi.string()
-        .trim()
-        .ip({
-          version: ['ipv4', 'ipv6']
-        })
-        .allow(''),
-      domain: Joi.string()
-        .trim()
-        .uri({
-          scheme: ['git', 'http', 'https', 'ftp', 'tcp', 'udp', 'smtp']
-        })
-        .allow(''),
-      ssl: Joi.object({
-        lastPurchaseAt: Joi.date(),
-        expiresAt: Joi.date()
-      }).unknown(false)
-    }).unknown(false),
-    clusterId: Joi.string().trim()
+    clusterId: Joi.string()
+      .trim()
+      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
   }).unknown(false)
 };
 

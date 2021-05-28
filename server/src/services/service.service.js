@@ -10,7 +10,9 @@ const ServiceDao = require('@daos/service.dao');
 const ServiceMemberDao = require('@daos/service-member.dao');
 const ClusterDao = require('@daos/cluster.dao');
 const ClusterMemberDao = require('@daos/cluster-member.dao');
+const ServerDao = require('@daos/server.dao');
 
+const ServerService = require('@services/server.service');
 const UserService = require('./user.service');
 
 const get = async (condition, projection) => {
@@ -29,7 +31,7 @@ const create = async ({ name, clusterId, ...rest }) => {
   if (await ServiceDao.findOne({ name }))
     throw new CustomError(
       errorCodes.BAD_REQUEST,
-      'Service name already exists'
+      `Service with name "${name}" already exists`
     );
 
   const service = await ServiceDao.create({
@@ -37,6 +39,8 @@ const create = async ({ name, clusterId, ...rest }) => {
     cluster: clusterId,
     ...rest
   });
+
+  await ServerDao.create({ service: service._id });
 
   return service;
 };
@@ -46,8 +50,8 @@ const update = async (condition, { name, clusterId, ...rest }) => {
     if (!(await ClusterDao.findOne(clusterId)))
       throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
 
-  // Find out whether any service has the same name with the name
-  // that is requested to be changed to, except the one that matched the condition
+  // Find out whether any service has the same `name` with the `name`
+  // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
 
   if (name)
@@ -57,7 +61,8 @@ const update = async (condition, { name, clusterId, ...rest }) => {
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
-      const conditionAvailableKeys = ['id', 'name'];
+      // Fields that identify instance
+      const conditionAvailableKeys = ['_id', 'name'];
 
       Object.keys(condition).forEach(key => {
         if (!conditionAvailableKeys.includes(key))
@@ -97,6 +102,8 @@ const update = async (condition, { name, clusterId, ...rest }) => {
     ...rest
   });
 
+  await ServerDao.update({ service: service._id }, {});
+
   return {
     statusCode: service.createdAt === service.updatedAt ? 201 : 200,
     service
@@ -111,11 +118,19 @@ const removeOne = async condition => {
 
   await ServiceMemberDao.removeAll({ service: service._id });
 
+  await ServerService.removeOne({ service: service._id });
+
   return service;
 };
 
 const removeAll = async (services = []) => {
   await ServiceMemberDao.removeAll({
+    service: {
+      $in: services.map(service => service._id)
+    }
+  });
+
+  await ServerDao.removeAll({
     service: {
       $in: services.map(service => service._id)
     }
