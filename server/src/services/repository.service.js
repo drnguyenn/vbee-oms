@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-/* eslint-disable no-console */
 const {
   Types: { ObjectId }
 } = require('mongoose');
@@ -8,14 +7,14 @@ const snakecaseKeys = require('snakecase-keys');
 const CustomError = require('@errors/custom-error');
 const errorCodes = require('@errors/code');
 
+const { GITHUB_API, GITHUB_REPOSITORY_PERMISSIONS } = require('@constants');
+
 const customAxios = require('@customs/axios.custom');
 
 const RepositoryDao = require('@daos/repository.dao');
 
 const UserService = require('./user.service');
 const GhAppInstallationService = require('./gh-app-installation.service');
-
-const { GITHUB_API, GITHUB_REPOSITORY_PERMISSIONS } = require('@constants');
 
 const get = async (condition, projection) => {
   const repository = await RepositoryDao.findOne(condition, projection);
@@ -30,7 +29,7 @@ const create = async data => {
   if (await RepositoryDao.findOne({ githubId: data.githubId }))
     throw new CustomError(
       errorCodes.BAD_REQUEST,
-      "Repository's GitHub ID already exists"
+      `Repository with GitHub ID "${data.githubId}" already exists`
     );
 
   const repository = await RepositoryDao.create(data);
@@ -39,8 +38,8 @@ const create = async data => {
 };
 
 const update = async (condition, data) => {
-  // Find out whether any repository has the same GithubID with the GithubID
-  // that is requested to be changed to, except the one that matched the condition
+  // Find out whether any repository has the same `githubID` with the `githubID`
+  // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
 
   if (data.githubId)
@@ -50,7 +49,8 @@ const update = async (condition, data) => {
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
-      const conditionAvailableKeys = ['id', 'githubId'];
+      // Fields that identify instance
+      const conditionAvailableKeys = ['_id', 'githubId'];
 
       Object.keys(condition).forEach(key => {
         if (!conditionAvailableKeys.includes(key))
@@ -119,18 +119,20 @@ const addMember = async (
   { _id, permission, invitation },
   ghAppInstallationToken
 ) => {
-  let repository = await get(repoCondition);
+  let repository;
+
+  if (!ghAppInstallationToken) repository = await get(repoCondition);
 
   const user = await UserService.get(_id);
 
   if (repository.members.filter(mem => mem._id.equals(_id)).length)
     throw new CustomError(errorCodes.BAD_REQUEST, 'Member is already added');
 
-  // Add member to GitHub repository using GitHub API
   if (ghAppInstallationToken) {
     const { name, owner } = repository;
 
     try {
+      // Add member to GitHub repository using GitHub API
       const response = await customAxios({
         method: 'PUT',
         url: `${GITHUB_API.BASE_URL}/repos/${owner}/${name}/collaborators/${user.githubUsername}`,
@@ -146,6 +148,7 @@ const addMember = async (
         status
       } = response;
 
+      // Add member to repository in Vbee OMS database
       await RepositoryDao.addMember(repository, {
         _id,
         permission,
@@ -175,7 +178,9 @@ const updateMember = async (
   { permission, invitation },
   ghAppInstallationToken
 ) => {
-  let repository = await get(repoCondition);
+  let repository;
+
+  if (!ghAppInstallationToken) repository = await get(repoCondition);
 
   const user = await UserService.get(memberCondition);
   const { _id } = user;
@@ -260,7 +265,9 @@ const removeMember = async (
   memberCondition,
   ghAppInstallationToken
 ) => {
-  let repository = await get(repoCondition);
+  let repository;
+
+  if (!ghAppInstallationToken) repository = await get(repoCondition);
 
   const user = await UserService.get(memberCondition);
   const { _id } = user;
@@ -269,7 +276,6 @@ const removeMember = async (
   if (!member)
     throw new CustomError(errorCodes.BAD_REQUEST, 'Member not found');
 
-  // Remove member of GitHub repository using GitHub API
   const { invitation } = member;
 
   if (ghAppInstallationToken) {
@@ -279,6 +285,7 @@ const removeMember = async (
       switch (invitation.status) {
         case 'pending':
           try {
+            // Remove member invitation of GitHub repository using GitHub API
             await customAxios({
               method: 'DELETE',
               url: `${GITHUB_API.BASE_URL}/repos/${owner}/${name}/invitations/${invitation.githubId}`,
@@ -296,6 +303,7 @@ const removeMember = async (
 
         case 'accepted':
           try {
+            // Remove member of GitHub repository using GitHub API
             await customAxios({
               method: 'DELETE',
               url: `${GITHUB_API.BASE_URL}/repos/${owner}/${name}/collaborators/${user.githubUsername}`,

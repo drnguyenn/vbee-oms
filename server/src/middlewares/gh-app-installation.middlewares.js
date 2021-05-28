@@ -5,9 +5,10 @@ const ghAppInstallationToken = async (req, res, next) => {
   const { id } = req.params;
   const { ghAppInstallationId } = await RepositoryService.get(id);
 
-  req.ghAppInstallationToken = await GhAppInstallationService.getGhAppInstallationToken(
-    { githubId: ghAppInstallationId }
-  );
+  req.ghAppInstallationToken =
+    await GhAppInstallationService.getGhAppInstallationToken({
+      githubId: ghAppInstallationId
+    });
 
   return next();
 };

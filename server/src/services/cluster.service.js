@@ -30,7 +30,7 @@ const create = async data => {
   if (await ClusterDao.findOne({ name: data.name }))
     throw new CustomError(
       errorCodes.BAD_REQUEST,
-      'Cluster name already exists'
+      `Cluster with name "${data.name}" already exists`
     );
 
   const cluster = await ClusterDao.create(data);
@@ -41,8 +41,8 @@ const create = async data => {
 };
 
 const update = async (condition, data) => {
-  // Find out whether any cluster has the same name with the name
-  // that is requested to be changed to, except the one that matched the condition
+  // Find out whether any cluster has the same `name` with the `name`
+  // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
 
   if (data.name)
@@ -52,7 +52,8 @@ const update = async (condition, data) => {
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
-      const conditionAvailableKeys = ['id', 'name'];
+      // Fields that identify instance
+      const conditionAvailableKeys = ['_id', 'name'];
 
       Object.keys(condition).forEach(key => {
         if (!conditionAvailableKeys.includes(key))
@@ -185,14 +186,6 @@ const removeMemberFromAllClusters = async memberCondition => {
   return { statusCode: 200 };
 };
 
-const getDiagram = async clusterCondition => {
-  const cluster = await get(clusterCondition);
-
-  await cluster.populate('diagram').execPopulate();
-
-  return cluster.diagram;
-};
-
 const addDiagramNode = async (clusterCondition, { serviceId, ...rest }) => {
   const cluster = await get(clusterCondition);
 
@@ -293,7 +286,6 @@ module.exports = {
   updateMember,
   removeMember,
   removeMemberFromAllClusters,
-  getDiagram,
   addDiagramNode,
   updateDiagramNode,
   removeDiagramNode,

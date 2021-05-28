@@ -29,7 +29,7 @@ const create = async data => {
   if (await GhAppInstallationDao.findOne({ githubId: data.githubId }))
     throw new CustomError(
       errorCodes.BAD_REQUEST,
-      "GitHub app installation's GitHub ID already exists"
+      `GitHub app installation with GitHub ID "${data.githubId}" already exists`
     );
 
   const ghAppInstallation = await GhAppInstallationDao.create(data);
@@ -38,8 +38,8 @@ const create = async data => {
 };
 
 const update = async (condition, data) => {
-  // Find out whether any GitHub app installation has the same GithubID with the GithubID
-  // that is requested to be changed to, except the one that matched the condition
+  // Find out whether any GitHub app installation has the same `githubID` with the `githubID`
+  // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
 
   if (ObjectId.isValid(condition))
@@ -69,7 +69,7 @@ const update = async (condition, data) => {
   if (await GhAppInstallationDao.findOne(conditionAndException))
     throw new CustomError(
       errorCodes.BAD_REQUEST,
-      "GitHub app installation's GitHub ID already exists"
+      'GitHub app installation already exists'
     );
 
   const ghAppInstallation = await GhAppInstallationDao.update(condition, data);
