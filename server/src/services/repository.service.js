@@ -119,9 +119,7 @@ const addMember = async (
   { _id, permission, invitation },
   ghAppInstallationToken
 ) => {
-  let repository;
-
-  if (!ghAppInstallationToken) repository = await get(repoCondition);
+  let repository = await get(repoCondition);
 
   const user = await UserService.get(_id);
 
@@ -178,9 +176,7 @@ const updateMember = async (
   { permission, invitation },
   ghAppInstallationToken
 ) => {
-  let repository;
-
-  if (!ghAppInstallationToken) repository = await get(repoCondition);
+  let repository = await get(repoCondition);
 
   const user = await UserService.get(memberCondition);
   const { _id } = user;
@@ -265,21 +261,18 @@ const removeMember = async (
   memberCondition,
   ghAppInstallationToken
 ) => {
-  let repository;
-
-  if (!ghAppInstallationToken) repository = await get(repoCondition);
+  let repository = await get(repoCondition);
 
   const user = await UserService.get(memberCondition);
   const { _id } = user;
 
-  const member = repository.members.filter(mem => mem._id.equals(_id))[0];
-  if (!member)
-    throw new CustomError(errorCodes.BAD_REQUEST, 'Member not found');
-
-  const { invitation } = member;
-
   if (ghAppInstallationToken) {
+    const member = repository.members.filter(mem => mem._id.equals(_id))[0];
+    if (!member)
+      throw new CustomError(errorCodes.BAD_REQUEST, 'Member not found');
+
     const { name, owner } = repository;
+    const { invitation } = member;
 
     try {
       switch (invitation.status) {

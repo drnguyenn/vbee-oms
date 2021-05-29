@@ -90,9 +90,8 @@ const removeMember = async (req, res) => {
 const removeMemberFromAllRepositories = async (req, res) => {
   const { userId } = req.params;
 
-  const {
-    statusCode
-  } = await RepositoryService.removeMemberFromAllRepositories(userId);
+  const { statusCode } =
+    await RepositoryService.removeMemberFromAllRepositories(userId);
 
   return res.status(statusCode).json({ status: statusCode < 400 ? 1 : 0 });
 };

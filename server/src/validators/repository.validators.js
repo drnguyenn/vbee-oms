@@ -1,5 +1,15 @@
 const { Joi, validate } = require('express-validation');
 
+const {
+  Types: { ObjectId }
+} = require('mongoose');
+
+const mongodbObjectIdValidator = (value, helpers) => {
+  if (ObjectId.isValid(value)) return value;
+
+  return helpers.error('any.custom');
+};
+
 const searchRepositoriesValidation = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
@@ -8,7 +18,9 @@ const searchRepositoriesValidation = {
     owner: Joi.string().trim(),
     githubId: Joi.string().trim(),
     ghAppInstallationId: Joi.string().trim(),
-    serviceId: Joi.string().trim(),
+    service: Joi.string()
+      .trim()
+      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator'),
     createdAt: Joi.date(),
     updatedAt: Joi.date()
   }).unknown(false)
@@ -21,7 +33,9 @@ const createRepositoryValidation = {
     owner: Joi.string().trim().required(),
     githubId: Joi.string().trim(),
     ghAppInstallationId: Joi.string().trim(),
-    serviceId: Joi.string().trim()
+    serviceId: Joi.string()
+      .trim()
+      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
   }).unknown(false)
 };
 
@@ -32,7 +46,9 @@ const updateRepositoryValidation = {
     owner: Joi.string().trim(),
     githubId: Joi.string().trim(),
     ghAppInstallationId: Joi.string().trim(),
-    serviceId: Joi.string().trim()
+    serviceId: Joi.string()
+      .trim()
+      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
   }).unknown(false)
 };
 
