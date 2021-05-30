@@ -2,8 +2,9 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 export const HeaderStyles = styled.div`
-  position: sticky;
+  position: fixed;
   top: 0;
+  width: 94%;
   height: 65px;
   margin-left: 80px;
   z-index: 1100;

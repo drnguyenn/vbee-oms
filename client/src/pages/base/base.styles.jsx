@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import themes from '../../themes';
 
 export const BasePageStyles = styled.div`
-  top: -65px;
+  position: relative;
+  top: 65px;
   margin-left: 80px;
   padding: 0 ${themes.lengthMd2} ${themes.lengthMd2};
 `;
