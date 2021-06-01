@@ -3,19 +3,19 @@ import SignIn from '../../components/sign-in/sign-in.component';
 import LandingImage from '../../assets/images/landing-page.png';
 
 import {
-  LandingPageStyles,
+  LoginPageStyles,
   LandingImageContainer,
   SignInFormStyles
-} from './landing.styles';
+} from './log-in.styles';
 
-const LandingPage = () => (
-  <LandingPageStyles>
+const LoginPage = () => (
+  <LoginPageStyles>
     <LandingImageContainer src={LandingImage} alt='Landing Page Image' />
     <SignInFormStyles>
       <h1>Vbee OMS</h1>
       <SignIn />
     </SignInFormStyles>
-  </LandingPageStyles>
+  </LoginPageStyles>
 );
 
-export default LandingPage;
+export default LoginPage;

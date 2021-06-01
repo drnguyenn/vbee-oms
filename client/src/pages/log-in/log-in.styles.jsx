@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const LandingPageStyles = styled.div`
+export const LoginPageStyles = styled.div`
   display: flex;
 `;
 

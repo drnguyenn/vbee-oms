@@ -3,7 +3,7 @@ import { lazy } from 'react';
 
 import ROUTE_PATHS from './route-paths';
 
-const LandingPage = lazy(() => import('../pages/landing/landing.component'));
+const LoginPage = lazy(() => import('../pages/log-in/log-in.component'));
 
 const NotFoundPage = lazy(() =>
   import('../pages/not-found/not-found.component')
@@ -39,7 +39,7 @@ const MembersPage = lazy(() => import('../pages/members/members.component'));
 export default [
   {
     path: ROUTE_PATHS.LOGIN,
-    component: LandingPage,
+    component: LoginPage,
     exact: true,
     restricted: true,
     isPrivate: false
