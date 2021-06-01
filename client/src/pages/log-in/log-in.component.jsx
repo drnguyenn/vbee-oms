@@ -1,16 +1,16 @@
 import SignIn from '../../components/sign-in/sign-in.component';
 
-import LandingImage from '../../assets/images/landing-page.png';
+import LoginImage from '../../assets/images/login-page.png';
 
 import {
   LoginPageStyles,
-  LandingImageContainer,
+  LoginImageContainer,
   SignInFormStyles
 } from './log-in.styles';
 
 const LoginPage = () => (
   <LoginPageStyles>
-    <LandingImageContainer src={LandingImage} alt='Landing Page Image' />
+    <LoginImageContainer src={LoginImage} alt='Login Page Image' />
     <SignInFormStyles>
       <h1>Vbee OMS</h1>
       <SignIn />

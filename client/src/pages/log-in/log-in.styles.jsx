@@ -4,7 +4,7 @@ export const LoginPageStyles = styled.div`
   display: flex;
 `;
 
-export const LandingImageContainer = styled.img`
+export const LoginImageContainer = styled.img`
   width: 50%;
   height: 100%;
 `;
