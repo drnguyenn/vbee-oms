@@ -63,20 +63,16 @@ const NodeActionMenu = memo(({ node }) => {
 
   const dispatch = useDispatch();
 
-  const handleSpeedDialOpen = () => {
-    setSpeedDialOpen(true);
-  };
+  const handleSpeedDial = () => setSpeedDialOpen(!speedDialOpen);
 
-  const handleSpeedDialClose = () => {
-    setSpeedDialOpen(false);
-  };
+  const handleSpeedDialClose = () => setSpeedDialOpen(false);
 
   return (
     <SpeedDial
       ariaLabel='NodeActionSpeedDial'
       className={classes.speedDial}
       icon={<SpeedDialIcon icon={<MoreVert />} openIcon={<Close />} />}
-      onOpen={handleSpeedDialOpen}
+      onClick={handleSpeedDial}
       onClose={handleSpeedDialClose}
       open={speedDialOpen}
       direction='right'
