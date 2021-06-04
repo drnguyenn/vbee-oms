@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const SyncIndicatorStyles = styled.div`
-  position: absolute;
+  position: fixed;
   bottom: 30px;
   right: 30px;
   display: flex;
