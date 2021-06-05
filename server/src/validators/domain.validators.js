@@ -24,7 +24,10 @@ const searchDomainsValidation = {
 
 const createDomainValidation = {
   body: Joi.object({
-    domains: Joi.array().unique().items(Joi.string().trim().domain()),
+    domains: Joi.array()
+      .unique()
+      .items(Joi.string().trim().domain())
+      .required(),
     serverId: Joi.string()
       .trim()
       .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
