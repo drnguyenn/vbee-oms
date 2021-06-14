@@ -2,11 +2,7 @@ import styled from 'styled-components';
 
 export const LoginPageStyles = styled.div`
   display: flex;
-
-  @media screen and (max-width: 650px) {
-    flex-direction: column;
-    align-items: center;
-  }
+  padding: 1rem;
 `;
 
 export const LoginImageContainer = styled.img`
@@ -14,20 +10,19 @@ export const LoginImageContainer = styled.img`
   height: 100%;
 
   @media screen and (max-width: 650px) {
-    width: 80%;
+    display: none;
   }
 `;
 
 export const LoginAndLogoStyles = styled.div`
   width: 50%;
-  margin-top: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
   @media screen and (max-width: 650px) {
-    width: 80%;
+    width: 100%;
   }
 `;
 
