@@ -93,6 +93,17 @@ const remove = async condition => {
   return ghAppInstallation;
 };
 
+const search = async (
+  condition,
+  projection = { createdAt: 0, updatedAt: 0 }
+) => {
+  const getGhAppInstallations = await GhAppInstallationDao.findAll(
+    condition,
+    projection
+  );
+  return getGhAppInstallations;
+};
+
 const getGhAppInstallationToken = async installationCondition => {
   const { accessToken, githubId } = await get(installationCondition);
 
@@ -114,5 +125,6 @@ module.exports = {
   create,
   update,
   remove,
+  search,
   getGhAppInstallationToken
 };
