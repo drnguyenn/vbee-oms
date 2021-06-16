@@ -84,6 +84,7 @@ const ProfileInputForm = () => {
           fullWidth
         />
         <TextField
+          disabled
           name='githubId'
           type='text'
           value={githubId}
