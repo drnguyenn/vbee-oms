@@ -231,7 +231,7 @@ const ServiceServerSection = () => {
   const dispatch = useDispatch();
 
   const [serverInfo, setServerInfo] = useState({ ipAddress: '' });
-  const { ipAddress } = serverInfo;
+  const { ipAddress = '' } = serverInfo;
 
   useEffect(() => {
     const { id } = currentService.server;
