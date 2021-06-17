@@ -36,11 +36,12 @@ const errorHandler = (err, req, res, next) => {
 
     case codes.INTERNAL_SERVER_ERROR:
       code = codes.INTERNAL_SERVER_ERROR;
-      message = message || 'Something Went Wrong';
+      message = message || 'Internal Server Error';
       break;
 
     default:
-      code = 200;
+      code = 500;
+      message = 'Something went wrong';
   }
 
   return res.status(code).send(
