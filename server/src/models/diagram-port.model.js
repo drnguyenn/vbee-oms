@@ -23,7 +23,9 @@ const DiagramPortSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    typePojoToMixed: false
+    typePojoToMixed: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
@@ -42,12 +44,6 @@ DiagramPortSchema.virtual('inLinks', {
 DiagramPortSchema.pre('findOneAndDelete', function populateLinks() {
   this.populate({ path: 'outLinks', select: '_id' });
   this.populate({ path: 'inLinks', select: '_id' });
-});
-
-DiagramPortSchema.post('findOneAndDelete', port => {
-  if (port) {
-    port._doc.links = [...port.outLinks, ...port.inLinks];
-  }
 });
 
 module.exports = mongoose.model('DiagramPort', DiagramPortSchema);

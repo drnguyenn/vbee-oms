@@ -16,7 +16,9 @@ const ServiceSchema = new mongoose.Schema(
     timestamps: true,
     versionKey: false,
     typePojoToMixed: false,
-    autoIndex: true
+    autoIndex: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
@@ -53,41 +55,19 @@ ServiceSchema.pre('find', function populateMemberCount() {
   this.populate('memberCount');
 });
 
-ServiceSchema.post('find', services => {
-  services.forEach(service => {
-    service._doc.memberCount = service.memberCount;
-  });
-});
-
 ServiceSchema.pre('findOne', function populateMembersAndCluster() {
   this.populate('memberCount');
   this.populate({ path: 'members', select: 'role -_id -service' });
-  this.populate({ path: 'server', select: '_id' });
+  this.populate({ path: 'server', select: 'ipAddress' });
   this.populate({ path: 'cluster', select: 'name' });
-});
-
-ServiceSchema.post('findOne', service => {
-  if (service) {
-    service._doc.memberCount = service.memberCount;
-    service._doc.members = service.members;
-    service._doc.server = service.server;
-  }
 });
 
 ServiceSchema.pre('findOneAndUpdate', function populateMemberCount() {
   this.populate('memberCount');
 });
 
-ServiceSchema.post('findOneAndUpdate', service => {
-  if (service) service._doc.memberCount = service.memberCount;
-});
-
 ServiceSchema.pre('findOneAndDelete', function populateMemberCount() {
   this.populate('memberCount');
-});
-
-ServiceSchema.post('findOneAndDelete', service => {
-  if (service) service._doc.memberCount = service.memberCount;
 });
 
 module.exports = mongoose.model('Service', ServiceSchema);

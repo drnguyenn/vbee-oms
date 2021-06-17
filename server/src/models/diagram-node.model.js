@@ -20,7 +20,9 @@ const DiagramNodeSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    typePojoToMixed: false
+    typePojoToMixed: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
@@ -30,24 +32,20 @@ DiagramNodeSchema.virtual('ports', {
   foreignField: 'node'
 });
 
-DiagramNodeSchema.pre('find', function populatePorts() {
+DiagramNodeSchema.pre('find', function populate() {
   this.populate({ path: 'ports' });
-});
-
-DiagramNodeSchema.post('find', nodes => {
-  nodes.forEach(node => {
-    node._doc.ports = node.ports;
+  this.populate({
+    path: 'service',
+    select: 'name version',
+    populate: {
+      path: 'server',
+      select: 'ipAddress'
+    }
   });
 });
 
 DiagramNodeSchema.pre('findOneAndDelete', function populatePorts() {
   this.populate({ path: 'ports', select: '_id' });
-});
-
-DiagramNodeSchema.post('findOneAndDelete', node => {
-  if (node) {
-    node._doc.ports = node.ports;
-  }
 });
 
 module.exports = mongoose.model('DiagramNode', DiagramNodeSchema);

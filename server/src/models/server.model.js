@@ -2,14 +2,16 @@ const mongoose = require('mongoose');
 
 const ServerSchema = new mongoose.Schema(
   {
-    ipAddress: { type: String, default: '', unique: true },
+    ipAddress: { type: String, unique: true, sparse: true },
     service: { type: mongoose.Types.ObjectId, require: true, ref: 'Service' }
   },
   {
     timestamps: true,
     versionKey: false,
     typePojoToMixed: false,
-    autoIndex: true
+    autoIndex: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
@@ -21,12 +23,6 @@ ServerSchema.virtual('domains', {
 
 ServerSchema.pre('findOne', function populateMembersAndCluster() {
   this.populate({ path: 'domains' });
-});
-
-ServerSchema.post('findOne', server => {
-  if (server) {
-    server._doc.domains = server.domains;
-  }
 });
 
 module.exports = mongoose.model('Server', ServerSchema);

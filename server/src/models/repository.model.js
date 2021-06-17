@@ -23,7 +23,7 @@ const RepositorySchema = new mongoose.Schema(
         }
       }
     ],
-    githubId: { type: String, unique: true },
+    githubId: { type: String, unique: true, sparse: true },
     ghAppInstallationId: { type: String },
     serviceId: { type: String }
   },
@@ -31,7 +31,9 @@ const RepositorySchema = new mongoose.Schema(
     timestamps: true,
     versionKey: false,
     typePojoToMixed: false,
-    autoIndex: true
+    autoIndex: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
