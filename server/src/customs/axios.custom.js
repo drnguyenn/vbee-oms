@@ -13,7 +13,9 @@ customAxios.interceptors.response.use(
   error => {
     // Handle error
     console.error(error);
-    return error.response;
+
+    if (error.response) return error.response;
+    throw new Error('Network connection error');
   }
 );
 
