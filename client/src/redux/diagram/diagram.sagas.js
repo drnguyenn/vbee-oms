@@ -39,7 +39,7 @@ function* fetchClusterDiagram({ payload }) {
     yield put(fetchClusterDiagramSuccess(diagram));
   } catch (error) {
     yield put(fetchClusterDiagramFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -50,7 +50,7 @@ function* updateClusterDiagramElements({ payload: { elements } }) {
     yield put(updateClusterDiagramElementsSuccess());
   } catch (error) {
     yield put(updateClusterDiagramElementsFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -62,7 +62,7 @@ function* removeClusterDiagramElements({ payload: { elements, callback } }) {
     yield put(removeClusterDiagramElementsSuccess());
   } catch (error) {
     yield put(removeClusterDiagramElementsFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -73,7 +73,7 @@ function* addClusterDiagramNode({ payload: { node } }) {
     yield put(addClusterDiagramNodeSuccess(diagramNode));
   } catch (error) {
     yield put(addClusterDiagramNodeFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -88,7 +88,7 @@ function* updateClusterDiagramNode({ payload: { nodeId, data } }) {
     yield put(updateClusterDiagramNodeSuccess(diagramNode));
   } catch (error) {
     yield put(updateClusterDiagramNodeFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -103,7 +103,7 @@ function* removeClusterDiagramNode({ payload: { nodeId, callback } }) {
     yield put(removeClusterDiagramNodeSuccess(diagramNode));
   } catch (error) {
     yield put(removeClusterDiagramNodeFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -114,7 +114,7 @@ function* addClusterDiagramPort({ payload: { port } }) {
     yield put(addClusterDiagramPortSuccess(diagramPort));
   } catch (error) {
     yield put(addClusterDiagramPortFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -129,7 +129,7 @@ function* updateClusterDiagramPort({ payload: { portId, data } }) {
     yield put(updateClusterDiagramPortSuccess(diagramPort));
   } catch (error) {
     yield put(updateClusterDiagramPortFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -144,7 +144,7 @@ function* removeClusterDiagramPort({ payload: { portId, callback } }) {
     yield put(removeClusterDiagramPortSuccess(diagramPort));
   } catch (error) {
     yield put(removeClusterDiagramPortFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -156,7 +156,7 @@ function* addClusterDiagramLink({ payload: { link, callback } }) {
     yield put(addClusterDiagramLinkSuccess(diagramLink));
   } catch (error) {
     yield put(addClusterDiagramLinkFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -171,7 +171,7 @@ function* updateClusterDiagramLink({ payload: { linkId, data } }) {
     yield put(updateClusterDiagramLinkSuccess(diagramLink));
   } catch (error) {
     yield put(updateClusterDiagramLinkFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 
@@ -186,7 +186,7 @@ function* removeClusterDiagramLink({ payload: { linkId, callback } }) {
     yield put(removeClusterDiagramLinkSuccess(diagramLink));
   } catch (error) {
     yield put(removeClusterDiagramLinkFailure(error));
-    yield put(notify({ type: 'error', content: 'Something went wrong' }));
+    yield put(notify('Something went wrong', { variant: 'error' }));
   }
 }
 

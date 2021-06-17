@@ -37,7 +37,7 @@ function* fetchAllClusters() {
     yield put(fetchAllClustersSuccess(clusters));
   } catch (error) {
     yield put(fetchAllClustersFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -48,7 +48,7 @@ function* fetchCluster({ payload }) {
     yield put(fetchClusterSuccess(cluster));
   } catch (error) {
     yield put(fetchClusterFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -58,12 +58,12 @@ function* createCluster({ payload }) {
 
     yield put(createClusterSuccess(cluster));
     yield put(
-      notify({ type: 'success', content: `Cluster "${cluster.name}" created` })
+      notify(`Cluster "${cluster.name}" created`, { variant: 'success' })
     );
     yield put(toggleClusterCreationModal());
   } catch (error) {
     yield put(createClusterFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -72,10 +72,10 @@ function* updateClusterInfoStart({ payload: { id, data } }) {
     const cluster = yield call(ClusterService.updateCluster, id, data);
 
     yield put(updateClusterInfoSuccess(cluster));
-    yield put(notify({ type: 'success', content: 'Changes saved' }));
+    yield put(notify('Changes saved', { variant: 'success' }));
   } catch (error) {
     yield put(updateClusterInfoFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -85,12 +85,12 @@ function* deleteCluster({ payload }) {
 
     yield put(deleteClusterSuccess(cluster));
     yield put(
-      notify({ type: 'success', content: `Cluster "${cluster.name}" deleted` })
+      notify(`Cluster "${cluster.name}" deleted`, { variant: 'success' })
     );
     yield put(toggleClusterDeleteConfirmationModal());
   } catch (error) {
     yield put(deleteClusterFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
     yield put(toggleClusterDeleteConfirmationModal());
   }
 }
@@ -108,14 +108,11 @@ function* addMember({ payload: { clusterId, userId, data } }) {
 
     yield put(addClusterMemberSuccess(member));
     yield put(
-      notify({
-        type: 'success',
-        content: `Member "${member.user.username}" added`
-      })
+      notify(`Member "${member.user.username}" added`, { variant: 'success' })
     );
   } catch (error) {
     yield put(addClusterMemberFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -130,14 +127,11 @@ function* updateMember({ payload: { clusterId, userId, data } }) {
 
     yield put(updateClusterMemberSuccess(member));
     yield put(
-      notify({
-        type: 'success',
-        content: `Member "${member.user.username}" updated`
-      })
+      notify(`Member "${member.user.username}" updated`, { variant: 'success' })
     );
   } catch (error) {
     yield put(updateClusterMemberFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -148,15 +142,10 @@ function* removeMember({ payload: { clusterId, userId } }) {
     const member = yield call(ClusterService.removeMember, clusterId, userId);
 
     yield put(removeClusterMemberSuccess(member));
-    yield put(
-      notify({
-        type: 'success',
-        content: 'Member removed'
-      })
-    );
+    yield put(notify('Member removed', { variant: 'success' }));
   } catch (error) {
     yield put(removeClusterMemberFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 

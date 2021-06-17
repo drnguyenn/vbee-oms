@@ -1,6 +1,6 @@
 import NotificationActionTypes from './notification.types';
 
-export const notify = ({ type, content }) => ({
+export const notify = (content, options) => ({
   type: NotificationActionTypes.NOTIFY,
-  payload: { type, content }
+  payload: { content, options }
 });

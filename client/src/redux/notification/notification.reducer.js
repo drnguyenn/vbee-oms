@@ -1,8 +1,8 @@
 import NotificationActionTypes from './notification.types';
 
 const INITIAL_STATE = {
-  type: undefined,
-  content: null
+  content: null,
+  options: {}
 };
 
 const notificationReducer = (state = INITIAL_STATE, action) => {
@@ -10,10 +10,7 @@ const notificationReducer = (state = INITIAL_STATE, action) => {
 
   switch (type) {
     case NotificationActionTypes.NOTIFY:
-      return {
-        type: payload.type,
-        content: payload.content
-      };
+      return { content: payload.content, options: payload.options };
 
     default:
       return state;

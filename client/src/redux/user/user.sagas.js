@@ -37,7 +37,7 @@ function* getCurrentUser() {
     yield put(signInSuccess(user));
   } catch (error) {
     yield put(signInFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -48,10 +48,10 @@ function* signInWithEmail({ payload: { email, password } }) {
     if (!user) return;
 
     yield put(signInSuccess(user));
-    yield put(notify({ type: 'default', content: `Hi ${user.username}` }));
+    yield put(notify(`Hi ${user.username}`, { variant: 'info' }));
   } catch (error) {
     yield put(signInFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -62,12 +62,10 @@ function* signOut() {
     const { currentUser } = yield select(state => state.user);
 
     yield put(signOutSuccess());
-    yield put(
-      notify({ type: 'default', content: `Goodbye ${currentUser.username}` })
-    );
+    yield put(notify(`Goodbye ${currentUser.username}`, { variant: 'info' }));
   } catch (error) {
     yield put(signOutFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -78,12 +76,10 @@ function* signUp({ payload: { username, email, password } }) {
     if (!user) return;
 
     yield put(signUpSuccess(user));
-    yield put(
-      notify({ type: 'success', content: 'Account registered successfully' })
-    );
+    yield put(notify('User account created', { variant: 'success' }));
   } catch (error) {
     yield put(signUpFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -94,10 +90,10 @@ function* updateProfile({ payload }) {
     const user = yield call(UserServices.updateProfile, accessToken, payload);
 
     yield put(updateProfileSuccess(user));
-    yield put(notify({ type: 'success', content: 'Profile updated' }));
+    yield put(notify('Profile updated', { variant: 'success' }));
   } catch (error) {
     yield put(updateProfileFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -108,10 +104,10 @@ function* updateAvatar({ payload }) {
     const user = yield call(UserServices.updateAvatar, accessToken, payload);
 
     yield put(updateAvatarSuccess(user));
-    yield put(notify({ type: 'success', content: 'Avatar uploaded' }));
+    yield put(notify('Avatar uploaded', { variant: 'success' }));
   } catch (error) {
     yield put(updateAvatarFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 

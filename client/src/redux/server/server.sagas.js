@@ -43,7 +43,7 @@ function* fetchAllServers() {
     yield put(fetchAllServersSuccess(servers));
   } catch (error) {
     yield put(fetchAllServersFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -54,7 +54,7 @@ function* fetchServer({ payload }) {
     yield put(fetchServerSuccess(server));
   } catch (error) {
     yield put(fetchServerFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -63,13 +63,11 @@ function* createServer({ payload }) {
     const server = yield call(ServerService.createServer, payload);
 
     yield put(createServerSuccess(server));
-    yield put(
-      notify({ type: 'success', content: `Server "${server.name}" created` })
-    );
+    yield put(notify('Server created', { variant: 'success' }));
     yield put(toggleServerCreationModal());
   } catch (error) {
     yield put(createServerFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -78,10 +76,10 @@ function* updateServerInfoStart({ payload: { id, data } }) {
     const server = yield call(ServerService.updateServer, id, data);
 
     yield put(updateServerInfoSuccess(server));
-    yield put(notify({ type: 'success', content: 'Changes saved' }));
+    yield put(notify('Changes saved', { variant: 'success' }));
   } catch (error) {
     yield put(updateServerInfoFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -90,13 +88,11 @@ function* deleteServer({ payload }) {
     const server = yield call(ServerService.deleteServer, payload);
 
     yield put(deleteServerSuccess(server));
-    yield put(
-      notify({ type: 'success', content: `Server "${server.name}" deleted` })
-    );
+    yield put(notify('Server deleted', { variant: 'success' }));
     yield put(toggleServerDeleteConfirmationModal());
   } catch (error) {
     yield put(deleteServerFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
     yield put(toggleServerDeleteConfirmationModal());
   }
 }
@@ -111,7 +107,7 @@ function* getAllServerDomainsSslStatus({ payload }) {
     yield put(getAllServerDomainsSslStatusSuccess(domains));
   } catch (error) {
     yield put(getAllServerDomainsSslStatusFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -120,18 +116,13 @@ function* addDomain({ payload: { serverId, domains } }) {
     const newDomains = yield call(ServerService.addDomain, serverId, domains);
 
     yield put(addServerDomainSuccess(newDomains));
-    yield put(
-      notify({
-        type: 'success',
-        content: 'Domains added'
-      })
-    );
+    yield put(notify('Domains added', { variant: 'success' }));
     yield put(toggleServerDomainAdditionModal());
 
     yield put(getDomainsSslStatusStart(newDomains.map(({ value }) => value)));
   } catch (error) {
     yield put(addServerDomainFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -140,18 +131,13 @@ function* updateDomain({ payload: { domainId, data } }) {
     const domain = yield call(ServerService.updateDomain, domainId, data);
 
     yield put(updateServerDomainSuccess(domain));
-    yield put(
-      notify({
-        type: 'success',
-        content: 'Domain updated'
-      })
-    );
+    yield put(notify('Domains updated', { variant: 'success' }));
     yield put(toggleServerDomainUpdateModal());
 
     yield put(getDomainsSslStatusStart([domain.value]));
   } catch (error) {
     yield put(updateServerDomainFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -163,14 +149,11 @@ function* removeDomain({ payload }) {
 
     yield put(removeServerDomainSuccess(domain));
     yield put(
-      notify({
-        type: 'success',
-        content: `Domain "${domain.value}" removed`
-      })
+      notify(`Domain "${domain.value}" removed`, { variant: 'success' })
     );
   } catch (error) {
     yield put(removeServerDomainFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -181,7 +164,7 @@ function* getDomainsSslStatus({ payload }) {
     yield put(getDomainsSslStatusSuccess(domains));
   } catch (error) {
     yield put(getDomainsSslStatusFailure(error));
-    yield put(notify({ type: 'error', content: error.message }));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
