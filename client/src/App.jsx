@@ -58,7 +58,12 @@ const App = () => {
           }
         },
         typography: {
-          fontFamily: "'Ubuntu', sans-serif"
+          fontFamily: `'Ubuntu', sans-serif, -apple-system, BlinkMacSystemFont,
+            'Segoe UI', 'Roboto', 'Oxygen','Cantarell', 'Fira Sans',
+            'Droid Sans', 'Helvetica Neue'`
+        },
+        shape: {
+          borderRadius: 8
         }
       }),
     [type]

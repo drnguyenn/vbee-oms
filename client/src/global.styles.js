@@ -2,7 +2,16 @@ import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyles = createGlobalStyle`
   body {
-    font-family: 'Ubuntu', sans-serif;
+    font-family: 'Ubuntu', sans-serif, -apple-system, BlinkMacSystemFont,
+      'Segoe UI', 'Roboto', 'Oxygen','Cantarell', 'Fira Sans', 'Droid Sans',
+      'Helvetica Neue';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
   }
 
   a {
