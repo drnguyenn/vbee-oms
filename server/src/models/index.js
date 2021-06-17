@@ -1,8 +1,15 @@
 /* eslint-disable no-console */
 const mongoose = require('mongoose');
+
 const { MONGO_URI } = require('@configs');
 
+const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_DATABASE } = process.env;
+
 mongoose.connect(MONGO_URI, {
+  user: MONGO_USERNAME,
+  pass: MONGO_PASSWORD,
+  dbName: MONGO_DATABASE,
+
   autoIndex: false,
   useFindAndModify: false,
   useNewUrlParser: true,
@@ -18,5 +25,5 @@ mongoose.connection.on('error', err => {
 });
 
 mongoose.connection.once('open', () => {
-  console.log(`Connected to MongoDB`);
+  console.info(`Connected to MongoDB`);
 });
