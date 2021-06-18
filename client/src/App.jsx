@@ -51,11 +51,18 @@ const App = () => {
         palette: {
           // type: prefersDarkMode ? 'dark' : 'light'
           type,
-          primary: {
-            light: '#fff9b0',
-            main: '#f6c90e',
-            dark: '#fab300'
-          }
+          primary:
+            type === 'dark'
+              ? {
+                  light: '#fff9b0',
+                  main: '#f6c90e',
+                  dark: '#fab300'
+                }
+              : {
+                  light: '#ffb74d',
+                  main: '#ff9800',
+                  dark: '#f57c00'
+                }
         },
         typography: {
           fontFamily: `'Ubuntu', sans-serif, -apple-system, BlinkMacSystemFont,
