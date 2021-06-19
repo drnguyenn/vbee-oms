@@ -36,7 +36,18 @@ DiagramNodeSchema.pre('find', function populate() {
   this.populate({ path: 'ports' });
   this.populate({
     path: 'service',
-    select: 'name version',
+    select: 'name description version',
+    populate: {
+      path: 'server',
+      select: 'ipAddress'
+    }
+  });
+});
+
+DiagramNodeSchema.pre('findOneAndUpdate', function populate() {
+  this.populate({
+    path: 'service',
+    select: 'name description version',
     populate: {
       path: 'server',
       select: 'ipAddress'
