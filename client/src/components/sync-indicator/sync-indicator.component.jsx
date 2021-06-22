@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import { makeStyles, Tooltip } from '@material-ui/core';
 import { Sync } from '@material-ui/icons';
 
@@ -28,4 +30,4 @@ const SyncIndicator = ({ spin = false }) => {
   );
 };
 
-export default SyncIndicator;
+export default memo(SyncIndicator);

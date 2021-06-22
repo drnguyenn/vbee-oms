@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import { makeStyles, Paper, Tooltip } from '@material-ui/core';
 import { Ballot } from '@material-ui/icons';
 
@@ -33,4 +35,4 @@ const DiagramToolbar = () => {
   );
 };
 
-export default DiagramToolbar;
+export default memo(DiagramToolbar);
