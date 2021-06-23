@@ -12,6 +12,7 @@ class CustomCreateLinkState extends State {
       new Action({
         type: InputType.MOUSE_UP,
         fire: actionEvent => {
+          // Only trigger if the port is left-clicked
           if (actionEvent.event.button === 0) {
             const element = this.engine
               .getActionEventBus()
@@ -37,8 +38,7 @@ class CustomCreateLinkState extends State {
             ) {
               if (this.sourcePort.canLinkToPort(element)) {
                 this.link.setTargetPort(element);
-                element.reportPosition();
-                // this.link.remove(); // Remove this link to use link created from server
+                // element.reportPosition();
                 this.clearState();
                 this.eject();
               }

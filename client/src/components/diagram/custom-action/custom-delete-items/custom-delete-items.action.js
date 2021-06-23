@@ -56,9 +56,8 @@ class CustomDeleteItemsAction extends Action {
               store.dispatch(
                 setSelectedDiagramElements({
                   ...itemsToRemove,
-                  callback: () => {
-                    selectedEntities.forEach(item => removeItem(item));
-                  }
+                  callback: () =>
+                    selectedEntities.forEach(item => removeItem(item))
                 })
               );
 
@@ -81,11 +80,8 @@ class CustomDeleteItemsAction extends Action {
               if (!item.getEditMode()) {
                 store.dispatch(
                   setSelectedDiagramNode({
-                    id: item.id,
-                    name: item.name,
-                    callback: () => {
-                      removeItem(selectedEntities[0]);
-                    }
+                    ...item,
+                    callback: () => removeItem(selectedEntities[0])
                   })
                 );
 
@@ -106,6 +102,10 @@ class CustomDeleteItemsAction extends Action {
 
             if (item instanceof PointModel) {
               removeItem(item);
+
+              const link = item.getParent();
+              link.fireEvent({ link }, 'linksUpdated');
+
               this.engine.repaintCanvas();
             }
           }

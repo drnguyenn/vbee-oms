@@ -5,12 +5,10 @@ import {
   InputType,
   DragCanvasState
 } from '@projectstorm/react-canvas-core';
-import {
-  PortModel,
-  DragDiagramItemsState
-} from '@projectstorm/react-diagrams-core';
+import { PortModel } from '@projectstorm/react-diagrams-core';
 
 import CustomCreateLinkState from './custom-create-link/custom-create-link.state';
+import CustomDragDiagramItemsState from './custom-create-link/custom-drag-diagram-items.state';
 
 class CustomDefaultState extends State {
   constructor() {
@@ -18,7 +16,7 @@ class CustomDefaultState extends State {
     this.childStates = [new SelectingState()];
     this.dragCanvas = new DragCanvasState();
     this.createLink = new CustomCreateLinkState();
-    this.dragItems = new DragDiagramItemsState();
+    this.dragItems = new CustomDragDiagramItemsState();
 
     // Determine what was clicked on
     this.registerAction(

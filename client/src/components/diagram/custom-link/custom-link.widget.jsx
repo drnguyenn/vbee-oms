@@ -5,8 +5,8 @@ const CustomLinkArrowWidget = ({ point, previousPoint, color }) => {
   const angle =
     90 +
     (Math.atan2(
-      point.getPosition().y - previousPoint.getPosition().y,
-      point.getPosition().x - previousPoint.getPosition().x
+      point.getY() - previousPoint.getY(),
+      point.getX() - previousPoint.getX()
     ) *
       180) /
       Math.PI;
@@ -14,12 +14,10 @@ const CustomLinkArrowWidget = ({ point, previousPoint, color }) => {
   return (
     <g
       className='arrow'
-      transform={`translate(${point.getPosition().x}, ${
-        point.getPosition().y
-      })`}
+      transform={`translate(${point.getX()}, ${point.getY()})`}
     >
       <g style={{ transform: `rotate(${angle}deg)` }}>
-        <g transform='translate(0, -3)'>
+        <g transform='translate(0, -10)'>
           <polygon
             points='0,5 5,20 -5,20'
             fill={color}
@@ -46,21 +44,6 @@ class CustomLinkWidget extends DefaultLinkWidget {
       />
     );
   }
-
-  // generatePoint(point) {
-  //   const p = this.props.link
-  //     .getPoints()
-  //     .find(({ options: { id } }) => id === point.options.id);
-
-  //   if (
-  //     !p ||
-  //     p.getPosition().x !== point.getPosition().x ||
-  //     p.getPosition().y !== point.getPosition().y
-  //   )
-  //     this.props.link.fireEvent({ point }, 'customLinkUpdated');
-
-  //   return super.generatePoint(point);
-  // }
 
   render() {
     const { link } = this.props;

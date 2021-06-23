@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { memo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import { isEmpty } from 'lodash';
@@ -9,163 +10,164 @@ import {
   makeStyles,
   useTheme,
   TextField,
-  Fade
+  Typography,
+  Fade,
+  Tooltip,
+  withStyles
 } from '@material-ui/core';
-import { SpeedDial, SpeedDialAction, SpeedDialIcon } from '@material-ui/lab';
-import {
-  Add,
-  CheckCircle,
-  Close,
-  Delete,
-  Info,
-  MoreVert
-} from '@material-ui/icons';
+import { CheckCircle, Delete, Info } from '@material-ui/icons';
 
 import {
   setSelectedDiagramNode,
   updateClusterDiagramNodeStart,
-  addClusterDiagramPortStart,
-  // updateClusterDiagramPortStart,
-  removeClusterDiagramPortStart
+  setShowDrawer
 } from '../../../redux/diagram/diagram.actions';
 import { toggleDiagramNodeRemoveConfirmationModal } from '../../../redux/modal/modal.actions';
-
-import { debouncedUpdateDiagram } from '../../../utils/diagram.utils';
 
 import {
   CustomNodeStyles,
   HeaderStyles,
   TitleStyles,
-  PortStyles
+  PortStyles,
+  TooltipRowStyles,
+  TooltipRowTitleStyles,
+  TooltipRowValueStyles
 } from './custom-node.styles';
 
 const useStyles = makeStyles(muiTheme => ({
   success: {
     color: muiTheme.palette.success.light
   },
-  speedDial: {
-    position: 'absolute',
-    right: -176,
-    bottom: 0
+  nodeActionMenuIcon: {
+    marginRight: '1rem'
+  },
+  tooltip: {
+    minWidth: 150
+  },
+  metricsDefault: {},
+  metricsLow: {
+    color: muiTheme.palette.success.main
+  },
+  metricsMedium: {
+    color: muiTheme.palette.warning.main
+  },
+  metricsHigh: {
+    color: muiTheme.palette.error.main
   }
 }));
 
-const nodeMenuPropsAreEqual = (prevProps, nextProps) =>
-  prevProps.node.id === nextProps.node.id &&
-  prevProps.node.name === nextProps.node.name;
-
-const NodeActionMenu = memo(({ node }) => {
-  const classes = useStyles();
-
-  const [speedDialOpen, setSpeedDialOpen] = useState(false);
-
-  const { currentDiagram } = useSelector(state => state.diagram);
-
-  const dispatch = useDispatch();
-
-  const handleSpeedDial = () => setSpeedDialOpen(!speedDialOpen);
-
-  const handleSpeedDialClose = () => setSpeedDialOpen(false);
-
-  return (
-    <SpeedDial
-      ariaLabel='NodeActionSpeedDial'
-      className={classes.speedDial}
-      icon={<SpeedDialIcon icon={<MoreVert />} openIcon={<Close />} />}
-      onClick={handleSpeedDial}
-      onClose={handleSpeedDialClose}
-      open={speedDialOpen}
-      direction='right'
-      FabProps={{ size: 'small', color: 'default' }}
-    >
-      <SpeedDialAction
-        icon={<Add />}
-        tooltipTitle='Add port'
-        tooltipPlacement='top'
-        onClick={() => {
-          dispatch(
-            addClusterDiagramPortStart({
-              options: { in: false },
-              nodeId: node.id,
-              diagramId: currentDiagram.id
-            })
-          );
-
-          debouncedUpdateDiagram.flush();
-        }}
-      />
-      <SpeedDialAction
-        icon={<Info />}
-        tooltipTitle='Details'
-        tooltipPlacement='top'
-        onClick={handleSpeedDialClose}
-      />
-      <SpeedDialAction
-        icon={<Delete color='secondary' />}
-        tooltipTitle='Remove'
-        tooltipPlacement='top'
-        onClick={() => {
-          dispatch(
-            setSelectedDiagramNode({
-              id: node.id,
-              name: node.name,
-              callback: () => {
-                node.remove();
-              }
-            })
-          );
-          dispatch(toggleDiagramNodeRemoveConfirmationModal());
-        }}
-      />
-    </SpeedDial>
-  );
-}, nodeMenuPropsAreEqual);
+const MetricsTooltip = withStyles(() => ({
+  tooltip: {
+    minWidth: 170,
+    padding: 10
+  }
+}))(Tooltip);
 
 const initialMenu = {
   mouseX: null,
   mouseY: null
 };
 
-const portMenuPropsAreEqual = (prevProps, nextProps) =>
-  // prevProps.selectedPort === nextProps.selectedPort &&
-  prevProps.mouseX === nextProps.mouseX &&
-  prevProps.mouseY === nextProps.mouseY;
+const nodeMenuPropsAreEqual = (prevProps, nextProps) =>
+  prevProps.node.id === nextProps.node.id &&
+  prevProps.node.name === nextProps.node.name &&
+  prevProps.nodeActionMenu === nextProps.nodeActionMenu;
 
-const PortActionMenu = memo(
-  ({
-    mouseX,
-    mouseY,
-    handleClose,
-    // handleSwitchPort,
-    handleRemovePort
-    // selectedPort
-  }) => (
-    <Menu
-      open={Boolean(mouseY)}
-      onClose={handleClose}
-      anchorReference='anchorPosition'
-      anchorPosition={
-        mouseY && mouseX ? { top: mouseY, left: mouseX } : undefined
-      }
-    >
-      {/* {selectedPort && isEmpty(selectedPort.getLinks()) && (
-        <MenuItem onClick={handleSwitchPort}>
-          Switch to {selectedPort.options.in ? 'out' : 'in'} port
+const NodeActionMenu = memo(
+  ({ node, nodeActionMenu: { mouseX, mouseY }, handleClose }) => {
+    const classes = useStyles();
+
+    const dispatch = useDispatch();
+
+    const handleDetailsClick = () => {
+      dispatch(setSelectedDiagramNode(node));
+      dispatch(setShowDrawer(true));
+
+      handleClose();
+    };
+
+    const handleRemoveClick = () => {
+      dispatch(
+        setSelectedDiagramNode({
+          ...node,
+          callback: () => node.remove()
+        })
+      );
+      dispatch(toggleDiagramNodeRemoveConfirmationModal());
+
+      handleClose();
+    };
+
+    return (
+      <Menu
+        open={Boolean(mouseY)}
+        onClose={handleClose}
+        anchorReference='anchorPosition'
+        anchorPosition={
+          mouseY && mouseX ? { top: mouseY, left: mouseX } : undefined
+        }
+      >
+        <MenuItem onClick={handleDetailsClick}>
+          <Info className={classes.nodeActionMenuIcon} />
+          <Typography>Details</Typography>
         </MenuItem>
-      )} */}
-      <MenuItem onClick={handleRemovePort}>Remove port</MenuItem>
-    </Menu>
-  ),
-  portMenuPropsAreEqual
+        <MenuItem onClick={handleRemoveClick}>
+          <Delete className={classes.nodeActionMenuIcon} color='secondary' />
+          <Typography>Remove</Typography>
+        </MenuItem>
+      </Menu>
+    );
+  },
+  nodeMenuPropsAreEqual
 );
+
+// const portMenuPropsAreEqual = (prevProps, nextProps) =>
+//   prevProps.selectedPort === nextProps.selectedPort &&
+//   prevProps.portActionMenu === nextProps.portActionMenu;
+
+// const PortActionMenu = memo(
+//   ({
+//     portActionMenu: { mouseX, mouseY },
+//     handleClose,
+//     handleSwitchPort,
+//     handleRemovePort,
+//     selectedPort
+//   }) => (
+//     <Menu
+//       open={Boolean(mouseY)}
+//       onClose={handleClose}
+//       anchorReference='anchorPosition'
+//       anchorPosition={
+//         mouseY && mouseX ? { top: mouseY, left: mouseX } : undefined
+//       }
+//     >
+//       {selectedPort && isEmpty(selectedPort.getLinks()) && (
+//         <MenuItem onClick={handleSwitchPort}>
+//           Switch to {selectedPort.options.in ? 'out' : 'in'} port
+//         </MenuItem>
+//       )}
+//       <MenuItem onClick={handleRemovePort}>Remove port</MenuItem>
+//     </Menu>
+//   ),
+//   portMenuPropsAreEqual
+// );
+
+const getMetricClassName = (metric = 0) => {
+  if (!metric) return 'metricsDefault';
+  if (metric < 50) return 'metricsLow';
+  if (metric < 80) return 'metricsMedium';
+  if (metric < 100) return 'metricsHigh';
+  return '';
+};
 
 const CustomNodeWidget = ({ engine, node }) => {
   const classes = useStyles();
 
-  const [portActionMenu, setPortActionMenu] = useState(initialMenu);
-  const { mouseX, mouseY } = portActionMenu;
+  const { service } = node;
 
-  const [selectedPort, setSelectedPort] = useState();
+  const { selectedNode } = useSelector(state => state.diagram);
+
+  const [nodeActionMenu, setNodeActionMenu] = useState(initialMenu);
 
   const [editMode, setEditMode] = useState(false);
   node.setEditMode(editMode);
@@ -188,24 +190,23 @@ const CustomNodeWidget = ({ engine, node }) => {
       });
   }, [editMode, node]);
 
-  const handlePortActionMenuOpen = event => {
+  const handleNodeClick = () => {
+    if (!selectedNode || selectedNode.id !== node.id)
+      dispatch(setSelectedDiagramNode(node));
+  };
+
+  const handlePortClick = event => event.stopPropagation();
+
+  const handleNodeActionMenuOpen = event => {
     event.preventDefault();
 
-    setPortActionMenu({
+    setNodeActionMenu({
       mouseX: event.clientX - 2,
       mouseY: event.clientY - 4
     });
   };
 
-  const handlePortActionMenuClose = () => {
-    setPortActionMenu(initialMenu);
-    setSelectedPort(null);
-  };
-
-  const handleContextMenu = port => event => {
-    handlePortActionMenuOpen(event);
-    setSelectedPort(port);
-  };
+  const handleNodeActionMenuClose = () => setNodeActionMenu(initialMenu);
 
   const handleChange = event => {
     const { name: elementName, value } = event.target;
@@ -230,93 +231,143 @@ const CustomNodeWidget = ({ engine, node }) => {
   };
 
   return (
-    <CustomNodeStyles
-      backgroundColor={theme.palette.background.paper}
-      isSelected={node.serialize().selected}
-    >
-      <HeaderStyles>
-        {editMode ? (
-          <Fade in timeout={500}>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                autoComplete='off'
-                autoFocus
-                name='name'
-                type='text'
-                value={name}
-                onChange={handleChange}
-                onKeyUp={handleEscKeyUp}
-                label='Node name'
-                variant='outlined'
-                margin='dense'
-              />
-            </form>
-          </Fade>
-        ) : (
-          <TitleStyles onDoubleClick={() => setEditMode(true)}>
-            {name}
-          </TitleStyles>
+    <>
+      <CustomNodeStyles
+        backgroundColor={theme.palette.background.paper}
+        isSelected={node.serialize().selected}
+        onClick={handleNodeClick}
+        onContextMenu={handleNodeActionMenuOpen}
+      >
+        <HeaderStyles>
+          {editMode ? (
+            <Fade in timeout={500}>
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  autoComplete='off'
+                  autoFocus
+                  name='name'
+                  type='text'
+                  value={name}
+                  onChange={handleChange}
+                  onKeyUp={handleEscKeyUp}
+                  label='Node name'
+                  variant='outlined'
+                  margin='dense'
+                />
+              </form>
+            </Fade>
+          ) : (
+            <TitleStyles
+              onDoubleClick={() => {
+                setEditMode(true);
+                setSelectedDiagramNode(node);
+              }}
+            >
+              {name}
+            </TitleStyles>
+          )}
+
+          {service && (
+            <CheckCircle className={classes.success} color='primary' />
+          )}
+        </HeaderStyles>
+
+        {service && (
+          <MetricsTooltip
+            className={classes.tooltip}
+            interactive
+            arrow
+            title={
+              <>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>IP</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {service ? service.server.ipAddress : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>CPU</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {service &&
+                    service.server.metrics &&
+                    service.server.metrics.cpuUsage > 0
+                      ? `${service.server.metrics.cpuUsage.toFixed(1)}%`
+                      : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>RAM</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {service &&
+                    service.server.metrics &&
+                    service.server.metrics.memoryUsage > 0
+                      ? `${service.server.metrics.memoryUsage.toFixed(1)}%`
+                      : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>Net in</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {service &&
+                    service.server.metrics &&
+                    service.server.metrics.networkIn > 0
+                      ? `${service.server.metrics.networkIn.toFixed(1)} KB/s`
+                      : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>Net out</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {service &&
+                    service.server.metrics &&
+                    service.server.metrics.networkOut > 0
+                      ? `${service.server.metrics.networkOut.toFixed(1)} KB/s`
+                      : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+              </>
+            }
+          >
+            <Typography
+              className={
+                service.server.metrics
+                  ? classes[getMetricClassName(service.server.metrics.cpuUsage)]
+                  : classes.metricsDefault
+              }
+              variant='h6'
+              display='inline'
+            >
+              {service.server.metrics && service.server.metrics.cpuUsage > 0
+                ? `${service.server.metrics.cpuUsage.toFixed(1)}%`
+                : '--'}
+            </Typography>
+          </MetricsTooltip>
         )}
 
-        <CheckCircle className={classes.success} color='primary' />
-      </HeaderStyles>
+        {Object.keys(ports).map(key => {
+          const port = ports[key];
 
-      {Object.keys(ports).map(key => {
-        const port = ports[key];
+          return (
+            <PortWidget
+              className='custom-port'
+              key={port.options.id}
+              engine={engine}
+              port={port}
+            >
+              <PortStyles
+                hoverBackgroundColor={theme.palette.primary.dark}
+                alignment={port.options.alignment}
+                onClick={handlePortClick}
+              />
+            </PortWidget>
+          );
+        })}
+      </CustomNodeStyles>
 
-        return (
-          <PortWidget
-            className='custom-port'
-            key={port.options.id}
-            engine={engine}
-            port={port}
-          >
-            <PortStyles
-              backgroundColor={theme.palette.primary.main}
-              hoverBackgroundColor={theme.palette.primary.dark}
-              onContextMenu={handleContextMenu(port)}
-            />
-          </PortWidget>
-        );
-      })}
-
-      <NodeActionMenu node={node} />
-
-      <PortActionMenu
-        {...{
-          mouseX,
-          mouseY,
-          handleClose: handlePortActionMenuClose,
-          // handleSwitchPort: () => {
-          //   dispatch(
-          //     updateClusterDiagramPortStart(
-          //       currentDiagram.id,
-          //       selectedPort.options.id,
-          //       {
-          //         options: { in: !selectedPort.options.in }
-          //       }
-          //     )
-          //   );
-
-          //   handlePortActionMenuClose();
-          // },
-          handleRemovePort: () => {
-            if (selectedPort)
-              dispatch(
-                removeClusterDiagramPortStart(selectedPort.options.id, () => {
-                  Object.values(selectedPort.getLinks()).forEach(link =>
-                    link.remove()
-                  );
-                  node.removePort(selectedPort);
-                })
-              );
-
-            handlePortActionMenuClose();
-          }
-          // selectedPort
-        }}
+      <NodeActionMenu
+        {...{ node, nodeActionMenu, handleClose: handleNodeActionMenuClose }}
       />
-    </CustomNodeStyles>
+    </>
   );
 };
 

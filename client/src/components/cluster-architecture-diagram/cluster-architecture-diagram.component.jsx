@@ -1,15 +1,13 @@
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import createEngine, {
-  DiagramModel,
-  PointModel
-} from '@projectstorm/react-diagrams';
+import createEngine, { DiagramModel } from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 
 import {
   addClusterDiagramLinkStart,
-  addClusterDiagramNodeStart
+  addClusterDiagramNodeStart,
+  setShowDrawer
 } from '../../redux/diagram/diagram.actions';
 
 import {
@@ -30,6 +28,8 @@ import CustomLinkFactory from '../diagram/custom-link/custom-link.factory';
 import CustomNodeModel from '../diagram/custom-node/custom-node.model';
 import CustomPortModel from '../diagram/custom-port/custom-port.model';
 import CustomLinkModel from '../diagram/custom-link/custom-link.model';
+
+import { fetchServersMetricsStart } from '../../redux/server/server.actions';
 
 import { ClusterArchitectureDiagramStyles } from './cluster-architecture-diagram.styles';
 
@@ -54,14 +54,12 @@ actions.forEach(Action =>
   engine.getActionEventBus().registerAction(new Action())
 );
 
-// engine.maxNumberPointsPerLink = 0;
-
 let model = new DiagramModel();
 
 engine.setModel(model);
 
 const ClusterArchitectureDiagram = () => {
-  const { currentDiagram } = useSelector(state => state.diagram);
+  const { currentDiagram, showDrawer } = useSelector(state => state.diagram);
 
   const dispatch = useDispatch();
 
@@ -70,13 +68,33 @@ const ClusterArchitectureDiagram = () => {
       event.entity instanceof CustomNodeModel &&
       event.function === 'positionChanged'
     ) {
-      const { id, position } = event.entity;
+      const { id, position, ports } = event.entity;
+
+      const linkUpdates = Object.values(ports).reduce(
+        (portAccumulator, { links }) => {
+          const linkWithPoints = Object.values(links).reduce(
+            (linkAccumulator, { id: linkId, points }) => ({
+              ...linkAccumulator,
+              [linkId]: {
+                points: points.map(({ position: pointPosition }) => ({
+                  position: pointPosition
+                }))
+              }
+            }),
+            {}
+          );
+
+          return { ...portAccumulator, ...linkWithPoints };
+        },
+        {}
+      );
 
       const changes = getDiagramChanges();
 
       setDiagramChanges({
         ...changes,
-        nodes: { ...changes.nodes, [id]: { position } }
+        nodes: { ...changes.nodes, [id]: { position } },
+        links: { ...changes.links, ...linkUpdates }
       });
 
       debouncedUpdateDiagram();
@@ -96,11 +114,12 @@ const ClusterArchitectureDiagram = () => {
                 targetPortId: targetPort.options.id,
                 points: event.entity
                   .getPoints()
-                  .slice(1, -1) // Remove head point and tail point since they will be created when connecting to ports
+
                   .map(point => ({ position: point.getPosition() })),
                 diagramId: currentDiagram.id
               },
-              () => event.entity.remove() // Remove this link to use link created from server
+              // Remove this link to use link created from server
+              () => event.entity.remove()
             )
           );
         }
@@ -111,7 +130,23 @@ const ClusterArchitectureDiagram = () => {
     [currentDiagram.id, dispatch]
   );
 
-  // const handleLinkUpdateEvent = useCallback(event => console.log(event), []);
+  const handleLinkUpdateEvent = useCallback(event => {
+    if (event.entity instanceof CustomLinkModel) {
+      const { id, points } = event.entity;
+
+      const changes = getDiagramChanges();
+
+      setDiagramChanges({
+        ...changes,
+        links: {
+          ...changes.links,
+          [id]: { points: points.map(({ position }) => ({ position })) }
+        }
+      });
+
+      debouncedUpdateDiagram();
+    }
+  }, []);
 
   useEffect(() => {
     model = new DiagramModel();
@@ -123,8 +158,8 @@ const ClusterArchitectureDiagram = () => {
     let allPorts = {};
 
     const nodes = currentDiagram.nodes.map(
-      ({ id, name, ports, position: { x, y } }) => {
-        const node = new CustomNodeModel({ id, name });
+      ({ id, name, ports, position: { x, y }, service }) => {
+        const node = new CustomNodeModel({ id, name }, service);
         node.setPosition(x, y);
 
         if (ports)
@@ -133,7 +168,8 @@ const ClusterArchitectureDiagram = () => {
               new CustomPortModel({
                 id: portId,
                 name: portId,
-                in: options.in
+                in: options.in,
+                alignment: options.alignment
               })
             );
 
@@ -154,16 +190,20 @@ const ClusterArchitectureDiagram = () => {
 
         link.setSourcePort(allPorts[sourcePort]);
         link.setTargetPort(allPorts[targetPort]);
-        points.forEach(({ position: { x, y } }, index) => {
-          const point = new PointModel({ link });
-          point.setPosition(x, y);
 
-          link.addPoint(point, index + 1);
+        link.setInitFirstPoint(points[0].position.x, points[0].position.y);
+        link.setInitLastPoint(
+          points[points.length - 1].position.x,
+          points[points.length - 1].position.y
+        );
+
+        points
+          .slice(1, -1)
+          .forEach(({ position: { x, y } }) => link.point(x, y, -1));
+
+        link.registerListener({
+          linksUpdated: handleLinkUpdateEvent
         });
-
-        // link.registerListener({
-        //   customLinkUpdated: handleLinkUpdateEvent
-        // });
 
         return link;
       }
@@ -172,7 +212,7 @@ const ClusterArchitectureDiagram = () => {
     model.addAll(...nodes, ...links);
 
     engine.repaintCanvas();
-  }, [currentDiagram, handleNodeEvent]);
+  }, [currentDiagram, handleNodeEvent, handleLinkUpdateEvent]);
 
   useEffect(() => {
     model.registerListener({
@@ -182,6 +222,35 @@ const ClusterArchitectureDiagram = () => {
         })
     });
   }, [handleLinkCreationEvent]);
+
+  useEffect(() => {
+    const serverIds = currentDiagram.nodes
+      .filter(node => node.service)
+      .map(node => node.service.server.id);
+
+    if (serverIds.length) {
+      const intervalId = setInterval(() => {
+        dispatch(
+          fetchServersMetricsStart(
+            currentDiagram.nodes
+              .filter(node => node.service)
+              .map(node => node.service.server.id)
+          )
+        );
+      }, 10000);
+
+      return () => clearInterval(intervalId);
+    }
+
+    return () => {};
+  }, [currentDiagram.nodes, dispatch]);
+
+  useEffect(
+    () => () => {
+      if (showDrawer) dispatch(setShowDrawer(false));
+    },
+    [dispatch, showDrawer]
+  );
 
   const handleDrop = event => {
     const { x, y } = engine.getRelativeMousePoint(event);

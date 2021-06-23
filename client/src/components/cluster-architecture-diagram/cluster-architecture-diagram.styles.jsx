@@ -33,5 +33,6 @@ export const ClusterArchitectureDiagramStyles = styled.div`
     position: absolute !important;
     width: 100%;
     height: 100%;
+    z-index: 1400;
   }
 `;

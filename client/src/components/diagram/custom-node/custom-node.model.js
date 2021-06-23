@@ -1,7 +1,7 @@
 import { NodeModel } from '@projectstorm/react-diagrams';
 
 class CustomNodeModel extends NodeModel {
-  constructor(options = {}) {
+  constructor(options = {}, service) {
     super({
       ...options,
       type: 'js-custom-node'
@@ -10,6 +10,7 @@ class CustomNodeModel extends NodeModel {
     this.id = options.id;
     this.name = options.name;
     this.editMode = options.editMode || false;
+    this.service = service;
   }
 
   serialize() {
@@ -17,7 +18,8 @@ class CustomNodeModel extends NodeModel {
       ...super.serialize(),
       id: this.id,
       name: this.name,
-      editMode: this.editMode
+      editMode: this.editMode,
+      service: this.service
     };
   }
 
@@ -27,6 +29,7 @@ class CustomNodeModel extends NodeModel {
     this.id = obj.id;
     this.name = obj.name;
     this.editMode = obj.editMode;
+    this.service = obj.service;
   }
 
   getEditMode() {

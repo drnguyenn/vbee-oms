@@ -11,6 +11,21 @@ class CustomPortModel extends PortModel {
   canLinkToPort() {
     return true;
   }
+
+  reportPosition() {
+    Object.values(this.getLinks()).forEach(link => {
+      const point = link.getPointForPort(this);
+
+      point.setPosition(link.getInitPointForPort(this).getPosition());
+    });
+
+    this.fireEvent(
+      {
+        entity: this
+      },
+      'reportInitialPosition'
+    );
+  }
 }
 
 export default CustomPortModel;
