@@ -11,14 +11,14 @@ const TopPortStyles = css`
   top: 0;
   left: 0;
   height: ${portThickness};
-  width: ${nodeWidth};
+  width: 100%;
   border-radius: ${borderRadius} ${borderRadius} 0 0;
 `;
 
 const RightPortStyles = css`
   top: 0;
   right: 0;
-  height: ${nodeMinHeight};
+  height: 100%;
   width: ${portThickness};
   border-radius: 0 ${borderRadius} ${borderRadius} 0;
 `;
@@ -27,14 +27,14 @@ const BottomPortStyles = css`
   bottom: 0;
   left: 0;
   height: ${portThickness};
-  width: ${nodeWidth};
+  width: 100%;
   border-radius: 0 0 ${borderRadius} ${borderRadius};
 `;
 
 const LeftPortStyles = css`
   top: 0;
   left: 0;
-  height: ${nodeMinHeight};
+  height: 100%;
   width: ${portThickness};
   border-radius: ${borderRadius} 0 0 ${borderRadius};
 `;
@@ -60,10 +60,11 @@ const getPortStyles = ({ alignment }) => {
 
 export const PortStyles = styled.div`
   position: absolute;
-
   cursor: pointer;
 
-  ${getPortStyles}:hover {
+  ${getPortStyles}
+
+  :hover {
     background-color: ${({ hoverBackgroundColor }) =>
       hoverBackgroundColor || '#fab300'};
   }
@@ -77,6 +78,7 @@ export const CustomNodeStyles = styled.div`
   padding: 0 ${themes.lengthSm3} ${themes.lengthSm3} ${themes.lengthSm3};
   text-align: center;
   cursor: initial;
+
   background-image: ${({ isSelected }) =>
     isSelected
       ? `linear-gradient(90deg, silver 50%, transparent 50%),
@@ -101,7 +103,8 @@ export const CustomNodeStyles = styled.div`
   }
 
   :hover {
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    box-shadow: 0 0 3px 1px
+      ${({ outlineBorderColor }) => outlineBorderColor || 'gray'};
   }
 `;
 
@@ -113,6 +116,9 @@ export const HeaderStyles = styled.div`
 
 export const TitleStyles = styled.h3`
   margin-right: ${themes.lengthSm2};
+  max-width: 80%;
+  white-space: nowrap;
+  text-align: left;
   cursor: pointer;
 `;
 
