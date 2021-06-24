@@ -54,7 +54,7 @@ const App = () => {
           primary:
             type === 'dark'
               ? {
-                  light: '#fff9b0',
+                  light: '#fad12d',
                   main: '#f6c90e',
                   dark: '#fab300'
                 }
