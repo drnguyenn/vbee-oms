@@ -14,6 +14,7 @@ const DiagramLinkSchema = new mongoose.Schema(
       {
         position: {
           type: {
+            _id: false,
             x: { type: Number, required: true },
             y: { type: Number, required: true }
           },
