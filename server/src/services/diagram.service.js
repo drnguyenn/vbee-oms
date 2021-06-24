@@ -54,12 +54,7 @@ const remove = async condition => {
   return diagram;
 };
 
-const search = async (condition, projection = { name: 1, description: 1 }) => {
-  if (condition.q) {
-    const diagrams = await DiagramDao.search(condition.q, projection);
-    return diagrams;
-  }
-
+const search = async (condition, projection = { cluster: 1 }) => {
   const diagrams = await DiagramDao.findAll(condition, projection);
   return diagrams;
 };
@@ -94,12 +89,26 @@ const addNode = async ({ name, diagramId, serviceId, ...rest }) => {
   let service = {};
   if (serviceId) service = await ServiceService.get(serviceId);
 
-  const diagramNode = await DiagramNodeDao.create({
+  let diagramNode = await DiagramNodeDao.create({
     name: name || service.name,
     diagram: diagramId,
     service: serviceId,
     ...rest
   });
+
+  await Promise.all(
+    ['top', 'right', 'bottom', 'left'].map(alignment =>
+      DiagramPortDao.create({
+        node: diagramNode._id,
+        diagram: diagramId,
+        options: {
+          alignment
+        }
+      })
+    )
+  );
+
+  diagramNode = await diagramNode.populate('ports').execPopulate();
 
   return { diagramNode, statusCode: 201 };
 };
@@ -196,7 +205,7 @@ const removePort = async portCondition => {
   if (!diagramPort)
     throw new CustomError(errorCodes.NOT_FOUND, 'Diagram port not found');
 
-  const { links } = diagramPort._doc;
+  const links = [...diagramPort.inLinks, ...diagramPort.outLinks];
 
   if (links.length) await removeAllLinks(links.map(link => link._id));
 

@@ -130,15 +130,10 @@ const updateNodeValidation = {
 
 const addPortValidation = {
   body: Joi.object({
-    position: Joi.object({
-      x: Joi.number().required(),
-      y: Joi.number().required()
-    }).unknown(false),
     options: Joi.object({
-      in: Joi.boolean()
-    })
-      .unknown(false)
-      .required(),
+      in: Joi.boolean(),
+      alignment: Joi.string().valid('top', 'right', 'bottom', 'left')
+    }).unknown(false),
     diagramId: Joi.string()
       .trim()
       .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
@@ -149,10 +144,6 @@ const addPortValidation = {
 
 const updatePortValidation = {
   body: Joi.object({
-    position: Joi.object({
-      x: Joi.number().required(),
-      y: Joi.number().required()
-    }).unknown(false),
     options: Joi.object({
       in: Joi.boolean()
     }).unknown(false),

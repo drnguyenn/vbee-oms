@@ -2,12 +2,13 @@ const mongoose = require('mongoose');
 
 const DiagramPortSchema = new mongoose.Schema(
   {
-    position: {
-      x: { type: Number },
-      y: { type: Number }
-    },
     options: {
-      in: { type: Boolean, default: false }
+      in: { type: Boolean, default: false },
+      alignment: {
+        type: String,
+        enum: ['top', 'right', 'bottom', 'left'],
+        default: 'left'
+      }
     },
     node: {
       type: mongoose.Types.ObjectId,
