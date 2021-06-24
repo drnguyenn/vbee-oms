@@ -1,6 +1,8 @@
 import { LinkWidget } from '@projectstorm/react-diagrams-core';
 import { DefaultLinkWidget } from '@projectstorm/react-diagrams-defaults';
 
+import CustomLinkPointWidget from '../custom-link-point/custom-link-point.widget';
+
 const CustomLinkArrowWidget = ({ point, previousPoint, color }) => {
   const angle =
     90 +
@@ -39,6 +41,19 @@ class CustomLinkWidget extends DefaultLinkWidget {
         key={point.getID()}
         point={point}
         previousPoint={previousPoint}
+        colorSelected={link.getOptions().selectedColor}
+        color={link.getOptions().color}
+      />
+    );
+  }
+
+  generatePoint(point) {
+    const { link } = this.props;
+
+    return (
+      <CustomLinkPointWidget
+        key={point.getID()}
+        point={point}
         colorSelected={link.getOptions().selectedColor}
         color={link.getOptions().color}
       />
