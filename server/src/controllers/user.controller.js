@@ -7,7 +7,7 @@ const searchUsers = async (req, res) => {
 };
 
 const register = async (req, res) => {
-  const user = await UserService.register(req.body);
+  const user = await UserService.register(req.user._id, req.body);
   return res.status(201).json({ status: 1, result: { user } });
 };
 
