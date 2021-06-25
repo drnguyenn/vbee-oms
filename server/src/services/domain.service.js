@@ -56,7 +56,7 @@ const update = async (condition, { serverId, value, ...rest }) => {
   if (value)
     if (ObjectId.isValid(condition))
       conditionAndException = {
-        value,
+        $or: [{ value }],
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
@@ -72,7 +72,7 @@ const update = async (condition, { serverId, value, ...rest }) => {
       });
 
       conditionAndException = {
-        value,
+        $or: [{ value }],
         $and: [
           Object.keys(condition).reduce(
             (accumulator, currentValue) => ({

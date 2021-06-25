@@ -44,12 +44,12 @@ const update = async (condition, data) => {
 
   if (ObjectId.isValid(condition))
     conditionAndException = {
-      githubId: data.githubId,
+      $or: [{ githubId: data.githubId }],
       $and: [{ _id: { $ne: condition } }]
     };
   else if (typeof condition === 'object' && condition)
     conditionAndException = {
-      githubId: data.githubId,
+      $or: [{ githubId: data.githubId }],
       $and: [
         Object.keys(condition).reduce(
           (accumulator, currentValue) => ({

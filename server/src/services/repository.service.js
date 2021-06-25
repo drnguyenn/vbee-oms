@@ -2,16 +2,12 @@
 const {
   Types: { ObjectId }
 } = require('mongoose');
-const snakecaseKeys = require('snakecase-keys');
 
 const CustomError = require('@errors/custom-error');
 const errorCodes = require('@errors/code');
 
-const { GITHUB_API, GITHUB_REPOSITORY_PERMISSIONS } = require('@constants');
-
-const customAxios = require('@customs/axios.custom');
-
 const RepositoryDao = require('@daos/repository.dao');
+const { github } = require('@utils/repository.utils');
 
 const UserService = require('./user.service');
 const GhAppInstallationService = require('./gh-app-installation.service');
@@ -45,7 +41,7 @@ const update = async (condition, data) => {
   if (data.githubId)
     if (ObjectId.isValid(condition))
       conditionAndException = {
-        githubId: data.githubId,
+        $or: [{ githubId: data.githubId }],
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
@@ -61,7 +57,7 @@ const update = async (condition, data) => {
       });
 
       conditionAndException = {
-        githubId: data.githubId,
+        $or: [{ githubId: data.githubId }],
         $and: [
           Object.keys(condition).reduce(
             (accumulator, currentValue) => ({
@@ -129,34 +125,33 @@ const addMember = async (
   if (ghAppInstallationToken) {
     const { name, owner } = repository;
 
-    try {
-      // Add member to GitHub repository using GitHub API
-      const response = await customAxios({
-        method: 'PUT',
-        url: `${GITHUB_API.BASE_URL}/repos/${owner}/${name}/collaborators/${user.githubUsername}`,
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: GITHUB_API.HEADERS.ACCEPT,
-          Authorization: `token ${ghAppInstallationToken}`
-        },
-        data: { permission: GITHUB_REPOSITORY_PERMISSIONS[permission] }
-      });
-      const {
-        data: { id },
-        status
-      } = response;
+    // Add member to GitHub repository using GitHub API
+    const response = await github.addMember(
+      ghAppInstallationToken,
+      owner,
+      name,
+      user.githubUsername,
+      permission
+    );
 
-      // Add member to repository in Vbee OMS database
-      await RepositoryDao.addMember(repository, {
-        _id,
-        permission,
-        invitation: { githubId: id, status: 'pending' }
-      });
+    if (response.status) {
+      if (response.status < 400) {
+        const {
+          data: { id }
+        } = response;
 
-      return { repository, statusCode: status };
-    } catch (error) {
-      console.error(error);
-      throw new Error(error.message);
+        // Add member to repository in Vbee OMS database
+        await RepositoryDao.addMember(repository, {
+          _id,
+          permission,
+          invitation: { githubId: id, status: 'pending' }
+        });
+
+        return { repository, statusCode: 201 };
+      }
+
+      const { message } = response.data;
+      throw new CustomError(response.status, message);
     }
   }
 
@@ -187,33 +182,33 @@ const updateMember = async (
     if (ghAppInstallationToken) {
       const { name, owner } = repository;
 
-      try {
-        // Add member to GitHub repository using GitHub API
-        const response = await customAxios({
-          method: 'PUT',
-          url: `${GITHUB_API.BASE_URL}/repos/${owner}/${name}/collaborators/${user.githubUsername}`,
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: GITHUB_API.HEADERS.ACCEPT,
-            Authorization: `token ${ghAppInstallationToken}`
-          },
-          data: { permission: GITHUB_REPOSITORY_PERMISSIONS[permission] }
-        });
-        const {
-          data: { id }
-        } = response;
+      // Add member to GitHub repository using GitHub API
+      const response = await github.addMember(
+        ghAppInstallationToken,
+        owner,
+        name,
+        user.githubUsername,
+        permission
+      );
 
-        // Add member to repository in Vbee OMS database
-        await RepositoryDao.addMember(repository, {
-          _id,
-          permission,
-          invitation: { githubId: id, status: 'pending' }
-        });
+      if (response.status) {
+        if (response.status < 400) {
+          const {
+            data: { id }
+          } = response;
 
-        return { repository, statusCode: 201 };
-      } catch (error) {
-        console.error(error);
-        throw new Error(error.message);
+          // Add member to repository in Vbee OMS database
+          await RepositoryDao.addMember(repository, {
+            _id,
+            permission,
+            invitation: { githubId: id, status: 'pending' }
+          });
+
+          return { repository, statusCode: 201 };
+        }
+
+        const { message } = response.data;
+        throw new CustomError(response.status, message);
       }
     }
 
@@ -231,21 +226,13 @@ const updateMember = async (
   // if (ghAppInstallationToken) {
   //   const { name, owner } = repository;
 
-  //   try {
-  //     await customAxios({
-  //       method: 'PUT',
-  //       url: `${GITHUB_API.BASE_URL}/repos/${owner}/${name}/collaborators/${user.githubUsername}`,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         Accept: GITHUB_API.HEADERS.ACCEPT,
-  //         Authorization: `token ${ghAppInstallationToken}`
-  //       },
-  //       data: { permission: GITHUB_REPOSITORY_PERMISSIONS[permission] }
-  //     });
-  //   } catch (error) {
-  //     console.error(error);
-  //     throw new Error(error.message);
-  //   }
+  //   await github.updateMember(
+  //     ghAppInstallationToken,
+  //     owner,
+  //     name,
+  //     user.githubUsername,
+  //     permission
+  //   )
   // }
 
   // Update member of repository in Vbee OMS database
@@ -274,50 +261,29 @@ const removeMember = async (
     const { name, owner } = repository;
     const { invitation } = member;
 
-    try {
-      switch (invitation.status) {
-        case 'pending':
-          try {
-            // Remove member invitation of GitHub repository using GitHub API
-            await customAxios({
-              method: 'DELETE',
-              url: `${GITHUB_API.BASE_URL}/repos/${owner}/${name}/invitations/${invitation.githubId}`,
-              headers: {
-                'Content-Type': 'application/json',
-                Accept: GITHUB_API.HEADERS.ACCEPT,
-                Authorization: `token ${ghAppInstallationToken}`
-              }
-            });
-          } catch (error) {
-            console.error(error);
-            throw new Error(error.message);
-          }
-          break;
+    switch (invitation.status) {
+      case 'pending':
+        // Delete member invitation of GitHub repository using GitHub API
+        await github.deleteInvitation(
+          ghAppInstallationToken,
+          owner,
+          name,
+          invitation.githubId
+        );
+        break;
 
-        case 'accepted':
-          try {
-            // Remove member of GitHub repository using GitHub API
-            await customAxios({
-              method: 'DELETE',
-              url: `${GITHUB_API.BASE_URL}/repos/${owner}/${name}/collaborators/${user.githubUsername}`,
-              headers: {
-                'Content-Type': 'application/json',
-                Accept: GITHUB_API.HEADERS.ACCEPT,
-                Authorization: `token ${ghAppInstallationToken}`
-              }
-            });
-          } catch (error) {
-            console.error(error);
-            throw new Error(error.message);
-          }
-          break;
+      case 'accepted':
+        // Remove member of GitHub repository using GitHub API
+        await github.removeMember(
+          ghAppInstallationToken,
+          owner,
+          name,
+          user.githubUsername
+        );
+        break;
 
-        default:
-          break;
-      }
-    } catch (error) {
-      console.error(error);
-      throw new Error(error.message);
+      default:
+        break;
     }
   }
 
@@ -361,23 +327,23 @@ const updatePRReviewProtection = async (
   const { owner, name } = repository;
 
   if (ghAppInstallationToken) {
-    try {
-      const response = await customAxios({
-        method: 'PATCH',
-        url: `${GITHUB_API.BASE_URL}/repos/${owner}/${name}/branches/${branch}/protection/required_pull_request_reviews`,
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: GITHUB_API.HEADERS.ACCEPT_LUKE_CAGE,
-          Authorization: `token ${ghAppInstallationToken}`
-        },
-        data: snakecaseKeys(options, { deep: true })
-      });
-      const { data, status } = response;
+    const response = await github.updatePRReviewProtection(
+      ghAppInstallationToken,
+      owner,
+      name,
+      branch,
+      options
+    );
 
-      return { data, statusCode: status };
-    } catch (error) {
-      console.error(error);
-      throw new Error(error.message);
+    if (response.status) {
+      if (response.status < 400) {
+        const { data, status } = response;
+
+        return { data, statusCode: status };
+      }
+
+      const { message } = response.data;
+      throw new CustomError(response.status, message);
     }
   }
 
