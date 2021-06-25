@@ -42,7 +42,7 @@ services:
       - MONGO_DATABASE=${MONGO_DATABASE}
 
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - JWT_EXPIRES_TIME=${JWT_EXPIRES_TIME}
+      - JWT_EXPIRATION_TIME=${JWT_EXPIRATION_TIME}
     command: yarn dev
     networks:
       - vbee-oms-network
