@@ -1,11 +1,12 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { IconButton, Tooltip } from '@material-ui/core';
 import {
   Dashboard,
-  AmpStories,
+  ViewCarousel,
+  Web,
   Storage,
   Kitchen,
   People,
@@ -26,18 +27,15 @@ import ROUTE_PATHS from '../../router/route-paths';
 
 import { SidebarStyles, LogoContainer, Logo } from './sidebar.styles';
 
-const Sidebar = () => {
-  const SIDEBAR_ROUTE_PATHS = useMemo(
-    () => [
-      ROUTE_PATHS.DASHBOARD,
-      ROUTE_PATHS.CLUSTERS,
-      ROUTE_PATHS.SERVICES,
-      ROUTE_PATHS.REPOSITORIES,
-      ROUTE_PATHS.MEMBERS
-    ],
-    []
-  );
+const SIDEBAR_ROUTE_PATHS = [
+  ROUTE_PATHS.DASHBOARD,
+  ROUTE_PATHS.CLUSTERS,
+  ROUTE_PATHS.SERVICES,
+  ROUTE_PATHS.REPOSITORIES,
+  ROUTE_PATHS.MEMBERS
+];
 
+const Sidebar = () => {
   const { type } = useSelector(state => state.theme);
   const { openPreferencesModal } = useSelector(state => state.modal);
 
@@ -63,7 +61,7 @@ const Sidebar = () => {
     });
 
     return unlisten;
-  }, [history, SIDEBAR_ROUTE_PATHS]);
+  }, [history]);
 
   const handleChange = (event, newValue) => {
     if (newValue) {
@@ -93,9 +91,12 @@ const Sidebar = () => {
           <Dashboard />
         </CustomToggleButton>
         <CustomToggleButton title='Clusters' value={ROUTE_PATHS.CLUSTERS}>
-          <AmpStories />
+          <ViewCarousel />
         </CustomToggleButton>
         <CustomToggleButton title='Services' value={ROUTE_PATHS.SERVICES}>
+          <Web />
+        </CustomToggleButton>
+        <CustomToggleButton title='Servers' value={ROUTE_PATHS.SERVERS}>
           <Storage />
         </CustomToggleButton>
         <CustomToggleButton

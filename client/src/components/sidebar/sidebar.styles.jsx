@@ -15,14 +15,16 @@ export const SidebarStyles = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+
+  @media screen and (max-width: 440px) {
+    width: 60px;
+  }
 `;
 
-export const LogoContainer = styled(Link)``;
+export const LogoContainer = styled(Link)`
+  text-align: center;
+`;
 
 export const Logo = styled.img`
-  height: 60px;
-`;
-
-export const InvisibleDiv = styled.div`
-  height: 60px;
+  width: 75%;
 `;
