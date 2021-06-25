@@ -28,6 +28,14 @@ const findOne = async (condition, projection) => {
   return null;
 };
 
+const findAll = async (condition, projection) => {
+  const ghAppInstallations = await GhAppInstallationModel.find(
+    condition,
+    projection
+  );
+  return ghAppInstallations;
+};
+
 const update = async (condition, data) => {
   const options = {
     new: true,
@@ -78,6 +86,7 @@ const remove = async condition => {
 module.exports = {
   create,
   findOne,
+  findAll,
   update,
   remove
 };
