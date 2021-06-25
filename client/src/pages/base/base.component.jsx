@@ -22,6 +22,7 @@ const useStyles = makeStyles({
 const BasePage = ({
   title,
   subtitle,
+  textAlign,
   children,
   showHeaderButton,
   tooltipTitle,
@@ -32,7 +33,7 @@ const BasePage = ({
   const classes = useStyles();
 
   return (
-    <BasePageStyles>
+    <BasePageStyles textAlign={textAlign}>
       <HeaderStyles backgroundColor={theme.palette.background.default}>
         <TitleStyles>{title}</TitleStyles>
       </HeaderStyles>
@@ -59,6 +60,7 @@ const BasePage = ({
 BasePage.propTypes = {
   title: PropTypes.string,
   subtitle: PropTypes.string,
+  textAlign: PropTypes.string,
   showHeaderButton: PropTypes.bool,
   tooltipTitle: PropTypes.string,
   headerButtonIcon: PropTypes.element,
@@ -68,6 +70,7 @@ BasePage.propTypes = {
 BasePage.defaultProps = {
   title: '',
   subtitle: '',
+  textAlign: 'initial',
   showHeaderButton: false,
   tooltipTitle: '',
   headerButtonIcon: <ArrowBackIosOutlined />,

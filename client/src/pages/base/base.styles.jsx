@@ -7,6 +7,7 @@ export const BasePageStyles = styled.div`
   top: 65px;
   margin-left: 80px;
   padding: 0 ${themes.lengthMd2} ${themes.lengthMd2};
+  text-align: ${({ textAlign }) => textAlign || 'initial'};
 `;
 
 export const HeaderStyles = styled.div`
