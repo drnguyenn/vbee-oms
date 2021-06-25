@@ -2,16 +2,19 @@
 import { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 
-import { Fab } from '@material-ui/core';
+import { Fab, Typography, withStyles } from '@material-ui/core';
+
+import BasePage from '../base/base.component';
 
 import ErrorPageImage from '../../assets/images/error-page.png';
 
-import {
-  ErrorImageOverlay,
-  ErrorImageStyles,
-  ErrorImageText
-} from './error-boundary.styles';
+import { ErrorImageStyles } from './error-boundary.styles';
 
+const useStyles = () => ({
+  content: {
+    marginBottom: '1rem'
+  }
+});
 class ErrorBoundary extends Component {
   constructor() {
     super();
@@ -27,31 +30,36 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    console.log(info);
+    console.info(info);
     if (error) console.error(error);
   }
 
   render() {
     const { hasErrored } = this.state;
-    const { children, history } = this.props;
+    const { children, history, classes } = this.props;
 
     if (hasErrored)
       return (
-        <ErrorImageOverlay>
+        <BasePage textAlign='center'>
           <ErrorImageStyles src={ErrorPageImage} alt='Error Page Image' />
-          <ErrorImageText>Sorry, this page is broken</ErrorImageText>
+          <Typography variant='h4' component='h1' gutterBottom>
+            Sorry, this page is broken
+          </Typography>
+          <Typography className={classes.content}>
+            It seems like something has gone wrong. Please come back later.
+          </Typography>
           <Fab
             variant='extended'
-            type='submit'
+            color='primary'
             onClick={() => history.push('/')}
           >
             Back to home
           </Fab>
-        </ErrorImageOverlay>
+        </BasePage>
       );
 
     return children;
   }
 }
 
-export default withRouter(ErrorBoundary);
+export default withRouter(withStyles(useStyles)(ErrorBoundary));
