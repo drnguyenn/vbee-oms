@@ -41,6 +41,19 @@ ClusterSchema.virtual('memberCount', {
   count: true
 });
 
+ClusterSchema.virtual('servers', {
+  ref: 'Server',
+  localField: '_id',
+  foreignField: 'cluster'
+});
+
+ClusterSchema.virtual('serverCount', {
+  ref: 'Server',
+  localField: '_id',
+  foreignField: 'cluster',
+  count: true
+});
+
 ClusterSchema.virtual('services', {
   ref: 'Service',
   localField: '_id',
@@ -54,29 +67,19 @@ ClusterSchema.virtual('serviceCount', {
   count: true
 });
 
-ClusterSchema.pre('find', function populateMemberAndServiceCount() {
+ClusterSchema.pre('findOne', function populate() {
   this.populate('memberCount');
   this.populate('serviceCount');
-});
-
-ClusterSchema.pre('findOne', function populateMembersAndServices() {
-  this.populate('memberCount');
-  this.populate('serviceCount');
+  this.populate('serverCount');
   this.populate({ path: 'members', select: 'role -_id -cluster' });
   this.populate({
     path: 'services',
-    select: 'name description version status -cluster'
+    select: 'name description version -cluster',
+    populate: { path: 'memberCount' }
   });
 });
 
-ClusterSchema.pre('findOneAndUpdate', function populateMemberAndServiceCount() {
-  this.populate('memberCount');
-  this.populate('serviceCount');
-});
-
-ClusterSchema.pre('findOneAndDelete', function populateMemberAndServiceCount() {
-  this.populate('memberCount');
-  this.populate('serviceCount');
+ClusterSchema.pre('findOneAndDelete', function populate() {
   this.populate({ path: 'services', select: 'members' });
 });
 

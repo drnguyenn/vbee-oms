@@ -29,7 +29,10 @@ const findOne = async (condition, projection) => {
 };
 
 const findAll = async (condition, projection) => {
-  const repositories = await RepositoryModel.find(condition, projection);
+  const repositories = await RepositoryModel.find(
+    condition,
+    projection
+  ).populate('memberCount');
   return repositories;
 };
 

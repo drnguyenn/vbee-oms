@@ -23,7 +23,10 @@ const findOne = async (condition, projection) => {
 };
 
 const findAll = async (condition, projection) => {
-  const clusters = await ClusterModel.find(condition, projection);
+  const clusters = await ClusterModel.find(condition, projection)
+    .populate('memberCount')
+    .populate('serviceCount')
+    .populate('serverCount');
   return clusters;
 };
 

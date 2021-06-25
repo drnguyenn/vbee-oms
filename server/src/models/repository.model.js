@@ -62,11 +62,7 @@ RepositorySchema.virtual('memberCount', {
   count: true
 });
 
-RepositorySchema.pre('find', function populateMemberCount() {
-  this.populate('memberCount');
-});
-
-RepositorySchema.pre('findOne', function populateMemberCount() {
+RepositorySchema.pre('findOne', function populate() {
   this.populate('memberCount');
 });
 
