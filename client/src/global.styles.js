@@ -19,7 +19,7 @@ const GlobalStyles = createGlobalStyle`
   }
 
   b {
-    color: #f6c90e;
+    color: ${({ boldTextColor }) => boldTextColor || '#f6c90e'};
   }
 
   :-webkit-autofill,

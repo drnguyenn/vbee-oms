@@ -83,7 +83,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <GlobalStyles />
+      <GlobalStyles boldTextColor={theme.palette.primary.main} />
       <CssBaseline />
 
       <SnackbarProvider
