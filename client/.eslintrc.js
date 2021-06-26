@@ -8,7 +8,7 @@ const prettierOptions = JSON.parse(
 module.exports = {
   env: {
     browser: true,
-    es6: true
+    es2021: true
   },
   globals: {
     Atomics: 'readonly',
@@ -18,7 +18,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true
     },
-    ecmaVersion: 2020,
+    ecmaVersion: 12,
     sourceType: 'module'
   },
   extends: [
@@ -29,7 +29,7 @@ module.exports = {
   ],
   plugins: ['react', 'prettier'],
   rules: {
-    'prettier/prettier': ['error', prettierOptions],
+    'prettier/prettier': ['warn', prettierOptions],
     'react/prop-types': 'off',
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-one-expression-per-line': 'off',
@@ -57,5 +57,25 @@ module.exports = {
     'arrow-body-style': 'off',
     'prefer-arrow-callback': 'off',
     'no-unused-vars': 'warn'
+  },
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [
+          ['assets', path.resolve(__dirname, 'src/assets')],
+          ['components', path.resolve(__dirname, 'src/components')],
+          ['constants', path.resolve(__dirname, 'src/constants')],
+          ['customs', path.resolve(__dirname, 'src/customs')],
+          ['modals', path.resolve(__dirname, 'src/modals')],
+          ['pages', path.resolve(__dirname, 'src/pages')],
+          ['redux', path.resolve(__dirname, 'src/redux')],
+          ['router', path.resolve(__dirname, 'src/router')],
+          ['services', path.resolve(__dirname, 'src/services')],
+          ['themes', path.resolve(__dirname, 'src/themes')],
+          ['utils', path.resolve(__dirname, 'src/utils')]
+        ],
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.json']
+      }
+    }
   }
 };

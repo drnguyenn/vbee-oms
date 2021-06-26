@@ -9,18 +9,18 @@ module.exports = {
   env: {
     browser: true,
     node: true,
-    es6: true
+    es2021: true
   },
   globals: {},
   extends: ['airbnb-base', 'prettier'],
   plugins: ['prettier'],
   rules: {
-    'prettier/prettier': ['error', prettierOptions],
+    'prettier/prettier': ['warn', prettierOptions],
     'arrow-body-style': 'off',
     'prefer-arrow-callback': 'off',
     'no-underscore-dangle': 'off',
     'no-param-reassign': 'warn',
-    'no-await-in-loop': 'off',
+    // 'no-await-in-loop': 'off',
     'no-use-before-define': 'off',
     'no-restricted-syntax': 'off',
     'global-require': 'off'
@@ -29,6 +29,7 @@ module.exports = {
     'import/resolver': {
       alias: {
         map: [
+          ['@credentials', path.resolve(__dirname, './credentials')],
           ['@configs', path.resolve(__dirname, './src/configs')],
           ['@constants', path.resolve(__dirname, './src/constants')],
           ['@controllers', path.resolve(__dirname, './src/controllers')],
