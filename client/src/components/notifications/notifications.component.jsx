@@ -4,11 +4,11 @@ import { useSnackbar } from 'notistack';
 
 import { Typography } from '@material-ui/core';
 
-const ConnectionErrorContent = () => (
+const ConnectionErrorMessage = () => (
   <Typography variant='body2'>
     You are currently offline.
     <br />
-    Some features may not work properly
+    Some features may not work properly.
   </Typography>
 );
 
@@ -43,7 +43,7 @@ const Notifications = () => {
         }
 
         setNotiKey(
-          enqueueSnackbar(<ConnectionErrorContent />, {
+          enqueueSnackbar(<ConnectionErrorMessage />, {
             variant: 'error',
             persist: true
           })
