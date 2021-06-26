@@ -9,14 +9,14 @@ import {
   IconButton,
   makeStyles
 } from '@material-ui/core';
-import { AccountTree, Add } from '@material-ui/icons';
+import { AccountTree, Add, Kitchen, People } from '@material-ui/icons';
 
-import { setServiceCreationModalOpen } from '../../redux/modal/modal.actions';
+import { setServiceCreationModalOpen } from 'redux/modal/modal.actions';
 
-import Section from '../section/section.component';
-import ServiceCard from '../service-card/service-card.component';
+import Section from 'components/section/section.component';
+import BaseCard from 'components/base-card/base-card.component';
 
-import ROUTE_PATHS from '../../router/route-paths';
+import ROUTE_PATHS from 'router/route-paths';
 
 const useStyles = makeStyles({
   grid: {
@@ -26,8 +26,15 @@ const useStyles = makeStyles({
     overflowY: 'auto',
     margin: 'initial'
   },
-  typography: {
-    margin: 'auto'
+  version: {
+    marginBottom: '0.8rem'
+  },
+  gridItem: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  icon: {
+    marginRight: '0.625rem'
   }
 });
 
@@ -80,8 +87,11 @@ const ClusterServicesSection = () => {
   const classes = useStyles();
 
   const { currentCluster } = useSelector(state => state.cluster);
-
   const { services = [], serviceCount = 0 } = currentCluster;
+
+  const { isProcessing } = useSelector(state => state.service);
+
+  const history = useHistory();
 
   return (
     <Section
@@ -89,19 +99,35 @@ const ClusterServicesSection = () => {
       subtitle={serviceCount ? <Subtitle serviceCount={serviceCount} /> : null}
       headerOptions={<HeaderOptions />}
     >
-      <Grid className={classes.grid} container spacing={1}>
-        {services.length ? (
-          <Grid container justify='center' spacing={3}>
-            {services.map(({ id, ...rest }) => (
-              <Grid key={id || services.length} item>
-                <ServiceCard id={id} {...rest} variant='small' />
-              </Grid>
-            ))}
-          </Grid>
-        ) : (
-          <Typography className={classes.typography}>
-            No services found
-          </Typography>
+      <Grid container justify='center' spacing={3}>
+        {services.map(
+          ({ id, name, version, memberCount, repositoryCount, ...rest }) => (
+            <Grid key={id} item>
+              <BaseCard
+                title={name}
+                isProcessing={isProcessing}
+                handleClick={() =>
+                  history.push(`${ROUTE_PATHS.SERVICES}/${id}`)
+                }
+                {...rest}
+              >
+                <Typography className={classes.version} color='primary'>
+                  {version && `v${version}`}
+                </Typography>
+                <Grid container spacing={1}>
+                  <Grid item xs={6} className={classes.gridItem}>
+                    <People className={classes.icon} color='primary' />
+                    {memberCount} member{memberCount > 1 && 's'}
+                  </Grid>
+                  <Grid item xs={6} className={classes.gridItem}>
+                    <Kitchen className={classes.icon} color='primary' />
+                    {repositoryCount} repositor
+                    {repositoryCount > 1 ? 'ies' : 'y'}
+                  </Grid>
+                </Grid>
+              </BaseCard>
+            </Grid>
+          )
         )}
       </Grid>
     </Section>

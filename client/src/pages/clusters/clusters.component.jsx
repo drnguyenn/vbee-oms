@@ -1,16 +1,19 @@
 import { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Grid, Tooltip, Fab, makeStyles } from '@material-ui/core';
-import { Add } from '@material-ui/icons';
+import { Add, People, Storage, Web } from '@material-ui/icons';
 
-import { fetchAllClustersStart } from '../../redux/cluster/cluster.actions';
-import { setClusterCreationModalOpen } from '../../redux/modal/modal.actions';
+import { fetchAllClustersStart } from 'redux/cluster/cluster.actions';
+import { setClusterCreationModalOpen } from 'redux/modal/modal.actions';
 
-import BasePage from '../base/base.component';
+import BasePage from 'pages/base/base.component';
 
-import Spinner from '../../components/spinner/spinner.component';
-import ClusterCard from '../../components/cluster-card/cluster-card.component';
+import Spinner from 'components/spinner/spinner.component';
+import BaseCard from 'components/base-card/base-card.component';
+
+import ROUTE_PATHS from 'router/route-paths';
 
 const useStyles = makeStyles(theme => ({
   fab: {
@@ -19,13 +22,24 @@ const useStyles = makeStyles(theme => ({
     right: theme.spacing(8),
     width: 70,
     height: 70
+  },
+  gridItem: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  icon: {
+    marginRight: '0.625rem'
   }
 }));
 
 const ClustersPage = () => {
   const classes = useStyles();
 
-  const { clusters, isFetchingClusters } = useSelector(state => state.cluster);
+  const { clusters, isFetchingClusters, isProcessing } = useSelector(
+    state => state.cluster
+  );
+
+  const history = useHistory();
 
   const dispatch = useDispatch();
 
@@ -48,11 +62,35 @@ const ClustersPage = () => {
     >
       <Grid container spacing={1}>
         <Grid container justify='center' spacing={3}>
-          {clusters.map(({ id, ...rest }) => (
-            <Grid key={id || clusters.length} item>
-              <ClusterCard id={id} {...rest} />
-            </Grid>
-          ))}
+          {clusters.map(
+            ({ id, name, memberCount, serviceCount, serverCount, ...rest }) => (
+              <Grid key={id} item>
+                <BaseCard
+                  title={name}
+                  isProcessing={isProcessing}
+                  handleClick={() =>
+                    history.push(`${ROUTE_PATHS.CLUSTERS}/${id}`)
+                  }
+                  {...rest}
+                >
+                  <Grid container spacing={1}>
+                    <Grid item xs={6} className={classes.gridItem}>
+                      <People className={classes.icon} color='primary' />
+                      {memberCount} member{memberCount > 1 && 's'}
+                    </Grid>
+                    <Grid item xs={6} className={classes.gridItem}>
+                      <Storage className={classes.icon} color='primary' />
+                      {serverCount} server{serverCount > 1 && 's'}
+                    </Grid>
+                    <Grid item xs={6} className={classes.gridItem}>
+                      <Web className={classes.icon} color='primary' />
+                      {serviceCount} service{serviceCount > 1 && 's'}
+                    </Grid>
+                  </Grid>
+                </BaseCard>
+              </Grid>
+            )
+          )}
         </Grid>
       </Grid>
 
