@@ -16,8 +16,8 @@ import {
 import { GroupAdd, MoreVert, Close, Check } from '@material-ui/icons';
 
 import {
-  toggleServiceMemberAdditionModal,
-  toggleServiceMemberRemoveConfirmationModal
+  setServiceMemberAdditionModalOpen,
+  setServiceMemberRemoveConfirmationModalOpen
 } from '../../redux/modal/modal.actions';
 import {
   setCurrentServiceMember,
@@ -62,7 +62,7 @@ const CustomToolbar = () => {
   const dispatch = useDispatch();
 
   const handleAddMemberClick = () =>
-    dispatch(toggleServiceMemberAdditionModal());
+    dispatch(setServiceMemberAdditionModalOpen(true));
 
   return isAddingMembers ? (
     <Tooltip title='Processing...'>
@@ -276,7 +276,7 @@ const ServiceMembersSection = () => {
               })
             );
 
-            dispatch(toggleServiceMemberRemoveConfirmationModal());
+            dispatch(setServiceMemberRemoveConfirmationModalOpen(true));
 
             handleClose();
           }

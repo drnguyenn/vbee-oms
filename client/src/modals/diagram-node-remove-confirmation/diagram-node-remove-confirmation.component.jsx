@@ -9,7 +9,7 @@ import {
   Button
 } from '@material-ui/core';
 
-import { toggleDiagramNodeRemoveConfirmationModal } from '../../redux/modal/modal.actions';
+import { setDiagramNodeRemoveConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { removeClusterDiagramNodeStart } from '../../redux/diagram/diagram.actions';
 
 import { removeElementsChanges } from '../../utils/diagram.utils';
@@ -26,7 +26,7 @@ const DiagramNodeRemoveConfirmationModal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () =>
-    dispatch(toggleDiagramNodeRemoveConfirmationModal());
+    dispatch(setDiagramNodeRemoveConfirmationModalOpen(false));
 
   const handleSubmit = async event => {
     event.preventDefault();

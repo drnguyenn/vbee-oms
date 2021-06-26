@@ -14,12 +14,12 @@ import {
   TextField
 } from '@material-ui/core';
 
-import { toggleServiceCreationModal } from '../../redux/modal/modal.actions';
+import { setServiceCreationModalOpen } from '../../redux/modal/modal.actions';
 import { createServiceStart } from '../../redux/service/service.actions';
 import { fetchAllClustersStart } from '../../redux/cluster/cluster.actions';
 
 const ServiceCreationModal = () => {
-  const { currentCluster } = useSelector(state => state.cluster);
+  const { currentCluster, clusters } = useSelector(state => state.cluster);
 
   const [serviceInfo, setServiceInfo] = useState({
     name: '',
@@ -27,14 +27,11 @@ const ServiceCreationModal = () => {
     clusterId: '',
     version: '1.0.0'
   });
-
   const { name, description, clusterId, version } = serviceInfo;
 
   const { openServiceCreationModal } = useSelector(state => state.modal);
 
   const { isProcessing } = useSelector(state => state.service);
-
-  const { clusters } = useSelector(state => state.cluster);
 
   const dispatch = useDispatch();
 
@@ -47,7 +44,7 @@ const ServiceCreationModal = () => {
       }));
   }, [clusters.length, currentCluster, dispatch]);
 
-  const handleClose = () => dispatch(toggleServiceCreationModal());
+  const handleClose = () => dispatch(setServiceCreationModalOpen(false));
 
   const handleChange = event => {
     const { name: elementName, value } = event.target;

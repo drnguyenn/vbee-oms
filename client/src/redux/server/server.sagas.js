@@ -7,10 +7,12 @@ import {
   fetchServerFailure,
   createServerSuccess,
   createServerFailure,
-  updateServerInfoSuccess,
-  updateServerInfoFailure,
+  updateServerSuccess,
+  updateServerFailure,
   deleteServerSuccess,
   deleteServerFailure,
+  fetchServersMetricsSuccess,
+  fetchServersMetricsFailure,
   getAllServerDomainsSslStatusSuccess,
   getAllServerDomainsSslStatusFailure,
   addServerDomainSuccess,
@@ -25,11 +27,11 @@ import {
 } from './server.actions';
 import { notify } from '../notification/notification.actions';
 import {
-  toggleServerCreationModal,
-  toggleServerDeleteConfirmationModal,
-  toggleServerDomainAdditionModal,
-  toggleServerDomainUpdateModal,
-  toggleServerDomainRemoveConfirmationModal
+  setServerCreationModalOpen,
+  setServerDeleteConfirmationModalOpen,
+  setServerDomainAdditionModalOpen,
+  setServerDomainUpdateModalOpen,
+  setServerDomainRemoveConfirmationModalOpen
 } from '../modal/modal.actions';
 
 import * as ServerService from '../../services/server.service';
@@ -64,21 +66,21 @@ function* createServer({ payload }) {
 
     yield put(createServerSuccess(server));
     yield put(notify('Server created', { variant: 'success' }));
-    yield put(toggleServerCreationModal());
+    yield put(setServerCreationModalOpen(false));
   } catch (error) {
     yield put(createServerFailure(error));
     yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
-function* updateServerInfoStart({ payload: { id, data } }) {
+function* updateServerStart({ payload: { id, data } }) {
   try {
     const server = yield call(ServerService.updateServer, id, data);
 
-    yield put(updateServerInfoSuccess(server));
+    yield put(updateServerSuccess(server));
     yield put(notify('Changes saved', { variant: 'success' }));
   } catch (error) {
-    yield put(updateServerInfoFailure(error));
+    yield put(updateServerFailure(error));
     yield put(notify(error.message, { variant: 'error' }));
   }
 }
@@ -89,11 +91,22 @@ function* deleteServer({ payload }) {
 
     yield put(deleteServerSuccess(server));
     yield put(notify('Server deleted', { variant: 'success' }));
-    yield put(toggleServerDeleteConfirmationModal());
+    yield put(setServerDeleteConfirmationModalOpen(false));
   } catch (error) {
     yield put(deleteServerFailure(error));
     yield put(notify(error.message, { variant: 'error' }));
-    yield put(toggleServerDeleteConfirmationModal());
+    yield put(setServerDeleteConfirmationModalOpen(false));
+  }
+}
+
+function* fetchServersMetrics({ payload }) {
+  try {
+    const metrics = yield call(ServerService.fetchMetrics, payload);
+
+    yield put(fetchServersMetricsSuccess(metrics));
+  } catch (error) {
+    yield put(fetchServersMetricsFailure(error));
+    yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
@@ -117,7 +130,7 @@ function* addDomain({ payload: { serverId, domains } }) {
 
     yield put(addServerDomainSuccess(newDomains));
     yield put(notify('Domains added', { variant: 'success' }));
-    yield put(toggleServerDomainAdditionModal());
+    yield put(setServerDomainAdditionModalOpen(false));
 
     yield put(getDomainsSslStatusStart(newDomains.map(({ value }) => value)));
   } catch (error) {
@@ -132,7 +145,7 @@ function* updateDomain({ payload: { domainId, data } }) {
 
     yield put(updateServerDomainSuccess(domain));
     yield put(notify('Domains updated', { variant: 'success' }));
-    yield put(toggleServerDomainUpdateModal());
+    yield put(setServerDomainUpdateModalOpen(false));
 
     yield put(getDomainsSslStatusStart([domain.value]));
   } catch (error) {
@@ -143,7 +156,7 @@ function* updateDomain({ payload: { domainId, data } }) {
 
 function* removeDomain({ payload }) {
   try {
-    yield put(toggleServerDomainRemoveConfirmationModal());
+    yield put(setServerDomainRemoveConfirmationModalOpen(false));
 
     const domain = yield call(ServerService.removeDomain, payload);
 
@@ -180,15 +193,19 @@ function* onCreateServerStart() {
   yield takeLatest(ServerActionTypes.CREATE_SERVER_START, createServer);
 }
 
-function* onUpdateServerInfoStart() {
-  yield takeLatest(
-    ServerActionTypes.UPDATE_SERVER_INFO_START,
-    updateServerInfoStart
-  );
+function* onUpdateServerStart() {
+  yield takeLatest(ServerActionTypes.UPDATE_SERVER_START, updateServerStart);
 }
 
 function* onDeleteServerStart() {
   yield takeLatest(ServerActionTypes.DELETE_SERVER_START, deleteServer);
+}
+
+function* onFetchServersMetricsStart() {
+  yield takeLatest(
+    ServerActionTypes.FETCH_SERVERS_METRICS_START,
+    fetchServersMetrics
+  );
 }
 
 function* onGetAllServerDomainsSslStatus() {
@@ -222,8 +239,9 @@ export default function* serverSagas() {
     call(onFetchAllServersStart),
     call(onFetchServerStart),
     call(onCreateServerStart),
-    call(onUpdateServerInfoStart),
+    call(onUpdateServerStart),
     call(onDeleteServerStart),
+    call(onFetchServersMetricsStart),
     call(onGetAllServerDomainsSslStatus),
     call(onAddDomainStart),
     call(onUpdateDomainStart),

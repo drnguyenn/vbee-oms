@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import { AccountTree, Add } from '@material-ui/icons';
 
-import { toggleServiceCreationModal } from '../../redux/modal/modal.actions';
+import { setServiceCreationModalOpen } from '../../redux/modal/modal.actions';
 
 import Section from '../section/section.component';
 import ServiceCard from '../service-card/service-card.component';
@@ -41,7 +41,8 @@ const HeaderOptions = () => {
 
   const dispatch = useDispatch();
 
-  const handleAddServiceClick = () => dispatch(toggleServiceCreationModal());
+  const handleAddServiceClick = () =>
+    dispatch(setServiceCreationModalOpen(true));
 
   const handleDiagramClick = () =>
     history.push(`${ROUTE_PATHS.CLUSTERS}/${id}/architecture`);

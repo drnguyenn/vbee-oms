@@ -9,7 +9,7 @@ import {
   Button
 } from '@material-ui/core';
 
-import { toggleClusterMemberRemoveConfirmationModal } from '../../redux/modal/modal.actions';
+import { setClusterMemberRemoveConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { removeClusterMemberStart } from '../../redux/cluster/cluster.actions';
 
 const ClusterMemberRemoveConfirmationModal = () => {
@@ -24,7 +24,7 @@ const ClusterMemberRemoveConfirmationModal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () =>
-    dispatch(toggleClusterMemberRemoveConfirmationModal());
+    dispatch(setClusterMemberRemoveConfirmationModalOpen(false));
 
   const handleSubmit = async event => {
     event.preventDefault();

@@ -14,83 +14,99 @@ const INITIAL_STATE = {
   openServiceMemberRemoveConfirmationModal: false,
 
   openClusterDiagramNodeRemoveConfirmationModal: false,
-  openClusterDiagramElementsRemoveConfirmationModal: false
+  openClusterDiagramElementsRemoveConfirmationModal: false,
+
+  openServerDomainAdditionModal: false,
+  openServerDomainUpdateModal: false,
+  openServerDomainRemoveConfirmationModal: false
 };
 
 const modalReducer = (state = INITIAL_STATE, action) => {
-  const { type } = action;
+  const { type, payload } = action;
 
   switch (type) {
-    case ModalActionTypes.TOGGLE_PREFERENCES_MODAL:
+    case ModalActionTypes.SET_PREFERENCES_MODAL_OPEN:
       return {
         ...state,
-        openPreferencesModal: !state.openPreferencesModal
+        openPreferencesModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_CLUSTER_CREATION_MODAL:
+    case ModalActionTypes.SET_CLUSTER_CREATION_MODAL_OPEN:
       return {
         ...state,
-        openClusterCreationModal: !state.openClusterCreationModal
+        openClusterCreationModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_CLUSTER_DELETE_CONFIRMATION_MODAL:
+    case ModalActionTypes.SET_CLUSTER_DELETE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openClusterDeleteConfirmationModal:
-          !state.openClusterDeleteConfirmationModal
+        openClusterDeleteConfirmationModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_CLUSTER_MEMBER_ADDITION_MODAL:
+    case ModalActionTypes.SET_CLUSTER_MEMBER_ADDITION_MODAL_OPEN:
       return {
         ...state,
-        openClusterMemberAdditionModal: !state.openClusterMemberAdditionModal
+        openClusterMemberAdditionModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_CLUSTER_MEMBER_REMOVE_CONFIRMATION_MODAL:
+    case ModalActionTypes.SET_CLUSTER_MEMBER_REMOVE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openClusterMemberRemoveConfirmationModal:
-          !state.openClusterMemberRemoveConfirmationModal
+        openClusterMemberRemoveConfirmationModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_SERVICE_CREATION_MODAL:
+    case ModalActionTypes.SET_SERVICE_CREATION_MODAL_OPEN:
       return {
         ...state,
-        openServiceCreationModal: !state.openServiceCreationModal
+        openServiceCreationModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_SERVICE_DELETE_CONFIRMATION_MODAL:
+    case ModalActionTypes.SET_SERVICE_DELETE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openServiceDeleteConfirmationModal:
-          !state.openServiceDeleteConfirmationModal
+        openServiceDeleteConfirmationModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_SERVICE_MEMBER_ADDITION_MODAL:
+    case ModalActionTypes.SET_SERVICE_MEMBER_ADDITION_MODAL_OPEN:
       return {
         ...state,
-        openServiceMemberAdditionModal: !state.openServiceMemberAdditionModal
+        openServiceMemberAdditionModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_SERVICE_MEMBER_REMOVE_CONFIRMATION_MODAL:
+    case ModalActionTypes.SET_SERVICE_MEMBER_REMOVE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openServiceMemberRemoveConfirmationModal:
-          !state.openServiceMemberRemoveConfirmationModal
+        openServiceMemberRemoveConfirmationModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_CLUSTER_DIAGRAM_NODE_REMOVE_CONFIRMATION_MODAL:
+    case ModalActionTypes.SET_CLUSTER_DIAGRAM_NODE_REMOVE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openClusterDiagramNodeRemoveConfirmationModal:
-          !state.openClusterDiagramNodeRemoveConfirmationModal
+        openClusterDiagramNodeRemoveConfirmationModal: payload
       };
 
-    case ModalActionTypes.TOGGLE_CLUSTER_DIAGRAM_ELEMENTS_REMOVE_CONFIRMATION_MODAL:
+    case ModalActionTypes.SET_CLUSTER_DIAGRAM_ELEMENTS_REMOVE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openClusterDiagramElementsRemoveConfirmationModal:
-          !state.openClusterDiagramElementsRemoveConfirmationModal
+        openClusterDiagramElementsRemoveConfirmationModal: payload
+      };
+
+    case ModalActionTypes.SET_SERVER_DOMAIN_ADDITION_MODAL_OPEN:
+      return {
+        ...state,
+        openServerDomainAdditionModal: payload
+      };
+
+    case ModalActionTypes.SET_SERVER_DOMAIN_UPDATE_MODAL_OPEN:
+      return {
+        ...state,
+        openServerDomainUpdateModal: payload
+      };
+
+    case ModalActionTypes.SET_SERVER_DOMAIN_REMOVE_CONFIRMATION_MODAL_OPEN:
+      return {
+        ...state,
+        openServerDomainRemoveConfirmationModal: payload
       };
 
     default:

@@ -9,7 +9,7 @@ import {
   Button
 } from '@material-ui/core';
 
-import { toggleServerDomainRemoveConfirmationModal } from '../../redux/modal/modal.actions';
+import { setServerDomainRemoveConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { removeServerDomainStart } from '../../redux/server/server.actions';
 
 const ServerDomainRemoveConfirmationModal = () => {
@@ -24,7 +24,7 @@ const ServerDomainRemoveConfirmationModal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () =>
-    dispatch(toggleServerDomainRemoveConfirmationModal());
+    dispatch(setServerDomainRemoveConfirmationModalOpen(false));
 
   const handleSubmit = async event => {
     event.preventDefault();

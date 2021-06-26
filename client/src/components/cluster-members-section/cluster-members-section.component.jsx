@@ -16,8 +16,8 @@ import {
 import { GroupAdd, MoreVert, Close, Check } from '@material-ui/icons';
 
 import {
-  toggleClusterMemberAdditionModal,
-  toggleClusterMemberRemoveConfirmationModal
+  setClusterMemberAdditionModalOpen,
+  setClusterMemberRemoveConfirmationModalOpen
 } from '../../redux/modal/modal.actions';
 import {
   setCurrentClusterMember,
@@ -62,7 +62,7 @@ const CustomToolbar = () => {
   const dispatch = useDispatch();
 
   const handleAddMemberClick = () =>
-    dispatch(toggleClusterMemberAdditionModal());
+    dispatch(setClusterMemberAdditionModalOpen(true));
 
   return isAddingMembers ? (
     <Tooltip title='Processing...'>
@@ -276,7 +276,7 @@ const ClusterMembersSection = () => {
               })
             );
 
-            dispatch(toggleClusterMemberRemoveConfirmationModal());
+            dispatch(setClusterMemberRemoveConfirmationModalOpen(true));
 
             handleClose();
           }

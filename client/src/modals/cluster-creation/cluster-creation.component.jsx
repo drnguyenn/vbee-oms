@@ -10,7 +10,7 @@ import {
   Button
 } from '@material-ui/core';
 
-import { toggleClusterCreationModal } from '../../redux/modal/modal.actions';
+import { setClusterCreationModalOpen } from '../../redux/modal/modal.actions';
 import { createClusterStart } from '../../redux/cluster/cluster.actions';
 
 const ClusterCreationModal = () => {
@@ -26,7 +26,7 @@ const ClusterCreationModal = () => {
 
   const dispatch = useDispatch();
 
-  const handleClose = () => dispatch(toggleClusterCreationModal());
+  const handleClose = () => dispatch(setClusterCreationModalOpen(false));
 
   const handleChange = event => {
     const { name: elementName, value } = event.target;

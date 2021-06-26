@@ -27,12 +27,12 @@ import {
   fetchServerStart,
   getAllServerDomainsSslStatusStart,
   setCurrentServerDomain,
-  updateServerInfoStart
+  updateServerStart
 } from '../../redux/server/server.actions';
 import {
-  toggleServerDomainAdditionModal,
-  toggleServerDomainRemoveConfirmationModal,
-  toggleServerDomainUpdateModal
+  setServerDomainAdditionModalOpen,
+  setServerDomainRemoveConfirmationModalOpen,
+  setServerDomainUpdateModalOpen
 } from '../../redux/modal/modal.actions';
 
 import Spinner from '../spinner/spinner.component';
@@ -105,7 +105,7 @@ const CustomToolbar = () => {
     dispatch(getAllServerDomainsSslStatusStart(currentServer.id));
 
   const handleAddDomainClick = () =>
-    dispatch(toggleServerDomainAdditionModal());
+    dispatch(setServerDomainAdditionModalOpen(true));
 
   return (
     <>
@@ -256,7 +256,7 @@ const ServiceServerSection = () => {
     async event => {
       event.preventDefault();
 
-      dispatch(updateServerInfoStart(currentServer.id, serverInfo));
+      dispatch(updateServerStart(currentServer.id, serverInfo));
 
       setEditMode(false);
     },
@@ -443,7 +443,7 @@ const ServiceServerSection = () => {
                 value: targetRow[1]
               })
             );
-            dispatch(toggleServerDomainUpdateModal());
+            dispatch(setServerDomainUpdateModalOpen(true));
 
             handleClose();
           },
@@ -455,7 +455,7 @@ const ServiceServerSection = () => {
               })
             );
 
-            dispatch(toggleServerDomainRemoveConfirmationModal());
+            dispatch(setServerDomainRemoveConfirmationModalOpen(true));
 
             handleClose();
           }

@@ -13,7 +13,7 @@ import {
   makeStyles
 } from '@material-ui/core';
 
-import { togglePreferencesModal } from '../../redux/modal/modal.actions';
+import { setPreferencesModalOpen } from '../../redux/modal/modal.actions';
 import { switchTheme } from '../../redux/theme/theme.actions';
 
 import themes from '../../themes';
@@ -34,7 +34,7 @@ const PreferencesModal = () => {
 
   const dispatch = useDispatch();
 
-  const handleClose = () => dispatch(togglePreferencesModal());
+  const handleClose = () => dispatch(setPreferencesModalOpen(false));
 
   const handleChange = event => {
     setValue(event.target.value);

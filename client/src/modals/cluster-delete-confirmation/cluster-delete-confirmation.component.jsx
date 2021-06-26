@@ -16,7 +16,7 @@ import {
   makeStyles
 } from '@material-ui/core';
 
-import { toggleClusterDeleteConfirmationModal } from '../../redux/modal/modal.actions';
+import { setClusterDeleteConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { deleteClusterStart } from '../../redux/cluster/cluster.actions';
 
 import Spinner from '../../components/spinner/spinner.component';
@@ -65,7 +65,8 @@ const ClusterDeleteConfirmationModal = () => {
     if (!currentCluster) history.push(ROUTE_PATHS.CLUSTERS);
   }, [currentCluster, history]);
 
-  const handleClose = () => dispatch(toggleClusterDeleteConfirmationModal());
+  const handleClose = () =>
+    dispatch(setClusterDeleteConfirmationModalOpen(false));
 
   const handleCheck = event => {
     const { name: checkboxName, checked } = event.target;

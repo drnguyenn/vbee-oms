@@ -9,7 +9,7 @@ import {
   Button
 } from '@material-ui/core';
 
-import { toggleServiceMemberRemoveConfirmationModal } from '../../redux/modal/modal.actions';
+import { setServiceMemberRemoveConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { removeServiceMemberStart } from '../../redux/service/service.actions';
 
 const ServiceMemberRemoveConfirmationModal = () => {
@@ -24,7 +24,7 @@ const ServiceMemberRemoveConfirmationModal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () =>
-    dispatch(toggleServiceMemberRemoveConfirmationModal());
+    dispatch(setServiceMemberRemoveConfirmationModalOpen(false));
 
   const handleSubmit = async event => {
     event.preventDefault();

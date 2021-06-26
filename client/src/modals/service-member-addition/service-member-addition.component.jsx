@@ -24,7 +24,7 @@ import { Autocomplete } from '@material-ui/lab';
 
 import { searchUsers } from '../../services/user.service';
 
-import { toggleServiceMemberAdditionModal } from '../../redux/modal/modal.actions';
+import { setServiceMemberAdditionModalOpen } from '../../redux/modal/modal.actions';
 import { addServiceMemberStart } from '../../redux/service/service.actions';
 
 import { DEBOUNCE_SEARCH_WAIT_TIME } from '../../constants';
@@ -61,7 +61,7 @@ const ServiceMemberAdditionModal = () => {
 
   const dispatch = useDispatch();
 
-  const handleClose = () => dispatch(toggleServiceMemberAdditionModal());
+  const handleClose = () => dispatch(setServiceMemberAdditionModalOpen(false));
 
   const handleChange = event => {
     setRole(event.target.value);

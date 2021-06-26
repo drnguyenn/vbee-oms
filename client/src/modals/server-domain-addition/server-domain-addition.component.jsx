@@ -20,7 +20,7 @@ import {
 } from '@material-ui/core';
 import { Add, Remove } from '@material-ui/icons';
 
-import { toggleServerDomainAdditionModal } from '../../redux/modal/modal.actions';
+import { setServerDomainAdditionModalOpen } from '../../redux/modal/modal.actions';
 import { addServerDomainStart } from '../../redux/server/server.actions';
 
 const useStyles = makeStyles({
@@ -40,7 +40,7 @@ const ServerDomainAdditionModal = () => {
 
   const dispatch = useDispatch();
 
-  const handleClose = () => dispatch(toggleServerDomainAdditionModal());
+  const handleClose = () => dispatch(setServerDomainAdditionModalOpen(false));
 
   const handleDomainsChange = event => {
     const { name, value } = event.target;

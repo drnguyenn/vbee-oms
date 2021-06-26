@@ -16,7 +16,7 @@ import {
   makeStyles
 } from '@material-ui/core';
 
-import { toggleServiceDeleteConfirmationModal } from '../../redux/modal/modal.actions';
+import { setServiceDeleteConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { deleteServiceStart } from '../../redux/service/service.actions';
 
 import Spinner from '../../components/spinner/spinner.component';
@@ -65,7 +65,8 @@ const ServiceDeleteConfirmationModal = () => {
     if (!currentService) history.push(ROUTE_PATHS.SERVICES);
   }, [currentService, history]);
 
-  const handleClose = () => dispatch(toggleServiceDeleteConfirmationModal());
+  const handleClose = () =>
+    dispatch(setServiceDeleteConfirmationModalOpen(false));
 
   const handleCheck = event => {
     const { name: checkboxName, checked } = event.target;

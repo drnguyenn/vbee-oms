@@ -10,7 +10,7 @@ import {
   DialogActions
 } from '@material-ui/core';
 
-import { toggleServerDomainUpdateModal } from '../../redux/modal/modal.actions';
+import { setServerDomainUpdateModalOpen } from '../../redux/modal/modal.actions';
 
 import { updateServerDomainStart } from '../../redux/server/server.actions';
 
@@ -25,7 +25,7 @@ const ServerDomainUpdateModal = () => {
 
   const dispatch = useDispatch();
 
-  const handleClose = () => dispatch(toggleServerDomainUpdateModal());
+  const handleClose = () => dispatch(setServerDomainUpdateModalOpen(false));
 
   const handleChange = event => setValue(event.target.value);
 

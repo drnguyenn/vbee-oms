@@ -5,7 +5,7 @@ import { Grid, Tooltip, Fab, makeStyles } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 
 import { fetchAllServicesStart } from '../../redux/service/service.actions';
-import { toggleServiceCreationModal } from '../../redux/modal/modal.actions';
+import { setServiceCreationModalOpen } from '../../redux/modal/modal.actions';
 
 import BasePage from '../base/base.component';
 
@@ -34,7 +34,7 @@ const ServicesPage = () => {
   }, [dispatch]);
 
   const handleAddButtonClick = () => {
-    dispatch(toggleServiceCreationModal());
+    dispatch(setServiceCreationModalOpen(true));
   };
 
   return isFetchingServices ? (

@@ -5,7 +5,7 @@ import { Grid, Tooltip, Fab, makeStyles } from '@material-ui/core';
 import { Add } from '@material-ui/icons';
 
 import { fetchAllClustersStart } from '../../redux/cluster/cluster.actions';
-import { toggleClusterCreationModal } from '../../redux/modal/modal.actions';
+import { setClusterCreationModalOpen } from '../../redux/modal/modal.actions';
 
 import BasePage from '../base/base.component';
 
@@ -34,7 +34,7 @@ const ClustersPage = () => {
   }, [dispatch]);
 
   const handleAddButtonClick = () => {
-    dispatch(toggleClusterCreationModal());
+    dispatch(setClusterCreationModalOpen(true));
   };
 
   return isFetchingClusters ? (

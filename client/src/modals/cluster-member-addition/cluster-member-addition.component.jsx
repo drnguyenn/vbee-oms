@@ -24,7 +24,7 @@ import { Autocomplete } from '@material-ui/lab';
 
 import { searchUsers } from '../../services/user.service';
 
-import { toggleClusterMemberAdditionModal } from '../../redux/modal/modal.actions';
+import { setClusterMemberAdditionModalOpen } from '../../redux/modal/modal.actions';
 import { addClusterMemberStart } from '../../redux/cluster/cluster.actions';
 
 import { DEBOUNCE_SEARCH_WAIT_TIME } from '../../constants';
@@ -61,7 +61,7 @@ const ClusterMemberAdditionModal = () => {
 
   const dispatch = useDispatch();
 
-  const handleClose = () => dispatch(toggleClusterMemberAdditionModal());
+  const handleClose = () => dispatch(setClusterMemberAdditionModalOpen(false));
 
   const handleChange = event => {
     setRole(event.target.value);

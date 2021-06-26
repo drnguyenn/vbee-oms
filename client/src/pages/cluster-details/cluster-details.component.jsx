@@ -6,7 +6,7 @@ import { Button, makeStyles } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 
 import { fetchClusterStart } from '../../redux/cluster/cluster.actions';
-import { toggleClusterDeleteConfirmationModal } from '../../redux/modal/modal.actions';
+import { setClusterDeleteConfirmationModalOpen } from '../../redux/modal/modal.actions';
 
 import ROUTE_PATHS from '../../router/route-paths';
 
@@ -51,7 +51,7 @@ const ClusterDetailsPage = () => {
   }, [error, history]);
 
   const handleDeleteButtonClick = () =>
-    dispatch(toggleClusterDeleteConfirmationModal());
+    dispatch(setClusterDeleteConfirmationModalOpen(true));
 
   const handleHeaderButtonClick = () => history.push(ROUTE_PATHS.CLUSTERS);
 

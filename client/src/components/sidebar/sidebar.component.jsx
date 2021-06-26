@@ -13,7 +13,7 @@ import {
   Settings
 } from '@material-ui/icons';
 
-import { togglePreferencesModal } from '../../redux/modal/modal.actions';
+import { setPreferencesModalOpen } from '../../redux/modal/modal.actions';
 
 import {
   CustomToggleButtonGroup,
@@ -70,7 +70,7 @@ const Sidebar = () => {
     }
   };
 
-  const handleClick = () => dispatch(togglePreferencesModal());
+  const handleClick = () => dispatch(setPreferencesModalOpen(true));
 
   return (
     <SidebarStyles theme={type}>

@@ -6,7 +6,7 @@ import { Button, makeStyles } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 
 import { fetchServiceStart } from '../../redux/service/service.actions';
-import { toggleServiceDeleteConfirmationModal } from '../../redux/modal/modal.actions';
+import { setServiceDeleteConfirmationModalOpen } from '../../redux/modal/modal.actions';
 
 import ROUTE_PATHS from '../../router/route-paths';
 
@@ -48,7 +48,7 @@ const ServiceDetailsPage = () => {
   }, [error, history]);
 
   const handleDeleteButtonClick = () =>
-    dispatch(toggleServiceDeleteConfirmationModal());
+    dispatch(setServiceDeleteConfirmationModalOpen(true));
 
   const handleHeaderButtonClick = () => history.push(ROUTE_PATHS.SERVICES);
 

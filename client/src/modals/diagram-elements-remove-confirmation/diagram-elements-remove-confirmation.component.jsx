@@ -9,7 +9,7 @@ import {
   Typography
 } from '@material-ui/core';
 
-import { toggleDiagramElementsRemoveConfirmationModal } from '../../redux/modal/modal.actions';
+import { setDiagramElementsRemoveConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { removeClusterDiagramElementsStart } from '../../redux/diagram/diagram.actions';
 
 import { removeElementsChanges } from '../../utils/diagram.utils';
@@ -27,7 +27,7 @@ const DiagramElementsRemoveConfirmationModal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () =>
-    dispatch(toggleDiagramElementsRemoveConfirmationModal());
+    dispatch(setDiagramElementsRemoveConfirmationModalOpen(false));
 
   const handleSubmit = async event => {
     event.preventDefault();
