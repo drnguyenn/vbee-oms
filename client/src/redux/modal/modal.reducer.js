@@ -6,19 +6,19 @@ const INITIAL_STATE = {
   openClusterCreationModal: false,
   openClusterDeleteConfirmationModal: false,
   openClusterMemberAdditionModal: false,
-  openClusterMemberRemoveConfirmationModal: false,
+  openClusterMemberRemovalConfirmationModal: false,
 
   openServiceCreationModal: false,
   openServiceDeleteConfirmationModal: false,
   openServiceMemberAdditionModal: false,
-  openServiceMemberRemoveConfirmationModal: false,
+  openServiceMemberRemovalConfirmationModal: false,
 
-  openClusterDiagramNodeRemoveConfirmationModal: false,
-  openClusterDiagramElementsRemoveConfirmationModal: false,
+  openClusterDiagramNodeRemovalConfirmationModal: false,
+  openClusterDiagramElementsRemovalConfirmationModal: false,
 
   openServerDomainAdditionModal: false,
   openServerDomainUpdateModal: false,
-  openServerDomainRemoveConfirmationModal: false
+  openServerDomainRemovalConfirmationModal: false
 };
 
 const modalReducer = (state = INITIAL_STATE, action) => {
@@ -52,7 +52,7 @@ const modalReducer = (state = INITIAL_STATE, action) => {
     case ModalActionTypes.SET_CLUSTER_MEMBER_REMOVE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openClusterMemberRemoveConfirmationModal: payload
+        openClusterMemberRemovalConfirmationModal: payload
       };
 
     case ModalActionTypes.SET_SERVICE_CREATION_MODAL_OPEN:
@@ -76,19 +76,19 @@ const modalReducer = (state = INITIAL_STATE, action) => {
     case ModalActionTypes.SET_SERVICE_MEMBER_REMOVE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openServiceMemberRemoveConfirmationModal: payload
+        openServiceMemberRemovalConfirmationModal: payload
       };
 
     case ModalActionTypes.SET_CLUSTER_DIAGRAM_NODE_REMOVE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openClusterDiagramNodeRemoveConfirmationModal: payload
+        openClusterDiagramNodeRemovalConfirmationModal: payload
       };
 
     case ModalActionTypes.SET_CLUSTER_DIAGRAM_ELEMENTS_REMOVE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openClusterDiagramElementsRemoveConfirmationModal: payload
+        openClusterDiagramElementsRemovalConfirmationModal: payload
       };
 
     case ModalActionTypes.SET_SERVER_DOMAIN_ADDITION_MODAL_OPEN:
@@ -106,7 +106,7 @@ const modalReducer = (state = INITIAL_STATE, action) => {
     case ModalActionTypes.SET_SERVER_DOMAIN_REMOVE_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
-        openServerDomainRemoveConfirmationModal: payload
+        openServerDomainRemovalConfirmationModal: payload
       };
 
     default:

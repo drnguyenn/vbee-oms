@@ -23,7 +23,7 @@ import {
   setServiceCreationModalOpen,
   setServiceDeleteConfirmationModalOpen,
   setServiceMemberAdditionModalOpen,
-  setServiceMemberRemoveConfirmationModalOpen
+  setServiceMemberRemovalConfirmationModalOpen
 } from '../modal/modal.actions';
 
 import * as ServiceService from '../../services/service.service';
@@ -137,7 +137,7 @@ function* updateMember({ payload: { serviceId, userId, data } }) {
 
 function* removeMember({ payload: { serviceId, userId } }) {
   try {
-    yield put(setServiceMemberRemoveConfirmationModalOpen(false));
+    yield put(setServiceMemberRemovalConfirmationModalOpen(false));
 
     const member = yield call(ServiceService.removeMember, serviceId, userId);
 

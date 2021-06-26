@@ -4,16 +4,16 @@ import PreferencesModal from './preferences/preferences.component';
 import ClusterCreationModal from './cluster-creation/cluster-creation.component';
 import ClusterDeleteConfirmationModal from './cluster-delete-confirmation/cluster-delete-confirmation.component';
 import ClusterMemberAdditionModal from './cluster-member-addition/cluster-member-addition.component';
-import ClusterMemberRemoveConfirmationModal from './cluster-member-remove-confirmation/cluster-member-remove-confirmation.component';
+import ClusterMemberRemovalConfirmationModal from './cluster-member-removal-confirmation/cluster-member-removal-confirmation.component';
 import ServiceCreationModal from './service-creation/service-creation.component';
 import ServiceDeleteConfirmationModal from './service-delete-confirmation/service-delete-confirmation.component';
 import ServiceMemberAdditionModal from './service-member-addition/service-member-addition.component';
-import ServiceMemberRemoveConfirmationModal from './service-member-remove-confirmation/service-member-remove-confirmation.component';
-import DiagramNodeRemoveConfirmationModal from './diagram-node-remove-confirmation/diagram-node-remove-confirmation.component';
-import DiagramElementsRemoveConfirmationModal from './diagram-elements-remove-confirmation/diagram-elements-remove-confirmation.component';
+import ServiceMemberRemovalConfirmationModal from './service-member-removal-confirmation/service-member-removal-confirmation.component';
+import DiagramNodeRemovalConfirmationModal from './diagram-node-removal-confirmation/diagram-node-removal-confirmation.component';
+import DiagramElementsRemovalConfirmationModal from './diagram-elements-removal-confirmation/diagram-elements-removal-confirmation.component';
 import ServerDomainAdditionModal from './server-domain-addition/server-domain-addition.component';
 import ServerDomainUpdateModal from './server-domain-update/server-domain-update.component';
-import ServerDomainRemoveConfirmationModal from './server-domain-remove-confirmation/server-domain-remove-confirmation.component';
+import ServerDomainRemovalConfirmationModal from './server-domain-removal-confirmation/server-domain-removal-confirmation.component';
 
 const ModalRegistrar = () => {
   const {
@@ -22,19 +22,19 @@ const ModalRegistrar = () => {
     openClusterCreationModal,
     openClusterDeleteConfirmationModal,
     openClusterMemberAdditionModal,
-    openClusterMemberRemoveConfirmationModal,
+    openClusterMemberRemovalConfirmationModal,
 
     openServiceCreationModal,
     openServiceDeleteConfirmationModal,
     openServiceMemberAdditionModal,
-    openServiceMemberRemoveConfirmationModal,
+    openServiceMemberRemovalConfirmationModal,
 
-    openClusterDiagramNodeRemoveConfirmationModal,
-    openClusterDiagramElementsRemoveConfirmationModal,
+    openClusterDiagramNodeRemovalConfirmationModal,
+    openClusterDiagramElementsRemovalConfirmationModal,
 
     openServerDomainAdditionModal,
     openServerDomainUpdateModal,
-    openServerDomainRemoveConfirmationModal
+    openServerDomainRemovalConfirmationModal
   } = useSelector(state => state.modal);
 
   return (
@@ -44,28 +44,28 @@ const ModalRegistrar = () => {
       {openClusterCreationModal && <ClusterCreationModal />}
       {openClusterDeleteConfirmationModal && <ClusterDeleteConfirmationModal />}
       {openClusterMemberAdditionModal && <ClusterMemberAdditionModal />}
-      {openClusterMemberRemoveConfirmationModal && (
-        <ClusterMemberRemoveConfirmationModal />
+      {openClusterMemberRemovalConfirmationModal && (
+        <ClusterMemberRemovalConfirmationModal />
       )}
 
       {openServiceCreationModal && <ServiceCreationModal />}
       {openServiceDeleteConfirmationModal && <ServiceDeleteConfirmationModal />}
       {openServiceMemberAdditionModal && <ServiceMemberAdditionModal />}
-      {openServiceMemberRemoveConfirmationModal && (
-        <ServiceMemberRemoveConfirmationModal />
+      {openServiceMemberRemovalConfirmationModal && (
+        <ServiceMemberRemovalConfirmationModal />
       )}
 
-      {openClusterDiagramNodeRemoveConfirmationModal && (
-        <DiagramNodeRemoveConfirmationModal />
+      {openClusterDiagramNodeRemovalConfirmationModal && (
+        <DiagramNodeRemovalConfirmationModal />
       )}
-      {openClusterDiagramElementsRemoveConfirmationModal && (
-        <DiagramElementsRemoveConfirmationModal />
+      {openClusterDiagramElementsRemovalConfirmationModal && (
+        <DiagramElementsRemovalConfirmationModal />
       )}
 
       {openServerDomainAdditionModal && <ServerDomainAdditionModal />}
       {openServerDomainUpdateModal && <ServerDomainUpdateModal />}
-      {openServerDomainRemoveConfirmationModal && (
-        <ServerDomainRemoveConfirmationModal />
+      {openServerDomainRemovalConfirmationModal && (
+        <ServerDomainRemovalConfirmationModal />
       )}
     </>
   );

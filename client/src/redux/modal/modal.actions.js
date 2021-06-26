@@ -20,7 +20,7 @@ export const setClusterMemberAdditionModalOpen = open => ({
   payload: open
 });
 
-export const setClusterMemberRemoveConfirmationModalOpen = open => ({
+export const setClusterMemberRemovalConfirmationModalOpen = open => ({
   type: ModalActionTypes.SET_CLUSTER_MEMBER_REMOVE_CONFIRMATION_MODAL_OPEN,
   payload: open
 });
@@ -40,17 +40,17 @@ export const setServiceMemberAdditionModalOpen = open => ({
   payload: open
 });
 
-export const setServiceMemberRemoveConfirmationModalOpen = open => ({
+export const setServiceMemberRemovalConfirmationModalOpen = open => ({
   type: ModalActionTypes.SET_SERVICE_MEMBER_REMOVE_CONFIRMATION_MODAL_OPEN,
   payload: open
 });
 
-export const setDiagramNodeRemoveConfirmationModalOpen = open => ({
+export const setDiagramNodeRemovalConfirmationModalOpen = open => ({
   type: ModalActionTypes.SET_CLUSTER_DIAGRAM_NODE_REMOVE_CONFIRMATION_MODAL_OPEN,
   payload: open
 });
 
-export const setDiagramElementsRemoveConfirmationModalOpen = open => ({
+export const setDiagramElementsRemovalConfirmationModalOpen = open => ({
   type: ModalActionTypes.SET_CLUSTER_DIAGRAM_ELEMENTS_REMOVE_CONFIRMATION_MODAL_OPEN,
   payload: open
 });
@@ -75,7 +75,7 @@ export const setServerDomainUpdateModalOpen = open => ({
   payload: open
 });
 
-export const setServerDomainRemoveConfirmationModalOpen = open => ({
+export const setServerDomainRemovalConfirmationModalOpen = open => ({
   type: ModalActionTypes.SET_SERVER_DOMAIN_REMOVE_CONFIRMATION_MODAL_OPEN,
   payload: open
 });

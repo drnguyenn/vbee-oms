@@ -9,11 +9,11 @@ import {
   Button
 } from '@material-ui/core';
 
-import { setServiceMemberRemoveConfirmationModalOpen } from '../../redux/modal/modal.actions';
+import { setServiceMemberRemovalConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { removeServiceMemberStart } from '../../redux/service/service.actions';
 
-const ServiceMemberRemoveConfirmationModal = () => {
-  const { openServiceMemberRemoveConfirmationModal } = useSelector(
+const ServiceMemberRemovalConfirmationModal = () => {
+  const { openServiceMemberRemovalConfirmationModal } = useSelector(
     state => state.modal
   );
 
@@ -24,7 +24,7 @@ const ServiceMemberRemoveConfirmationModal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () =>
-    dispatch(setServiceMemberRemoveConfirmationModalOpen(false));
+    dispatch(setServiceMemberRemovalConfirmationModalOpen(false));
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -36,7 +36,7 @@ const ServiceMemberRemoveConfirmationModal = () => {
   if (currentService && currentMember)
     return (
       <Dialog
-        open={openServiceMemberRemoveConfirmationModal}
+        open={openServiceMemberRemovalConfirmationModal}
         onClose={handleClose}
       >
         <DialogTitle>Remove member from service</DialogTitle>
@@ -73,4 +73,4 @@ const ServiceMemberRemoveConfirmationModal = () => {
   return null;
 };
 
-export default ServiceMemberRemoveConfirmationModal;
+export default ServiceMemberRemovalConfirmationModal;

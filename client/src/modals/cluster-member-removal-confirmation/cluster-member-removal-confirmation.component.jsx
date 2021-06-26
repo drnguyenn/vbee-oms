@@ -9,11 +9,11 @@ import {
   Button
 } from '@material-ui/core';
 
-import { setClusterMemberRemoveConfirmationModalOpen } from '../../redux/modal/modal.actions';
+import { setClusterMemberRemovalConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { removeClusterMemberStart } from '../../redux/cluster/cluster.actions';
 
-const ClusterMemberRemoveConfirmationModal = () => {
-  const { openClusterMemberRemoveConfirmationModal } = useSelector(
+const ClusterMemberRemovalConfirmationModal = () => {
+  const { openClusterMemberRemovalConfirmationModal } = useSelector(
     state => state.modal
   );
 
@@ -24,7 +24,7 @@ const ClusterMemberRemoveConfirmationModal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () =>
-    dispatch(setClusterMemberRemoveConfirmationModalOpen(false));
+    dispatch(setClusterMemberRemovalConfirmationModalOpen(false));
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -36,7 +36,7 @@ const ClusterMemberRemoveConfirmationModal = () => {
   if (currentCluster && currentMember)
     return (
       <Dialog
-        open={openClusterMemberRemoveConfirmationModal}
+        open={openClusterMemberRemovalConfirmationModal}
         onClose={handleClose}
       >
         <DialogTitle>Remove member from cluster</DialogTitle>
@@ -73,4 +73,4 @@ const ClusterMemberRemoveConfirmationModal = () => {
   return null;
 };
 
-export default ClusterMemberRemoveConfirmationModal;
+export default ClusterMemberRemovalConfirmationModal;

@@ -11,8 +11,8 @@ import {
   setSelectedDiagramNode
 } from '../../../../redux/diagram/diagram.actions';
 import {
-  setDiagramElementsRemoveConfirmationModalOpen,
-  setDiagramNodeRemoveConfirmationModalOpen
+  setDiagramElementsRemovalConfirmationModalOpen,
+  setDiagramNodeRemovalConfirmationModalOpen
 } from '../../../../redux/modal/modal.actions';
 
 import { removeElementsChanges } from '../../../../utils/diagram.utils';
@@ -62,7 +62,7 @@ class CustomDeleteItemsAction extends Action {
               );
 
               store.dispatch(
-                setDiagramElementsRemoveConfirmationModalOpen(true)
+                setDiagramElementsRemovalConfirmationModalOpen(true)
               );
 
               return;
@@ -87,7 +87,9 @@ class CustomDeleteItemsAction extends Action {
                   })
                 );
 
-                store.dispatch(setDiagramNodeRemoveConfirmationModalOpen(true));
+                store.dispatch(
+                  setDiagramNodeRemovalConfirmationModalOpen(true)
+                );
 
                 return;
               }

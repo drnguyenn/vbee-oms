@@ -17,7 +17,7 @@ import { GroupAdd, MoreVert, Close, Check } from '@material-ui/icons';
 
 import {
   setServiceMemberAdditionModalOpen,
-  setServiceMemberRemoveConfirmationModalOpen
+  setServiceMemberRemovalConfirmationModalOpen
 } from '../../redux/modal/modal.actions';
 import {
   setCurrentServiceMember,
@@ -276,7 +276,7 @@ const ServiceMembersSection = () => {
               })
             );
 
-            dispatch(setServiceMemberRemoveConfirmationModalOpen(true));
+            dispatch(setServiceMemberRemovalConfirmationModalOpen(true));
 
             handleClose();
           }

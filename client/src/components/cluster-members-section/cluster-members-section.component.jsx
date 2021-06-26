@@ -17,7 +17,7 @@ import { GroupAdd, MoreVert, Close, Check } from '@material-ui/icons';
 
 import {
   setClusterMemberAdditionModalOpen,
-  setClusterMemberRemoveConfirmationModalOpen
+  setClusterMemberRemovalConfirmationModalOpen
 } from '../../redux/modal/modal.actions';
 import {
   setCurrentClusterMember,
@@ -276,7 +276,7 @@ const ClusterMembersSection = () => {
               })
             );
 
-            dispatch(setClusterMemberRemoveConfirmationModalOpen(true));
+            dispatch(setClusterMemberRemovalConfirmationModalOpen(true));
 
             handleClose();
           }

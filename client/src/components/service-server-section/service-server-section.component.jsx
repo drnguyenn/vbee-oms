@@ -31,7 +31,7 @@ import {
 } from '../../redux/server/server.actions';
 import {
   setServerDomainAdditionModalOpen,
-  setServerDomainRemoveConfirmationModalOpen,
+  setServerDomainRemovalConfirmationModalOpen,
   setServerDomainUpdateModalOpen
 } from '../../redux/modal/modal.actions';
 
@@ -455,7 +455,7 @@ const ServiceServerSection = () => {
               })
             );
 
-            dispatch(setServerDomainRemoveConfirmationModalOpen(true));
+            dispatch(setServerDomainRemovalConfirmationModalOpen(true));
 
             handleClose();
           }

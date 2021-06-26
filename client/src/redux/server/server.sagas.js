@@ -31,7 +31,7 @@ import {
   setServerDeleteConfirmationModalOpen,
   setServerDomainAdditionModalOpen,
   setServerDomainUpdateModalOpen,
-  setServerDomainRemoveConfirmationModalOpen
+  setServerDomainRemovalConfirmationModalOpen
 } from '../modal/modal.actions';
 
 import * as ServerService from '../../services/server.service';
@@ -156,7 +156,7 @@ function* updateDomain({ payload: { domainId, data } }) {
 
 function* removeDomain({ payload }) {
   try {
-    yield put(setServerDomainRemoveConfirmationModalOpen(false));
+    yield put(setServerDomainRemovalConfirmationModalOpen(false));
 
     const domain = yield call(ServerService.removeDomain, payload);
 

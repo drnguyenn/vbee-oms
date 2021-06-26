@@ -9,13 +9,13 @@ import {
   Button
 } from '@material-ui/core';
 
-import { setDiagramNodeRemoveConfirmationModalOpen } from '../../redux/modal/modal.actions';
+import { setDiagramNodeRemovalConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { removeClusterDiagramNodeStart } from '../../redux/diagram/diagram.actions';
 
 import { removeElementsChanges } from '../../utils/diagram.utils';
 
-const DiagramNodeRemoveConfirmationModal = () => {
-  const { openClusterDiagramNodeRemoveConfirmationModal } = useSelector(
+const DiagramNodeRemovalConfirmationModal = () => {
+  const { openClusterDiagramNodeRemovalConfirmationModal } = useSelector(
     state => state.modal
   );
 
@@ -26,7 +26,7 @@ const DiagramNodeRemoveConfirmationModal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () =>
-    dispatch(setDiagramNodeRemoveConfirmationModalOpen(false));
+    dispatch(setDiagramNodeRemovalConfirmationModalOpen(false));
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -44,7 +44,7 @@ const DiagramNodeRemoveConfirmationModal = () => {
   if (currentDiagram && selectedNode)
     return (
       <Dialog
-        open={openClusterDiagramNodeRemoveConfirmationModal}
+        open={openClusterDiagramNodeRemovalConfirmationModal}
         onClose={handleClose}
       >
         <DialogTitle>Remove node</DialogTitle>
@@ -79,4 +79,4 @@ const DiagramNodeRemoveConfirmationModal = () => {
   return null;
 };
 
-export default DiagramNodeRemoveConfirmationModal;
+export default DiagramNodeRemovalConfirmationModal;

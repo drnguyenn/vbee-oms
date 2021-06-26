@@ -23,7 +23,7 @@ import {
   setClusterCreationModalOpen,
   setClusterDeleteConfirmationModalOpen,
   setClusterMemberAdditionModalOpen,
-  setClusterMemberRemoveConfirmationModalOpen
+  setClusterMemberRemovalConfirmationModalOpen
 } from '../modal/modal.actions';
 
 import * as ClusterService from '../../services/cluster.service';
@@ -137,7 +137,7 @@ function* updateMember({ payload: { clusterId, userId, data } }) {
 
 function* removeMember({ payload: { clusterId, userId } }) {
   try {
-    yield put(setClusterMemberRemoveConfirmationModalOpen(false));
+    yield put(setClusterMemberRemovalConfirmationModalOpen(false));
 
     const member = yield call(ClusterService.removeMember, clusterId, userId);
 

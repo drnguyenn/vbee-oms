@@ -9,11 +9,11 @@ import {
   Button
 } from '@material-ui/core';
 
-import { setServerDomainRemoveConfirmationModalOpen } from '../../redux/modal/modal.actions';
+import { setServerDomainRemovalConfirmationModalOpen } from '../../redux/modal/modal.actions';
 import { removeServerDomainStart } from '../../redux/server/server.actions';
 
-const ServerDomainRemoveConfirmationModal = () => {
-  const { openServerDomainRemoveConfirmationModal } = useSelector(
+const ServerDomainRemovalConfirmationModal = () => {
+  const { openServerDomainRemovalConfirmationModal } = useSelector(
     state => state.modal
   );
 
@@ -24,7 +24,7 @@ const ServerDomainRemoveConfirmationModal = () => {
   const dispatch = useDispatch();
 
   const handleClose = () =>
-    dispatch(setServerDomainRemoveConfirmationModalOpen(false));
+    dispatch(setServerDomainRemovalConfirmationModalOpen(false));
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -35,7 +35,7 @@ const ServerDomainRemoveConfirmationModal = () => {
   if (currentDomain)
     return (
       <Dialog
-        open={openServerDomainRemoveConfirmationModal}
+        open={openServerDomainRemovalConfirmationModal}
         onClose={handleClose}
         fullWidth
       >
@@ -69,4 +69,4 @@ const ServerDomainRemoveConfirmationModal = () => {
   return null;
 };
 
-export default ServerDomainRemoveConfirmationModal;
+export default ServerDomainRemovalConfirmationModal;
