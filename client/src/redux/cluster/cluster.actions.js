@@ -44,18 +44,18 @@ export const createClusterFailure = error => ({
   payload: error
 });
 
-export const updateClusterInfoStart = (id, data) => ({
-  type: ClusterActionTypes.UPDATE_CLUSTER_INFO_START,
+export const updateClusterStart = (id, data) => ({
+  type: ClusterActionTypes.UPDATE_CLUSTER_START,
   payload: { id, data }
 });
 
-export const updateClusterInfoSuccess = cluster => ({
-  type: ClusterActionTypes.UPDATE_CLUSTER_INFO_SUCCESS,
+export const updateClusterSuccess = cluster => ({
+  type: ClusterActionTypes.UPDATE_CLUSTER_SUCCESS,
   payload: cluster
 });
 
-export const updateClusterInfoFailure = error => ({
-  type: ClusterActionTypes.UPDATE_CLUSTER_INFO_FAILURE,
+export const updateClusterFailure = error => ({
+  type: ClusterActionTypes.UPDATE_CLUSTER_FAILURE,
   payload: error
 });
 

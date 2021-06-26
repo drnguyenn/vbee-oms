@@ -90,14 +90,14 @@ const serviceReducer = (state = INITIAL_STATE, action) => {
         error: payload
       };
 
-    case ServiceActionTypes.UPDATE_SERVICE_INFO_START:
+    case ServiceActionTypes.UPDATE_SERVICE_START:
       return {
         ...state,
         isUpdatingInfo: true,
         error: null
       };
 
-    case ServiceActionTypes.UPDATE_SERVICE_INFO_SUCCESS: {
+    case ServiceActionTypes.UPDATE_SERVICE_SUCCESS: {
       const { id, cluster, server, ...rest } = payload;
 
       return {
@@ -111,7 +111,7 @@ const serviceReducer = (state = INITIAL_STATE, action) => {
       };
     }
 
-    case ServiceActionTypes.UPDATE_SERVICE_INFO_FAILURE:
+    case ServiceActionTypes.UPDATE_SERVICE_FAILURE:
       return {
         ...state,
         isUpdatingInfo: false,

@@ -89,15 +89,15 @@ const serverReducer = (state = INITIAL_STATE, action) => {
         error: payload
       };
 
-    case ServerActionTypes.UPDATE_SERVER_INFO_START:
+    case ServerActionTypes.UPDATE_SERVER_START:
       return {
         ...state,
         isUpdatingInfo: true,
         error: null
       };
 
-    case ServerActionTypes.UPDATE_SERVER_INFO_SUCCESS: {
-      const { id, service, ...rest } = payload;
+    case ServerActionTypes.UPDATE_SERVER_SUCCESS: {
+      const { id, ...rest } = payload;
 
       return {
         ...state,
@@ -110,7 +110,7 @@ const serverReducer = (state = INITIAL_STATE, action) => {
       };
     }
 
-    case ServerActionTypes.UPDATE_SERVER_INFO_FAILURE:
+    case ServerActionTypes.UPDATE_SERVER_FAILURE:
       return {
         ...state,
         isUpdatingInfo: false,

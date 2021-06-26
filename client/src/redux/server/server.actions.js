@@ -44,18 +44,18 @@ export const createServerFailure = error => ({
   payload: error
 });
 
-export const updateServerInfoStart = (id, data) => ({
-  type: ServerActionTypes.UPDATE_SERVER_INFO_START,
+export const updateServerStart = (id, data) => ({
+  type: ServerActionTypes.UPDATE_SERVER_START,
   payload: { id, data }
 });
 
-export const updateServerInfoSuccess = server => ({
-  type: ServerActionTypes.UPDATE_SERVER_INFO_SUCCESS,
+export const updateServerSuccess = server => ({
+  type: ServerActionTypes.UPDATE_SERVER_SUCCESS,
   payload: server
 });
 
-export const updateServerInfoFailure = error => ({
-  type: ServerActionTypes.UPDATE_SERVER_INFO_FAILURE,
+export const updateServerFailure = error => ({
+  type: ServerActionTypes.UPDATE_SERVER_FAILURE,
   payload: error
 });
 
@@ -71,6 +71,21 @@ export const deleteServerSuccess = id => ({
 
 export const deleteServerFailure = error => ({
   type: ServerActionTypes.DELETE_SERVER_FAILURE,
+  payload: error
+});
+
+export const fetchServersMetricsStart = serverIds => ({
+  type: ServerActionTypes.FETCH_SERVERS_METRICS_START,
+  payload: serverIds
+});
+
+export const fetchServersMetricsSuccess = metrics => ({
+  type: ServerActionTypes.FETCH_SERVERS_METRICS_SUCCESS,
+  payload: metrics
+});
+
+export const fetchServersMetricsFailure = error => ({
+  type: ServerActionTypes.FETCH_SERVERS_METRICS_FAILURE,
   payload: error
 });
 

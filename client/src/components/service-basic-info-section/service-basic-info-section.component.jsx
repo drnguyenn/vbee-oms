@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { Close, Check, Edit } from '@material-ui/icons';
 
-import { updateServiceInfoStart } from '../../redux/service/service.actions';
+import { updateServiceStart } from '../../redux/service/service.actions';
 
 import Section from '../section/section.component';
 
@@ -73,7 +73,7 @@ const ServiceBasicInfoSection = () => {
   const handleSubmit = async event => {
     event.preventDefault();
 
-    dispatch(updateServiceInfoStart(currentService.id, serviceInfo));
+    dispatch(updateServiceStart(currentService.id, serviceInfo));
 
     setEditMode(false);
   };

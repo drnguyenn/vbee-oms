@@ -44,18 +44,18 @@ export const createServiceFailure = error => ({
   payload: error
 });
 
-export const updateServiceInfoStart = (id, data) => ({
-  type: ServiceActionTypes.UPDATE_SERVICE_INFO_START,
+export const updateServiceStart = (id, data) => ({
+  type: ServiceActionTypes.UPDATE_SERVICE_START,
   payload: { id, data }
 });
 
-export const updateServiceInfoSuccess = service => ({
-  type: ServiceActionTypes.UPDATE_SERVICE_INFO_SUCCESS,
+export const updateServiceSuccess = service => ({
+  type: ServiceActionTypes.UPDATE_SERVICE_SUCCESS,
   payload: service
 });
 
-export const updateServiceInfoFailure = error => ({
-  type: ServiceActionTypes.UPDATE_SERVICE_INFO_FAILURE,
+export const updateServiceFailure = error => ({
+  type: ServiceActionTypes.UPDATE_SERVICE_FAILURE,
   payload: error
 });
 

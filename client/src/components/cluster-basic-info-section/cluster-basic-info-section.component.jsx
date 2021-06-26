@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { Close, Check, Edit } from '@material-ui/icons';
 
-import { updateClusterInfoStart } from '../../redux/cluster/cluster.actions';
+import { updateClusterStart } from '../../redux/cluster/cluster.actions';
 
 import Section from '../section/section.component';
 
@@ -71,7 +71,7 @@ const ClusterBasicInfoSection = () => {
   const handleSubmit = event => {
     event.preventDefault();
 
-    dispatch(updateClusterInfoStart(currentCluster.id, clusterInfo));
+    dispatch(updateClusterStart(currentCluster.id, clusterInfo));
 
     setEditMode(false);
   };

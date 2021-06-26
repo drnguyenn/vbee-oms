@@ -1,4 +1,5 @@
 import ClusterActionTypes from './cluster.types';
+import ServiceActionTypes from '../service/service.types';
 
 const INITIAL_STATE = {
   clusters: [],
@@ -91,14 +92,14 @@ const clusterReducer = (state = INITIAL_STATE, action) => {
         error: payload
       };
 
-    case ClusterActionTypes.UPDATE_CLUSTER_INFO_START:
+    case ClusterActionTypes.UPDATE_CLUSTER_START:
       return {
         ...state,
         isUpdatingInfo: true,
         error: null
       };
 
-    case ClusterActionTypes.UPDATE_CLUSTER_INFO_SUCCESS: {
+    case ClusterActionTypes.UPDATE_CLUSTER_SUCCESS: {
       const { id, ...rest } = payload;
 
       return {
@@ -112,7 +113,7 @@ const clusterReducer = (state = INITIAL_STATE, action) => {
       };
     }
 
-    case ClusterActionTypes.UPDATE_CLUSTER_INFO_FAILURE:
+    case ClusterActionTypes.UPDATE_CLUSTER_FAILURE:
       return {
         ...state,
         isUpdatingInfo: false,
@@ -230,7 +231,7 @@ const clusterReducer = (state = INITIAL_STATE, action) => {
         error: payload
       };
 
-    case ClusterActionTypes.ADD_SERVICE:
+    case ServiceActionTypes.CREATE_SERVICE_SUCCESS:
       return {
         ...state,
         currentCluster:
