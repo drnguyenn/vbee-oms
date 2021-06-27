@@ -29,8 +29,9 @@ const useStyles = makeStyles({
     marginBottom: '1rem'
   },
   description: {
-    height: 50,
-    opacity: 0.9
+    height: 60,
+    opacity: 0.9,
+    whiteSpace: 'pre-wrap'
   }
 });
 
@@ -47,9 +48,9 @@ const BaseCard = ({
 
   const Description = useMemo(() => {
     if (description)
-      return description.length <= 90
+      return description.length <= 95
         ? description
-        : `${description.substring(0, 90)}...`;
+        : `${description.substring(0, 95)}...`;
 
     return <em>No description provided</em>;
   }, [description]);
