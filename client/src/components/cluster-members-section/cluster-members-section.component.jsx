@@ -90,17 +90,16 @@ const ClusterMembersSection = () => {
 
   const [targetRow, setTargetRow] = useState([]);
 
-  const handleMenu = event => setAnchorEl(event.currentTarget);
-
-  const handleClose = () => setAnchorEl(null);
-
   const [editMode, setEditMode] = useState(false);
 
   const [memberRole, setMemberRole] = useState('member');
 
-  const { currentCluster, isUpdatingMembers, isRemovingMembers } = useSelector(
-    state => state.cluster
-  );
+  const {
+    currentCluster,
+    isAddingMembers,
+    isUpdatingMembers,
+    isRemovingMembers
+  } = useSelector(state => state.cluster);
 
   const { members = [], memberCount = 0 } = currentCluster;
 
@@ -109,6 +108,10 @@ const ClusterMembersSection = () => {
   useEffect(() => {
     if (targetRow.length) setMemberRole(targetRow[4]);
   }, [targetRow]);
+
+  const handleMenu = event => setAnchorEl(event.currentTarget);
+
+  const handleClose = () => setAnchorEl(null);
 
   const handleCancelClick = () => setEditMode(false);
 
@@ -254,6 +257,7 @@ const ClusterMembersSection = () => {
           ...rest
         }))}
         options={options}
+        isLoading={isAddingMembers || isUpdatingMembers || isRemovingMembers}
       />
 
       <MemberActionMenu

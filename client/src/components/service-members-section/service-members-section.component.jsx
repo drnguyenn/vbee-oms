@@ -90,17 +90,16 @@ const ServiceMembersSection = () => {
 
   const [targetRow, setTargetRow] = useState([]);
 
-  const handleMenu = event => setAnchorEl(event.currentTarget);
-
-  const handleClose = () => setAnchorEl(null);
-
   const [editMode, setEditMode] = useState(false);
 
   const [memberRole, setMemberRole] = useState('member');
 
-  const { currentService, isUpdatingMembers, isRemovingMembers } = useSelector(
-    state => state.service
-  );
+  const {
+    currentService,
+    isAddingMembers,
+    isUpdatingMembers,
+    isRemovingMembers
+  } = useSelector(state => state.service);
 
   const { members = [], memberCount = 0 } = currentService;
 
@@ -109,6 +108,10 @@ const ServiceMembersSection = () => {
   useEffect(() => {
     if (targetRow.length) setMemberRole(targetRow[4]);
   }, [targetRow]);
+
+  const handleMenu = event => setAnchorEl(event.currentTarget);
+
+  const handleClose = () => setAnchorEl(null);
 
   const handleCancelClick = () => setEditMode(false);
 
@@ -254,6 +257,7 @@ const ServiceMembersSection = () => {
           ...rest
         }))}
         options={options}
+        isLoading={isAddingMembers || isUpdatingMembers || isRemovingMembers}
       />
 
       <MemberActionMenu
