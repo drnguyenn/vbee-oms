@@ -100,3 +100,6 @@ typings/
 
 # Private RSA keys
 *.pem
+
+# Credentials
+credentials/
