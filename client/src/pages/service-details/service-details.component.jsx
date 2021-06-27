@@ -5,17 +5,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, makeStyles } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 
-import { fetchServiceStart } from '../../redux/service/service.actions';
-import { setServiceDeleteConfirmationModalOpen } from '../../redux/modal/modal.actions';
+import {
+  fetchServiceStart,
+  setCurrentService
+} from 'redux/service/service.actions';
+import { setServiceDeleteConfirmationModalOpen } from 'redux/modal/modal.actions';
 
-import ROUTE_PATHS from '../../router/route-paths';
+import ROUTE_PATHS from 'router/route-paths';
 
-import BasePage from '../base/base.component';
-import Spinner from '../../components/spinner/spinner.component';
-import Section from '../../components/section/section.component';
-import ServiceBasicInfoSection from '../../components/service-basic-info-section/service-basic-info-section.component';
-import ServiceServerSection from '../../components/service-server-section/service-server-section.component';
-import ServiceMembersSection from '../../components/service-members-section/service-members-section.component';
+import BasePage from 'pages/base/base.component';
+import Spinner from 'components/spinner/spinner.component';
+import Section from 'components/section/section.component';
+import ServiceBasicInfoSection from 'components/service-basic-info-section/service-basic-info-section.component';
+import ServiceMembersSection from 'components/service-members-section/service-members-section.component';
 
 const useStyles = makeStyles({
   button: {
@@ -39,6 +41,8 @@ const ServiceDetailsPage = () => {
 
   useEffect(() => {
     dispatch(fetchServiceStart(id));
+
+    return () => dispatch(setCurrentService(null));
   }, [dispatch, id]);
 
   useEffect(() => {
@@ -64,8 +68,6 @@ const ServiceDetailsPage = () => {
         headerButtonOnClick={handleHeaderButtonClick}
       >
         <ServiceBasicInfoSection />
-
-        <ServiceServerSection />
 
         <ServiceMembersSection />
 

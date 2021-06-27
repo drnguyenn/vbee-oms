@@ -74,6 +74,11 @@ export const deleteClusterFailure = error => ({
   payload: error
 });
 
+export const setCurrentCluster = cluster => ({
+  type: ClusterActionTypes.SET_CURRENT_CLUSTER,
+  payload: cluster
+});
+
 export const setCurrentClusterMember = member => ({
   type: ClusterActionTypes.SET_CURRENT_CLUSTER_MEMBER,
   payload: member

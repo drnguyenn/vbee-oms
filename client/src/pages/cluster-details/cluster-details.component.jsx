@@ -5,17 +5,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, makeStyles } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 
-import { fetchClusterStart } from '../../redux/cluster/cluster.actions';
-import { setClusterDeleteConfirmationModalOpen } from '../../redux/modal/modal.actions';
+import {
+  fetchClusterStart,
+  setCurrentCluster
+} from 'redux/cluster/cluster.actions';
+import { setClusterDeleteConfirmationModalOpen } from 'redux/modal/modal.actions';
 
-import ROUTE_PATHS from '../../router/route-paths';
+import ROUTE_PATHS from 'router/route-paths';
 
-import BasePage from '../base/base.component';
-import Spinner from '../../components/spinner/spinner.component';
-import Section from '../../components/section/section.component';
-import ClusterBasicInfoSection from '../../components/cluster-basic-info-section/cluster-basic-info-section.component';
-import ClusterMembersSection from '../../components/cluster-members-section/cluster-members-section.component';
-import ClusterServicesSection from '../../components/cluster-services-section/cluster-services-section.component';
+import BasePage from 'pages/base/base.component';
+
+import Spinner from 'components/spinner/spinner.component';
+import Section from 'components/section/section.component';
+import ClusterBasicInfoSection from 'components/cluster-basic-info-section/cluster-basic-info-section.component';
+import ClusterMembersSection from 'components/cluster-members-section/cluster-members-section.component';
+import ClusterServicesSection from 'components/cluster-services-section/cluster-services-section.component';
 
 const useStyles = makeStyles({
   textField: {
@@ -42,6 +46,8 @@ const ClusterDetailsPage = () => {
 
   useEffect(() => {
     dispatch(fetchClusterStart(id));
+
+    return () => dispatch(setCurrentCluster(null));
   }, [dispatch, id]);
 
   useEffect(() => {

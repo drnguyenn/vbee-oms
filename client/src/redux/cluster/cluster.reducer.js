@@ -143,6 +143,13 @@ const clusterReducer = (state = INITIAL_STATE, action) => {
         error: payload
       };
 
+    case ClusterActionTypes.SET_CURRENT_CLUSTER: {
+      return {
+        ...state,
+        currentCluster: payload
+      };
+    }
+
     case ClusterActionTypes.SET_CURRENT_CLUSTER_MEMBER:
       return {
         ...state,

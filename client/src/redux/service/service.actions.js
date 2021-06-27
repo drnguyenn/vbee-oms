@@ -74,6 +74,11 @@ export const deleteServiceFailure = error => ({
   payload: error
 });
 
+export const setCurrentService = service => ({
+  type: ServiceActionTypes.SET_CURRENT_SERVICE,
+  payload: service
+});
+
 export const setCurrentServiceMember = member => ({
   type: ServiceActionTypes.SET_CURRENT_SERVICE_MEMBER,
   payload: member

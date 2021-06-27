@@ -141,6 +141,13 @@ const serviceReducer = (state = INITIAL_STATE, action) => {
         error: payload
       };
 
+    case ServiceActionTypes.SET_CURRENT_SERVICE: {
+      return {
+        ...state,
+        currentService: payload
+      };
+    }
+
     case ServiceActionTypes.SET_CURRENT_SERVICE_MEMBER:
       return {
         ...state,
