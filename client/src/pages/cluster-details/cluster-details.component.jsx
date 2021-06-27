@@ -18,8 +18,9 @@ import BasePage from 'pages/base/base.component';
 import Spinner from 'components/spinner/spinner.component';
 import Section from 'components/section/section.component';
 import ClusterBasicInfoSection from 'components/cluster-basic-info-section/cluster-basic-info-section.component';
-import ClusterMembersSection from 'components/cluster-members-section/cluster-members-section.component';
+import ClusterServersSection from 'components/cluster-servers-section/cluster-servers-section.component';
 import ClusterServicesSection from 'components/cluster-services-section/cluster-services-section.component';
+import ClusterMembersSection from 'components/cluster-members-section/cluster-members-section.component';
 
 const useStyles = makeStyles({
   textField: {
@@ -73,6 +74,8 @@ const ClusterDetailsPage = () => {
         headerButtonOnClick={handleHeaderButtonClick}
       >
         <ClusterBasicInfoSection />
+
+        <ClusterServersSection />
 
         <ClusterServicesSection />
 
