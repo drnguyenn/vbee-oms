@@ -28,6 +28,7 @@ export const SectionRowStyles = styled.div`
   justify-content: space-between;
   align-items: center;
   margin: ${themes.lengthSm2} 0;
+  white-space: pre-wrap;
 
   &:first-child {
     margin-top: 0;
@@ -47,5 +48,8 @@ export const SectionRowTitleStyles = styled.div`
 
 export const SectionRowValueStyles = styled.div`
   width: 70%;
+  max-height: 100px;
+  overflow-x: hidden;
+  overflow-y: auto;
   font-size: initial;
 `;
