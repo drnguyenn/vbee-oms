@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 
 export const ErrorImageStyles = styled.img`
-  width: 20%;
+  width: 35%;
+  margin-top: -40px;
 
   @media screen and (max-width: 650px) {
-    width: 50%;
+    width: 80%;
   }
 `;

@@ -4,9 +4,9 @@ import { withRouter } from 'react-router-dom';
 
 import { Fab, Typography, withStyles } from '@material-ui/core';
 
-import BasePage from '../base/base.component';
+import BasePage from 'pages/base/base.component';
 
-import ErrorPageImage from '../../assets/images/error-page.png';
+import ErrorImage from 'assets/images/error.svg';
 
 import { ErrorImageStyles } from './error-boundary.styles';
 
@@ -41,9 +41,9 @@ class ErrorBoundary extends Component {
     if (hasErrored)
       return (
         <BasePage textAlign='center'>
-          <ErrorImageStyles src={ErrorPageImage} alt='Error Page Image' />
+          <ErrorImageStyles src={ErrorImage} alt='Error Boundary Page Image' />
           <Typography variant='h4' component='h1' gutterBottom>
-            Sorry, this page is broken
+            Sorry, this page is temporarily unavailable
           </Typography>
           <Typography className={classes.content}>
             It seems like something has gone wrong. Please come back later.
