@@ -57,8 +57,7 @@ const ClusterBasicInfoSection = () => {
   const handleCancelClick = () => {
     setClusterInfo({
       name: currentCluster.name || '',
-      description: currentCluster.description || '',
-      version: currentCluster.version || ''
+      description: currentCluster.description || ''
     });
     setEditMode(false);
   };
@@ -170,7 +169,9 @@ const ClusterBasicInfoSection = () => {
           <SectionRowStyles>
             <SectionRowTitleStyles>Description</SectionRowTitleStyles>
             <Fade in timeout={500}>
-              <SectionRowValueStyles>{description}</SectionRowValueStyles>
+              <SectionRowValueStyles>
+                {description || <em>No description provided</em>}
+              </SectionRowValueStyles>
             </Fade>
           </SectionRowStyles>
         </>

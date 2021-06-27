@@ -188,7 +188,16 @@ const ServiceBasicInfoSection = () => {
           <SectionRowStyles>
             <SectionRowTitleStyles>Description</SectionRowTitleStyles>
             <Fade in timeout={500}>
-              <SectionRowValueStyles>{description}</SectionRowValueStyles>
+              <SectionRowValueStyles>
+                {description || <em>No description provided</em>}
+              </SectionRowValueStyles>
+            </Fade>
+          </SectionRowStyles>
+          <Divider />
+          <SectionRowStyles>
+            <SectionRowTitleStyles>Version</SectionRowTitleStyles>
+            <Fade in timeout={500}>
+              <SectionRowValueStyles>{version}</SectionRowValueStyles>
             </Fade>
           </SectionRowStyles>
           <Divider />
@@ -198,13 +207,6 @@ const ServiceBasicInfoSection = () => {
               <SectionRowValueStyles>
                 {currentService.cluster && currentService.cluster.name}
               </SectionRowValueStyles>
-            </Fade>
-          </SectionRowStyles>
-          <Divider />
-          <SectionRowStyles>
-            <SectionRowTitleStyles>Version</SectionRowTitleStyles>
-            <Fade in timeout={500}>
-              <SectionRowValueStyles>{version}</SectionRowValueStyles>
             </Fade>
           </SectionRowStyles>
         </>
