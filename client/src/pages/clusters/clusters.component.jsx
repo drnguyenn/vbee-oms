@@ -12,6 +12,7 @@ import BasePage from 'pages/base/base.component';
 
 import Spinner from 'components/spinner/spinner.component';
 import BaseCard from 'components/base-card/base-card.component';
+import EmptyIndication from 'components/empty-indication/empty-indication.component';
 
 import ROUTE_PATHS from 'router/route-paths';
 
@@ -60,11 +61,21 @@ const ClustersPage = () => {
         clusters.length > 1 ? 's' : ''
       } here`}
     >
-      <Grid container spacing={1}>
+      {clusters.length ? (
         <Grid container justify='center' spacing={3}>
           {clusters.map(
-            ({ id, name, memberCount, serviceCount, serverCount, ...rest }) => (
-              <Grid key={id} item>
+            (
+              {
+                id,
+                name,
+                memberCount = 0,
+                serviceCount = 0,
+                serverCount = 0,
+                ...rest
+              },
+              index
+            ) => (
+              <Grid key={id || index} item>
                 <BaseCard
                   title={name}
                   isProcessing={isProcessing}
@@ -92,7 +103,9 @@ const ClustersPage = () => {
             )
           )}
         </Grid>
-      </Grid>
+      ) : (
+        <EmptyIndication />
+      )}
 
       <Tooltip title='Create new cluster' arrow>
         <Fab

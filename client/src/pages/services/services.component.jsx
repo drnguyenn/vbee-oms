@@ -12,6 +12,7 @@ import BasePage from 'pages/base/base.component';
 
 import Spinner from 'components/spinner/spinner.component';
 import BaseCard from 'components/base-card/base-card.component';
+import EmptyIndication from 'components/empty-indication/empty-indication.component';
 
 import ROUTE_PATHS from 'router/route-paths';
 
@@ -24,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     height: 70
   },
   version: {
-    marginBottom: '0.8rem'
+    margin: '0.6rem 0'
   },
   gridItem: {
     display: 'flex',
@@ -63,22 +64,26 @@ const ServicesPage = () => {
         services.length > 1 ? 's' : ''
       } here`}
     >
-      <Grid container spacing={1}>
+      {services.length ? (
         <Grid container justify='center' spacing={3}>
           {services.map(
-            ({
-              id,
-              name,
-              cluster,
-              version,
-              memberCount,
-              repositoryCount,
-              ...rest
-            }) => (
-              <Grid key={id} item>
+            (
+              {
+                id,
+                name,
+                cluster,
+                version,
+                memberCount = 0,
+                repositoryCount = 0,
+                ...rest
+              },
+              index
+            ) => (
+              <Grid key={id || index} item>
                 <BaseCard
                   title={name}
                   subtitle={
+                    cluster &&
                     cluster.name && (
                       <span>
                         of <b>{cluster.name}</b>
@@ -110,7 +115,9 @@ const ServicesPage = () => {
             )
           )}
         </Grid>
-      </Grid>
+      ) : (
+        <EmptyIndication />
+      )}
 
       <Tooltip title='Create new service' arrow>
         <Fab
