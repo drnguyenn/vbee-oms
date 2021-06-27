@@ -38,7 +38,7 @@ const useStyles = makeStyles({
     marginRight: '0.625rem'
   },
   typography: {
-    margin: 'auto'
+    textAlign: 'center'
   }
 });
 
@@ -101,52 +101,43 @@ const ClusterServicesSection = () => {
       subtitle={serviceCount ? <Subtitle serviceCount={serviceCount} /> : null}
       headerOptions={<HeaderOptions />}
     >
-      <Grid className={classes.grid} container spacing={1}>
-        {serviceCount ? (
-          <Grid container justify='center' spacing={3}>
-            {services.map(
-              ({
-                id,
-                name,
-                version,
-                memberCount,
-                repositoryCount,
-                ...rest
-              }) => (
-                <Grid key={id} item>
-                  <BaseCard
-                    title={name}
-                    isProcessing={isProcessing}
-                    handleClick={() =>
-                      history.push(`${ROUTE_PATHS.SERVICES}/${id}`)
-                    }
-                    {...rest}
-                  >
-                    <Typography className={classes.version} color='primary'>
-                      {version && `v${version}`}
-                    </Typography>
-                    <Grid container spacing={1}>
-                      <Grid item xs={6} className={classes.gridItem}>
-                        <People className={classes.icon} color='primary' />
-                        {memberCount} member{memberCount > 1 && 's'}
-                      </Grid>
-                      <Grid item xs={6} className={classes.gridItem}>
-                        <Kitchen className={classes.icon} color='primary' />
-                        {repositoryCount} repositor
-                        {repositoryCount > 1 ? 'ies' : 'y'}
-                      </Grid>
+      {serviceCount ? (
+        <Grid className={classes.grid} container justify='center' spacing={3}>
+          {services.map(
+            ({ id, name, version, memberCount, repositoryCount, ...rest }) => (
+              <Grid key={id} item>
+                <BaseCard
+                  title={name}
+                  isProcessing={isProcessing}
+                  handleClick={() =>
+                    history.push(`${ROUTE_PATHS.SERVICES}/${id}`)
+                  }
+                  {...rest}
+                >
+                  <Typography className={classes.version} color='primary'>
+                    {version && `v${version}`}
+                  </Typography>
+                  <Grid container spacing={1}>
+                    <Grid item xs={6} className={classes.gridItem}>
+                      <People className={classes.icon} color='primary' />
+                      {memberCount} member{memberCount > 1 && 's'}
                     </Grid>
-                  </BaseCard>
-                </Grid>
-              )
-            )}
-          </Grid>
-        ) : (
-          <Typography className={classes.typography}>
-            No services found
-          </Typography>
-        )}
-      </Grid>
+                    <Grid item xs={6} className={classes.gridItem}>
+                      <Kitchen className={classes.icon} color='primary' />
+                      {repositoryCount} repositor
+                      {repositoryCount > 1 ? 'ies' : 'y'}
+                    </Grid>
+                  </Grid>
+                </BaseCard>
+              </Grid>
+            )
+          )}
+        </Grid>
+      ) : (
+        <Typography className={classes.typography}>
+          No services found
+        </Typography>
+      )}
     </Section>
   );
 };
