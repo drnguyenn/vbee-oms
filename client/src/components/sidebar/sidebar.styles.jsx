@@ -16,7 +16,7 @@ export const SidebarStyles = styled.div`
   justify-content: space-between;
   align-items: center;
 
-  @media screen and (max-width: 440px) {
+  @media screen and (max-width: 650px) {
     width: 60px;
   }
 `;
