@@ -77,12 +77,12 @@ const CustomToolbar = () => {
   );
 };
 
-const Subtitle = ({ memberCount }) => (
+const Subtitle = memo(({ memberCount }) => (
   <span>
     <b>{memberCount}</b> member
     {memberCount > 1 ? 's ' : ' '}joined this service
   </span>
-);
+));
 
 const ServiceMembersSection = () => {
   const [anchorEl, setAnchorEl] = useState(null);

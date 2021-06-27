@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -35,6 +36,9 @@ const useStyles = makeStyles({
   },
   icon: {
     marginRight: '0.625rem'
+  },
+  typography: {
+    margin: 'auto'
   }
 });
 
@@ -74,14 +78,12 @@ const HeaderOptions = () => {
   );
 };
 
-const Subtitle = ({ serviceCount }) => (
+const Subtitle = memo(({ serviceCount }) => (
   <span>
-    <b>
-      {serviceCount}/{serviceCount}
-    </b>
-    {serviceCount > 1 ? ' are ' : ' is '}healthy
+    <b>{serviceCount}</b>{' '}
+    {serviceCount > 1 ? 'services belong' : 'service belongs'} to this cluster
   </span>
-);
+));
 
 const ClusterServicesSection = () => {
   const classes = useStyles();
@@ -99,35 +101,50 @@ const ClusterServicesSection = () => {
       subtitle={serviceCount ? <Subtitle serviceCount={serviceCount} /> : null}
       headerOptions={<HeaderOptions />}
     >
-      <Grid container justify='center' spacing={3}>
-        {services.map(
-          ({ id, name, version, memberCount, repositoryCount, ...rest }) => (
-            <Grid key={id} item>
-              <BaseCard
-                title={name}
-                isProcessing={isProcessing}
-                handleClick={() =>
-                  history.push(`${ROUTE_PATHS.SERVICES}/${id}`)
-                }
-                {...rest}
-              >
-                <Typography className={classes.version} color='primary'>
-                  {version && `v${version}`}
-                </Typography>
-                <Grid container spacing={1}>
-                  <Grid item xs={6} className={classes.gridItem}>
-                    <People className={classes.icon} color='primary' />
-                    {memberCount} member{memberCount > 1 && 's'}
-                  </Grid>
-                  <Grid item xs={6} className={classes.gridItem}>
-                    <Kitchen className={classes.icon} color='primary' />
-                    {repositoryCount} repositor
-                    {repositoryCount > 1 ? 'ies' : 'y'}
-                  </Grid>
+      <Grid className={classes.grid} container spacing={1}>
+        {serviceCount ? (
+          <Grid container justify='center' spacing={3}>
+            {services.map(
+              ({
+                id,
+                name,
+                version,
+                memberCount,
+                repositoryCount,
+                ...rest
+              }) => (
+                <Grid key={id} item>
+                  <BaseCard
+                    title={name}
+                    isProcessing={isProcessing}
+                    handleClick={() =>
+                      history.push(`${ROUTE_PATHS.SERVICES}/${id}`)
+                    }
+                    {...rest}
+                  >
+                    <Typography className={classes.version} color='primary'>
+                      {version && `v${version}`}
+                    </Typography>
+                    <Grid container spacing={1}>
+                      <Grid item xs={6} className={classes.gridItem}>
+                        <People className={classes.icon} color='primary' />
+                        {memberCount} member{memberCount > 1 && 's'}
+                      </Grid>
+                      <Grid item xs={6} className={classes.gridItem}>
+                        <Kitchen className={classes.icon} color='primary' />
+                        {repositoryCount} repositor
+                        {repositoryCount > 1 ? 'ies' : 'y'}
+                      </Grid>
+                    </Grid>
+                  </BaseCard>
                 </Grid>
-              </BaseCard>
-            </Grid>
-          )
+              )
+            )}
+          </Grid>
+        ) : (
+          <Typography className={classes.typography}>
+            No services found
+          </Typography>
         )}
       </Grid>
     </Section>

@@ -77,12 +77,12 @@ const CustomToolbar = () => {
   );
 };
 
-const Subtitle = ({ memberCount }) => (
+const Subtitle = memo(({ memberCount }) => (
   <span>
     <b>{memberCount}</b> member
     {memberCount > 1 ? 's ' : ' '}joined this cluster
   </span>
-);
+));
 
 const ClusterMembersSection = () => {
   const [anchorEl, setAnchorEl] = useState(null);
