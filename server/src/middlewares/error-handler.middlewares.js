@@ -30,6 +30,10 @@ const errorHandler = (err, req, res, next) => {
       message = message || 'Not Found';
       break;
 
+    case codes.UNPROCESSABLE_ENTITY:
+      message = message || 'Unprocessable Entity';
+      break;
+
     case codes.TOO_MANY_REQUESTS:
       message = message || 'Too Many Requests';
       break;
