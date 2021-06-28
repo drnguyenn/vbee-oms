@@ -6,8 +6,8 @@ import { IconButton, Tooltip } from '@material-ui/core';
 import {
   Dashboard,
   ViewCarousel,
-  Web,
   Storage,
+  Web,
   Kitchen,
   People,
   Settings
@@ -93,11 +93,11 @@ const Sidebar = () => {
         <CustomToggleButton title='Clusters' value={ROUTE_PATHS.CLUSTERS}>
           <ViewCarousel />
         </CustomToggleButton>
-        <CustomToggleButton title='Services' value={ROUTE_PATHS.SERVICES}>
-          <Web />
-        </CustomToggleButton>
         <CustomToggleButton title='Servers' value={ROUTE_PATHS.SERVERS}>
           <Storage />
+        </CustomToggleButton>
+        <CustomToggleButton title='Services' value={ROUTE_PATHS.SERVICES}>
+          <Web />
         </CustomToggleButton>
         <CustomToggleButton
           title='Repositories'
