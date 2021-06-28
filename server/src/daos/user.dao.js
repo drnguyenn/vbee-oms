@@ -36,7 +36,8 @@ const update = async (condition, data) => {
   const options = {
     new: true,
     upsert: true,
-    setDefaultsOnInsert: true
+    setDefaultsOnInsert: true,
+    omitUndefined: true
   };
 
   if (ObjectId.isValid(condition)) {

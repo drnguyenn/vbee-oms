@@ -31,7 +31,8 @@ const update = async (condition, data) => {
   const options = {
     new: true,
     upsert: true,
-    setDefaultsOnInsert: true
+    setDefaultsOnInsert: true,
+    omitUndefined: true
   };
 
   if (ObjectId.isValid(condition)) {
@@ -69,9 +70,9 @@ const removeOne = async condition => {
   return null;
 };
 
-const removeAll = async condition => {
+const removeMany = async condition => {
   const diagramLinks = await DiagramLinkModel.deleteMany(condition);
   return diagramLinks;
 };
 
-module.exports = { create, findOne, findAll, update, removeOne, removeAll };
+module.exports = { create, findOne, findAll, update, removeOne, removeMany };

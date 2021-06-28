@@ -26,7 +26,8 @@ const update = async (condition, data) => {
   const options = {
     new: true,
     upsert: true,
-    setDefaultsOnInsert: true
+    setDefaultsOnInsert: true,
+    omitUndefined: true
   };
 
   if (typeof condition === 'object' && condition) {
@@ -50,9 +51,9 @@ const removeOne = async condition => {
   return null;
 };
 
-const removeAll = async condition => {
+const removeMany = async condition => {
   const clusterMembers = await ClusterMemberModel.deleteMany(condition);
   return clusterMembers;
 };
 
-module.exports = { create, findOne, findAll, update, removeOne, removeAll };
+module.exports = { create, findOne, findAll, update, removeOne, removeMany };

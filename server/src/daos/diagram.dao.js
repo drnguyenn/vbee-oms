@@ -27,19 +27,12 @@ const findAll = async (condition, projection) => {
   return diagrams;
 };
 
-const search = async (query, projection = {}) => {
-  const diagrams = await DiagramModel.find(
-    { $text: { $search: query } },
-    { score: { $meta: 'textScore' }, ...projection }
-  ).sort({ score: { $meta: 'textScore' } });
-  return diagrams;
-};
-
 const update = async (condition, data) => {
   const options = {
     new: true,
     upsert: true,
-    setDefaultsOnInsert: true
+    setDefaultsOnInsert: true,
+    omitUndefined: true
   };
 
   if (ObjectId.isValid(condition)) {
@@ -77,4 +70,4 @@ const remove = async condition => {
   return null;
 };
 
-module.exports = { create, findOne, findAll, search, update, remove };
+module.exports = { create, findOne, findAll, update, remove };
