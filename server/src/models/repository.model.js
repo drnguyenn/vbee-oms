@@ -25,15 +25,12 @@ const RepositorySchema = new mongoose.Schema(
     ],
     githubId: { type: String, unique: true, sparse: true },
     ghAppInstallationId: { type: String },
-    serviceId: { type: String }
+    service: { type: mongoose.Types.ObjectId, ref: 'Service' }
   },
   {
     timestamps: true,
     versionKey: false,
-    typePojoToMixed: false,
-    autoIndex: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    autoIndex: true
   }
 );
 

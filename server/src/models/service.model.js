@@ -11,10 +11,7 @@ const ServiceSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    typePojoToMixed: false,
-    autoIndex: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    autoIndex: true
   }
 );
 
@@ -63,7 +60,7 @@ ServiceSchema.pre('findOne', function populate() {
   });
   this.populate('repositoryCount');
   this.populate({ path: 'cluster', select: 'name' });
-  this.populate({ path: 'server' });
+  this.populate({ path: 'server', select: 'name ipAddress macAddress' });
 });
 
 module.exports = mongoose.model('Service', ServiceSchema);

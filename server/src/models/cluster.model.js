@@ -12,10 +12,7 @@ const ClusterSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    typePojoToMixed: false,
-    autoIndex: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    autoIndex: true
   }
 );
 
@@ -69,9 +66,14 @@ ClusterSchema.virtual('serviceCount', {
 
 ClusterSchema.pre('findOne', function populate() {
   this.populate('memberCount');
-  this.populate('serviceCount');
   this.populate('serverCount');
+  this.populate('serviceCount');
   this.populate({ path: 'members', select: 'role -_id -cluster' });
+  this.populate({
+    path: 'servers',
+    select: 'name ipAddress macAddress -cluster',
+    populate: { path: 'serviceCount domainCount' }
+  });
   this.populate({
     path: 'services',
     select: 'name description version -cluster',
@@ -80,7 +82,7 @@ ClusterSchema.pre('findOne', function populate() {
 });
 
 ClusterSchema.pre('findOneAndDelete', function populate() {
-  this.populate({ path: 'services', select: 'members' });
+  this.populate({ path: 'servers', select: '_id' });
 });
 
 module.exports = mongoose.model('Cluster', ClusterSchema);

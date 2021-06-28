@@ -6,10 +6,7 @@ const DiagramSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    versionKey: false,
-    typePojoToMixed: false,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    versionKey: false
   }
 );
 
@@ -25,19 +22,19 @@ DiagramSchema.virtual('links', {
   foreignField: 'diagram'
 });
 
-DiagramSchema.pre('find', function populateNodesAndLinks() {
+DiagramSchema.pre('find', function populate() {
   this.populate({ path: 'nodes' });
   this.populate({ path: 'links' });
   this.populate({ path: 'cluster', select: 'name' });
 });
 
-DiagramSchema.pre('findOne', function populateNodesAndLinks() {
+DiagramSchema.pre('findOne', function populate() {
   this.populate({ path: 'nodes' });
   this.populate({ path: 'links' });
   this.populate({ path: 'cluster', select: 'name' });
 });
 
-DiagramSchema.pre('findOneAndDelete', function populateNodesAndLinks() {
+DiagramSchema.pre('findOneAndDelete', function populate() {
   this.populate({ path: 'nodes' });
   this.populate({ path: 'links' });
 });

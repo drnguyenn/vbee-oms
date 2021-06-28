@@ -30,8 +30,7 @@ const DiagramLinkSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    versionKey: false,
-    typePojoToMixed: false
+    versionKey: false
   }
 );
 

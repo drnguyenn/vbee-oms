@@ -8,7 +8,6 @@ const DomainSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    typePojoToMixed: false,
     autoIndex: true
   }
 );

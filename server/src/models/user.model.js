@@ -21,10 +21,7 @@ const UserSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    typePojoToMixed: false,
-    autoIndex: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    autoIndex: true
   }
 );
 
