@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { debounce } from 'lodash';
 
@@ -22,42 +22,62 @@ import {
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 
-import { searchUsers } from '../../services/user.service';
+import { searchUsers } from 'services/user.service';
 
-import { setServiceMemberAdditionModalOpen } from '../../redux/modal/modal.actions';
-import { addServiceMemberStart } from '../../redux/service/service.actions';
+import { setServiceMemberAdditionModalOpen } from 'redux/modal/modal.actions';
+import { addServiceMemberStart } from 'redux/service/service.actions';
+
+import { useAutocompleteLogic } from 'hooks/autocomplete.hooks';
 
 import { DEBOUNCE_SEARCH_WAIT_TIME } from '../../constants';
 
 const useStyles = makeStyles({
-  additionStatus: {
+  additionalStatus: {
     fontStyle: 'italic'
   }
 });
 
-const handleSearch = debounce(async (searchText = '', callback = () => {}) => {
-  if (searchText) {
-    const users = await searchUsers(`?q=${searchText}`);
+const handleSearch = debounce(async (query = {}, callback = () => {}) => {
+  const users = await searchUsers(query);
 
-    callback(users);
-  }
+  callback(users);
 }, DEBOUNCE_SEARCH_WAIT_TIME);
 
 const ServiceMemberAdditionModal = () => {
   const classes = useStyles();
 
-  const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState([]);
-  const [value, setValue] = useState(null);
-  const [inputValue, setInputValue] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+  const { isAddingMembers, currentService } = useSelector(
+    state => state.service
+  );
+
+  const preprocessResults = useCallback(
+    results =>
+      results.map(result =>
+        currentService.members.map(({ user: { id } }) => id).includes(result.id)
+          ? { ...result, isAdded: true }
+          : { ...result, isAdded: false }
+      ),
+    [currentService.members]
+  );
+
+  const {
+    options,
+    value,
+    inputValue,
+    isSearching,
+    handleValueChange,
+    handleInputChange
+  } = useAutocompleteLogic(
+    handleSearch,
+    'q',
+    'username',
+    'id',
+    preprocessResults
+  );
 
   const [role, setRole] = useState('member');
 
   const { openServiceMemberAdditionModal } = useSelector(state => state.modal);
-  const { isAddingMembers, currentService } = useSelector(
-    state => state.service
-  );
 
   const dispatch = useDispatch();
 
@@ -70,45 +90,9 @@ const ServiceMemberAdditionModal = () => {
   const handleSubmit = async event => {
     event.preventDefault();
 
-    dispatch(addServiceMemberStart(currentService.id, value.id, { role }));
+    if (currentService && value)
+      dispatch(addServiceMemberStart(currentService.id, value.id, { role }));
   };
-
-  const handleValueChange = (event, newValue) => {
-    // setOptions(newValue ? [newValue, ...options] : options);
-    setValue(newValue);
-  };
-
-  const handleInputChange = (event, newInputValue) => {
-    setInputValue(newInputValue);
-  };
-
-  useEffect(() => {
-    if (!inputValue) setOptions(value ? [value] : []);
-    else if (!value || inputValue !== value.username) {
-      setIsSearching(true);
-
-      handleSearch(inputValue, results => {
-        let newOptions = [];
-
-        if (results.length)
-          newOptions = results.map(result =>
-            currentService.members
-              .map(({ user: { id } }) => id)
-              .includes(result.id)
-              ? { ...result, isAdded: true }
-              : { ...result, isAdded: false }
-          );
-
-        setOptions(
-          value && !newOptions.includes(value)
-            ? [...newOptions, value]
-            : newOptions
-        );
-
-        setIsSearching(false);
-      });
-    }
-  }, [inputValue, value, currentService.members]);
 
   return (
     <Dialog
@@ -121,18 +105,11 @@ const ServiceMemberAdditionModal = () => {
         <DialogContent>
           <Autocomplete
             fullWidth
-            open={open}
-            onOpen={() => setOpen(true)}
-            onClose={() => {
-              setOpen(false);
-              setIsSearching(false);
-            }}
             value={value}
             inputValue={inputValue}
             onChange={handleValueChange}
             onInputChange={handleInputChange}
             filterOptions={option => option}
-            // filterSelectedOptions
             includeInputInList
             getOptionSelected={(option, selectedValue) =>
               option.id === selectedValue.id
@@ -141,7 +118,7 @@ const ServiceMemberAdditionModal = () => {
             getOptionDisabled={option => option.isAdded}
             options={options}
             noOptionsText='No matching results found'
-            loading={open && isSearching && options.length === 0}
+            loading={isSearching && !options.length}
             loadingText='Searching...'
             renderInput={params => (
               <TextField
@@ -150,6 +127,7 @@ const ServiceMemberAdditionModal = () => {
                 autoFocus
                 label='Choose a member'
                 placeholder="Enter member's username, full name or GitHub username, etc."
+                margin='normal'
                 variant='outlined'
                 InputProps={{
                   ...params.InputProps,
@@ -177,7 +155,7 @@ const ServiceMemberAdditionModal = () => {
                 </Grid>
                 <Grid>
                   {option.isAdded && (
-                    <Typography className={classes.additionStatus}>
+                    <Typography className={classes.additionalStatus}>
                       Added
                     </Typography>
                   )}

@@ -1,33 +1,77 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { debounce } from 'lodash';
 
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField
+  TextField,
+  Typography
 } from '@material-ui/core';
+import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 
-import { setServiceCreationModalOpen } from '../../redux/modal/modal.actions';
-import { createServiceStart } from '../../redux/service/service.actions';
-import { fetchAllClustersStart } from '../../redux/cluster/cluster.actions';
+import { searchClusters } from 'services/cluster.service';
+import { searchServers } from 'services/server.service';
+
+import { setServiceCreationModalOpen } from 'redux/modal/modal.actions';
+import { createServiceStart } from 'redux/service/service.actions';
+
+import { useAutocompleteLogic } from 'hooks/autocomplete.hooks';
+
+import { DEBOUNCE_SEARCH_WAIT_TIME } from '../../constants';
+
+const handleSearchClusters = debounce(
+  async (query = {}, callback = () => {}) => {
+    const clusters = await searchClusters(query);
+
+    callback(clusters);
+  },
+  DEBOUNCE_SEARCH_WAIT_TIME
+);
+
+const handleSearchServers = async (query = {}, callback = () => {}) => {
+  const servers = await searchServers(query);
+
+  callback(servers);
+};
+
+const serverFilterOptions = createFilterOptions({
+  stringify: ({ id, name, ipAddress, macAddress }) =>
+    `${id}${name}${ipAddress}${macAddress}`,
+  trim: true
+});
 
 const ServiceCreationModal = () => {
-  const { currentCluster, clusters } = useSelector(state => state.cluster);
+  const { currentCluster } = useSelector(state => state.cluster);
+
+  const { currentServer } = useSelector(state => state.server);
 
   const [serviceInfo, setServiceInfo] = useState({
     name: '',
     description: '',
-    clusterId: '',
     version: '1.0.0'
   });
-  const { name, description, clusterId, version } = serviceInfo;
+  const { name, description, version } = serviceInfo;
+
+  const {
+    options: clusterOptions,
+    value: clusterValue,
+    inputValue: clusterInputValue,
+    isSearching: isSearchingCluster,
+    handleValueChange: handleClusterValueChange,
+    handleInputChange: handleClusterInputChange,
+    setOptions: setClusterOptions,
+    setValue: setClusterValue
+  } = useAutocompleteLogic(handleSearchClusters, 'q', 'name', 'id');
+
+  const [serverOptions, setServerOptions] = useState([]);
+  const [serverValue, setServerValue] = useState(null);
+  const [serverInputValue, setServerInputValue] = useState('');
+  const [isFetchingServer, setIsFetchingServer] = useState(false);
 
   const { openServiceCreationModal } = useSelector(state => state.modal);
 
@@ -36,13 +80,30 @@ const ServiceCreationModal = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!clusters.length) dispatch(fetchAllClustersStart());
-    else if (currentCluster)
-      setServiceInfo(prevServiceInfo => ({
-        ...prevServiceInfo,
-        clusterId: currentCluster.id
-      }));
-  }, [clusters.length, currentCluster, dispatch]);
+    if (currentCluster) setClusterValue(currentCluster);
+    else if (currentServer) {
+      setServerOptions([currentServer]);
+      setServerValue(currentServer);
+
+      setClusterOptions([currentServer.cluster]);
+      setClusterValue(currentServer.cluster);
+    }
+  }, [currentCluster, currentServer, setClusterOptions, setClusterValue]);
+
+  useEffect(() => {
+    if (clusterValue) {
+      setIsFetchingServer(true);
+
+      handleSearchServers({ cluster: clusterValue.id }, results => {
+        if (serverValue && !results.some(({ id }) => id === serverValue.id))
+          setServerValue(null);
+
+        setServerOptions(results);
+
+        setIsFetchingServer(false);
+      });
+    }
+  }, [clusterValue, serverValue]);
 
   const handleClose = () => dispatch(setServiceCreationModalOpen(false));
 
@@ -51,10 +112,25 @@ const ServiceCreationModal = () => {
     setServiceInfo({ ...serviceInfo, [elementName]: value });
   };
 
+  const handleServerValueChange = (event, newValue) => {
+    setServerValue(newValue);
+  };
+
+  const handleServerInputChange = (event, newInputValue) => {
+    setServerInputValue(newInputValue);
+  };
+
   const handleSubmit = async event => {
     event.preventDefault();
 
-    dispatch(createServiceStart(serviceInfo));
+    if (clusterValue)
+      dispatch(
+        createServiceStart({
+          ...serviceInfo,
+          clusterId: clusterValue.id,
+          serverId: serverValue ? serverValue.id : null
+        })
+      );
   };
 
   return (
@@ -77,21 +153,103 @@ const ServiceCreationModal = () => {
             variant='outlined'
             fullWidth
           />
-          <FormControl required variant='outlined' margin='normal' fullWidth>
-            <InputLabel>Cluster</InputLabel>
-            <Select
-              name='clusterId'
-              value={clusterId}
-              onChange={handleChange}
-              label='Cluster'
-            >
-              {clusters.map(({ id, name: clusterName }) => (
-                <MenuItem key={id} value={id} label={clusterName}>
-                  {clusterName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            fullWidth
+            value={clusterValue}
+            inputValue={clusterInputValue}
+            onChange={handleClusterValueChange}
+            onInputChange={handleClusterInputChange}
+            filterOptions={option => option}
+            includeInputInList
+            getOptionSelected={(option, selectedValue) =>
+              option.id === selectedValue.id
+            }
+            getOptionLabel={option => option.name}
+            options={clusterOptions}
+            noOptionsText='No matching results found'
+            loading={isSearchingCluster && !clusterOptions.length}
+            loadingText='Searching...'
+            renderInput={params => (
+              <TextField
+                {...params}
+                required
+                label='Choose a cluster'
+                placeholder="Enter cluster's ID, name, or description"
+                margin='normal'
+                variant='outlined'
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {isSearchingCluster ? (
+                        <CircularProgress color='inherit' size={20} />
+                      ) : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  )
+                }}
+              />
+            )}
+            renderOption={option => (
+              <div>
+                <Typography>{option.name}</Typography>
+                <Typography color='textSecondary' variant='body2'>
+                  {!option.description && <em>No description provided</em>}
+                  {option.description.length <= 70
+                    ? option.description
+                    : `${option.description.substring(0, 70)}...`}
+                </Typography>
+              </div>
+            )}
+          />
+
+          {clusterValue && (
+            <Autocomplete
+              fullWidth
+              value={serverValue}
+              inputValue={serverInputValue}
+              onChange={handleServerValueChange}
+              onInputChange={handleServerInputChange}
+              filterOptions={serverFilterOptions}
+              includeInputInList
+              getOptionSelected={(option, selectedValue) =>
+                option.id === selectedValue.id
+              }
+              getOptionLabel={option => option.name}
+              options={serverOptions}
+              noOptionsText='No matching results found'
+              loading={isFetchingServer && !serverOptions.length}
+              loadingText='Fetching...'
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label='Choose a server'
+                  placeholder="Enter server's ID, name, IP address, or MAC address, etc."
+                  margin='normal'
+                  variant='outlined'
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {isFetchingServer ? (
+                          <CircularProgress color='inherit' size={20} />
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    )
+                  }}
+                />
+              )}
+              renderOption={option => (
+                <div>
+                  <Typography>{option.name}</Typography>
+                  <Typography color='textSecondary' variant='body2'>
+                    {option.ipAddress}
+                  </Typography>
+                </div>
+              )}
+            />
+          )}
           <TextField
             autoComplete='off'
             name='description'
