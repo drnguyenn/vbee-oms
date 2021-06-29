@@ -37,17 +37,10 @@ const ServiceDeleteConfirmationModal = () => {
   const classes = useStyles();
 
   const [checkedState, setCheckedState] = useState({
-    checkedRepositoriesDelete: false,
-    checkedServerInfoDelete: false,
-    checkedDocsDelete: false,
+    checkedRepoAssociationsRemove: false,
     checkedMembersRemove: false
   });
-  const {
-    checkedRepositoriesDelete,
-    checkedServerInfoDelete,
-    checkedDocsDelete,
-    checkedMembersRemove
-  } = checkedState;
+  const { checkedRepoAssociationsRemove, checkedMembersRemove } = checkedState;
 
   const [serviceName, setServiceName] = useState('');
 
@@ -92,40 +85,20 @@ const ServiceDeleteConfirmationModal = () => {
             <Typography gutterBottom>
               By deleting this service, you agree to:
             </Typography>
+
             <FormGroup>
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={checkedRepositoriesDelete}
+                    checked={checkedRepoAssociationsRemove}
                     onChange={handleCheck}
-                    name='checkedRepositoriesDelete'
+                    name='checkedRepoAssociationsRemove'
                   />
                 }
-                label='Delete all repositories belong to it'
+                label='Remove all repository associations'
                 disabled={isProcessing}
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={checkedServerInfoDelete}
-                    onChange={handleCheck}
-                    name='checkedServerInfoDelete'
-                  />
-                }
-                label='Delete all the associated server information'
-                disabled={isProcessing}
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={checkedDocsDelete}
-                    onChange={handleCheck}
-                    name='checkedDocsDelete'
-                  />
-                }
-                label='Delete all related documentations'
-                disabled={isProcessing}
-              />
+
               <FormControlLabel
                 control={
                   <Checkbox
@@ -138,12 +111,14 @@ const ServiceDeleteConfirmationModal = () => {
                 disabled={isProcessing}
               />
             </FormGroup>
+
             <Typography className={classes.typography}>
               This action is <b>permanent</b> and <b>cannot</b> be undone, are
               you absolutely sure ?
               <br />
               Please type <b>{currentService.name}</b> to confirm.
             </Typography>
+
             <TextField
               required
               autoComplete='off'
@@ -172,9 +147,7 @@ const ServiceDeleteConfirmationModal = () => {
               color='secondary'
               disabled={
                 isProcessing ||
-                !checkedRepositoriesDelete ||
-                !checkedServerInfoDelete ||
-                !checkedDocsDelete ||
+                !checkedRepoAssociationsRemove ||
                 !checkedMembersRemove ||
                 currentService.name !== serviceName
               }

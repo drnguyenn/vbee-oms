@@ -37,16 +37,14 @@ const ClusterDeleteConfirmationModal = () => {
   const classes = useStyles();
 
   const [checkedState, setCheckedState] = useState({
-    checkedServicesDelete: false,
-    checkedServersAndRepositoriesDelete: false,
-    checkedMembersRemove: false,
-    checkedDiagramRemove: false
+    checkedServersAndServicesDelete: false,
+    checkedRepoAssociationsRemove: false,
+    checkedMembersRemove: false
   });
   const {
-    checkedServicesDelete,
-    checkedServersAndRepositoriesDelete,
-    checkedMembersRemove,
-    checkedDiagramRemove
+    checkedServersAndServicesDelete,
+    checkedRepoAssociationsRemove,
+    checkedMembersRemove
   } = checkedState;
 
   const [clusterName, setClusterName] = useState('');
@@ -93,28 +91,28 @@ const ClusterDeleteConfirmationModal = () => {
             <Typography gutterBottom>
               By deleting this cluster, you agree to:
             </Typography>
+
             <FormGroup>
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={checkedServicesDelete}
+                    checked={checkedServersAndServicesDelete}
                     onChange={handleCheck}
-                    name='checkedServicesDelete'
+                    name='checkedServersAndServicesDelete'
                   />
                 }
-                label='Delete all services inside it'
+                label='Delete all servers and services inside it'
                 disabled={isProcessing}
               />
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={checkedServersAndRepositoriesDelete}
+                    checked={checkedRepoAssociationsRemove}
                     onChange={handleCheck}
-                    name='checkedServersAndRepositoriesDelete'
+                    name='checkedRepoAssociationsRemove'
                   />
                 }
-                label='Delete all servers information and repositories belong to
-              the services mentioned above'
+                label='Delete all repository associations of the services mentioned above'
                 disabled={isProcessing}
               />
               <FormControlLabel
@@ -128,24 +126,15 @@ const ClusterDeleteConfirmationModal = () => {
                 label='Remove all member associations'
                 disabled={isProcessing}
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={checkedDiagramRemove}
-                    onChange={handleCheck}
-                    name='checkedDiagramRemove'
-                  />
-                }
-                label='Remove this cluster architecture diagram'
-                disabled={isProcessing}
-              />
             </FormGroup>
+
             <Typography className={classes.typography}>
               This action is <b>permanent</b> and <b>cannot</b> be undone, are
               you absolutely sure ?
               <br />
               Please type <b>{currentCluster.name}</b> to confirm.
             </Typography>
+
             <TextField
               required
               autoComplete='off'
@@ -174,10 +163,9 @@ const ClusterDeleteConfirmationModal = () => {
               color='secondary'
               disabled={
                 isProcessing ||
-                !checkedServicesDelete ||
-                !checkedServersAndRepositoriesDelete ||
+                !checkedServersAndServicesDelete ||
+                !checkedRepoAssociationsRemove ||
                 !checkedMembersRemove ||
-                !checkedDiagramRemove ||
                 currentCluster.name !== clusterName
               }
             >
