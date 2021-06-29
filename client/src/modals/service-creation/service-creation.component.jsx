@@ -64,7 +64,6 @@ const ServiceCreationModal = () => {
     isSearching: isSearchingCluster,
     handleValueChange: handleClusterValueChange,
     handleInputChange: handleClusterInputChange,
-    setOptions: setClusterOptions,
     setValue: setClusterValue
   } = useAutocompleteLogic(handleSearchClusters, 'q', 'name', 'id');
 
@@ -79,31 +78,42 @@ const ServiceCreationModal = () => {
 
   const dispatch = useDispatch();
 
+  const fetchServers = clusterId => {
+    setIsFetchingServer(true);
+
+    handleSearchServers({ cluster: clusterId }, results => {
+      setServerOptions(results);
+
+      setIsFetchingServer(false);
+    });
+  };
+
+  // First render
   useEffect(() => {
-    if (currentCluster) setClusterValue(currentCluster);
-    else if (currentServer) {
+    if (currentCluster) {
+      fetchServers(currentCluster.id);
+
+      setClusterValue(currentCluster);
+    } else if (currentServer) {
+      const { cluster } = currentServer;
+      fetchServers(cluster.id);
+
+      setClusterValue(cluster);
+
       setServerOptions([currentServer]);
       setServerValue(currentServer);
-
-      setClusterOptions([currentServer.cluster]);
-      setClusterValue(currentServer.cluster);
     }
-  }, [currentCluster, currentServer, setClusterOptions, setClusterValue]);
+  }, [currentCluster, currentServer, setClusterValue]);
 
-  useEffect(() => {
-    if (clusterValue) {
-      setIsFetchingServer(true);
+  const customHandleClusterValueChange = (event, newValue) => {
+    handleClusterValueChange(event, newValue);
 
-      handleSearchServers({ cluster: clusterValue.id }, results => {
-        if (serverValue && !results.some(({ id }) => id === serverValue.id))
-          setServerValue(null);
+    if (newValue) {
+      setServerValue(null);
 
-        setServerOptions(results);
-
-        setIsFetchingServer(false);
-      });
+      fetchServers(newValue.id);
     }
-  }, [clusterValue, serverValue]);
+  };
 
   const handleClose = () => dispatch(setServiceCreationModalOpen(false));
 
@@ -157,7 +167,7 @@ const ServiceCreationModal = () => {
             fullWidth
             value={clusterValue}
             inputValue={clusterInputValue}
-            onChange={handleClusterValueChange}
+            onChange={customHandleClusterValueChange}
             onInputChange={handleClusterInputChange}
             filterOptions={option => option}
             includeInputInList
