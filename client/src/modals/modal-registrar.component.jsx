@@ -1,19 +1,21 @@
 import { useSelector } from 'react-redux';
 
-import PreferencesModal from './preferences/preferences.component';
-import ClusterCreationModal from './cluster-creation/cluster-creation.component';
-import ClusterDeleteConfirmationModal from './cluster-delete-confirmation/cluster-delete-confirmation.component';
-import ClusterMemberAdditionModal from './cluster-member-addition/cluster-member-addition.component';
-import ClusterMemberRemovalConfirmationModal from './cluster-member-removal-confirmation/cluster-member-removal-confirmation.component';
-import ServiceCreationModal from './service-creation/service-creation.component';
-import ServiceDeleteConfirmationModal from './service-delete-confirmation/service-delete-confirmation.component';
-import ServiceMemberAdditionModal from './service-member-addition/service-member-addition.component';
-import ServiceMemberRemovalConfirmationModal from './service-member-removal-confirmation/service-member-removal-confirmation.component';
-import DiagramNodeRemovalConfirmationModal from './diagram-node-removal-confirmation/diagram-node-removal-confirmation.component';
-import DiagramElementsRemovalConfirmationModal from './diagram-elements-removal-confirmation/diagram-elements-removal-confirmation.component';
-import ServerDomainAdditionModal from './server-domain-addition/server-domain-addition.component';
-import ServerDomainUpdateModal from './server-domain-update/server-domain-update.component';
-import ServerDomainRemovalConfirmationModal from './server-domain-removal-confirmation/server-domain-removal-confirmation.component';
+import PreferencesModal from 'modals/preferences/preferences.component';
+import ClusterCreationModal from 'modals/cluster-creation/cluster-creation.component';
+import ClusterDeleteConfirmationModal from 'modals/cluster-delete-confirmation/cluster-delete-confirmation.component';
+import ClusterMemberAdditionModal from 'modals/cluster-member-addition/cluster-member-addition.component';
+import ClusterMemberRemovalConfirmationModal from 'modals/cluster-member-removal-confirmation/cluster-member-removal-confirmation.component';
+import ServerCreationModal from 'modals/server-creation/server-creation.component';
+import ServerDeleteConfirmationModal from 'modals/server-delete-confirmation/server-delete-confirmation.component';
+import ServerDomainAdditionModal from 'modals/server-domain-addition/server-domain-addition.component';
+import ServerDomainUpdateModal from 'modals/server-domain-update/server-domain-update.component';
+import ServerDomainRemovalConfirmationModal from 'modals/server-domain-removal-confirmation/server-domain-removal-confirmation.component';
+import ServiceCreationModal from 'modals/service-creation/service-creation.component';
+import ServiceDeleteConfirmationModal from 'modals/service-delete-confirmation/service-delete-confirmation.component';
+import ServiceMemberAdditionModal from 'modals/service-member-addition/service-member-addition.component';
+import ServiceMemberRemovalConfirmationModal from 'modals/service-member-removal-confirmation/service-member-removal-confirmation.component';
+import DiagramNodeRemovalConfirmationModal from 'modals/diagram-node-removal-confirmation/diagram-node-removal-confirmation.component';
+import DiagramElementsRemovalConfirmationModal from 'modals/diagram-elements-removal-confirmation/diagram-elements-removal-confirmation.component';
 
 const ModalRegistrar = () => {
   const {
@@ -24,17 +26,19 @@ const ModalRegistrar = () => {
     openClusterMemberAdditionModal,
     openClusterMemberRemovalConfirmationModal,
 
+    openServerCreationModal,
+    openServerDeleteConfirmationModal,
+    openServerDomainAdditionModal,
+    openServerDomainUpdateModal,
+    openServerDomainRemovalConfirmationModal,
+
     openServiceCreationModal,
     openServiceDeleteConfirmationModal,
     openServiceMemberAdditionModal,
     openServiceMemberRemovalConfirmationModal,
 
     openClusterDiagramNodeRemovalConfirmationModal,
-    openClusterDiagramElementsRemovalConfirmationModal,
-
-    openServerDomainAdditionModal,
-    openServerDomainUpdateModal,
-    openServerDomainRemovalConfirmationModal
+    openClusterDiagramElementsRemovalConfirmationModal
   } = useSelector(state => state.modal);
 
   return (
@@ -46,6 +50,14 @@ const ModalRegistrar = () => {
       {openClusterMemberAdditionModal && <ClusterMemberAdditionModal />}
       {openClusterMemberRemovalConfirmationModal && (
         <ClusterMemberRemovalConfirmationModal />
+      )}
+
+      {openServerCreationModal && <ServerCreationModal />}
+      {openServerDeleteConfirmationModal && <ServerDeleteConfirmationModal />}
+      {openServerDomainAdditionModal && <ServerDomainAdditionModal />}
+      {openServerDomainUpdateModal && <ServerDomainUpdateModal />}
+      {openServerDomainRemovalConfirmationModal && (
+        <ServerDomainRemovalConfirmationModal />
       )}
 
       {openServiceCreationModal && <ServiceCreationModal />}
@@ -60,12 +72,6 @@ const ModalRegistrar = () => {
       )}
       {openClusterDiagramElementsRemovalConfirmationModal && (
         <DiagramElementsRemovalConfirmationModal />
-      )}
-
-      {openServerDomainAdditionModal && <ServerDomainAdditionModal />}
-      {openServerDomainUpdateModal && <ServerDomainUpdateModal />}
-      {openServerDomainRemovalConfirmationModal && (
-        <ServerDomainRemovalConfirmationModal />
       )}
     </>
   );
