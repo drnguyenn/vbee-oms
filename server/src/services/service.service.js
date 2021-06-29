@@ -12,7 +12,6 @@ const ClusterDao = require('@daos/cluster.dao');
 const ClusterMemberDao = require('@daos/cluster-member.dao');
 const ServerDao = require('@daos/server.dao');
 
-const ServerService = require('@services/server.service');
 const UserService = require('./user.service');
 
 const get = async (condition, projection) => {
@@ -24,7 +23,7 @@ const get = async (condition, projection) => {
   return service;
 };
 
-const create = async ({ name, clusterId, ...rest }) => {
+const create = async ({ name, clusterId, serverId, ...rest }) => {
   if (!(await ClusterDao.findOne(clusterId)))
     throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
 
@@ -34,21 +33,46 @@ const create = async ({ name, clusterId, ...rest }) => {
       `Service with name "${name}" already exists`
     );
 
+  if (serverId) {
+    const server = await ServerDao.findOne(serverId);
+    if (!server)
+      throw new CustomError(errorCodes.NOT_FOUND, 'Server not found');
+
+    const servers = await ServerDao.findAll({ cluster: clusterId }, '_id');
+    if (!servers.map(({ _id }) => _id.toString()).includes(serverId))
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Server "${server.name}" does not belong to the specified cluster`
+      );
+  }
+
   const service = await ServiceDao.create({
     name,
     cluster: clusterId,
+    server: serverId,
     ...rest
   });
-
-  await ServerDao.create({ service: service._id });
 
   return service;
 };
 
-const update = async (condition, { name, clusterId, ...rest }) => {
+const update = async (condition, { name, clusterId, serverId, ...rest }) => {
   if (clusterId)
     if (!(await ClusterDao.findOne(clusterId)))
       throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
+
+  if (serverId) {
+    const server = await ServerDao.findOne(serverId);
+    if (!server)
+      throw new CustomError(errorCodes.NOT_FOUND, 'Server not found');
+
+    const servers = await ServerDao.findAll({ cluster: clusterId }, '_id');
+    if (!servers.map(({ _id }) => _id.toString()).includes(serverId))
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Server "${server.name}" does not belong to the specified cluster`
+      );
+  }
 
   // Find out whether any service has the same `name` with the `name`
   // that is requested to be changed to, except the one that matched the `condition`
@@ -57,7 +81,7 @@ const update = async (condition, { name, clusterId, ...rest }) => {
   if (name)
     if (ObjectId.isValid(condition))
       conditionAndException = {
-        name,
+        $or: [{ name }],
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
@@ -73,7 +97,7 @@ const update = async (condition, { name, clusterId, ...rest }) => {
       });
 
       conditionAndException = {
-        name,
+        $or: [{ name }],
         $and: [
           Object.keys(condition).reduce(
             (accumulator, currentValue) => ({
@@ -99,10 +123,19 @@ const update = async (condition, { name, clusterId, ...rest }) => {
   const service = await ServiceDao.update(condition, {
     name,
     cluster: clusterId,
+    server: serverId || null,
     ...rest
   });
 
-  await ServerDao.update({ service: service._id }, {});
+  const members = await ServiceMemberDao.findAll(
+    { service: service._id },
+    'user'
+  );
+  Promise.all(
+    members.map(({ user }) =>
+      ClusterMemberDao.update({ user, cluster: clusterId })
+    )
+  );
 
   return {
     statusCode: service.createdAt === service.updatedAt ? 201 : 200,
@@ -116,31 +149,15 @@ const removeOne = async condition => {
   if (!service)
     throw new CustomError(errorCodes.NOT_FOUND, 'Service not found');
 
-  await ServiceMemberDao.removeAll({ service: service._id });
-
-  await ServerService.removeOne({ service: service._id });
+  await ServiceMemberDao.removeMany({ service: service._id });
 
   return service;
 };
 
-const removeAll = async (services = []) => {
-  await ServiceMemberDao.removeAll({
-    service: {
-      $in: services.map(service => service._id)
-    }
-  });
+const removeMany = async (serviceIds = []) => {
+  await ServiceMemberDao.removeMany({ service: { $in: serviceIds } });
 
-  await ServerDao.removeAll({
-    service: {
-      $in: services.map(service => service._id)
-    }
-  });
-
-  const result = await ServiceDao.removeAll({
-    _id: {
-      $in: services.map(service => service._id)
-    }
-  });
+  const result = await ServiceDao.removeMany({ _id: { $in: serviceIds } });
 
   return result;
 };
@@ -172,7 +189,7 @@ const addMember = async (serviceCondition, memberCondition, data) => {
     ...data
   });
 
-  await ClusterMemberDao.update({
+  ClusterMemberDao.update({
     user: user._id,
     cluster: service.cluster._id
   });
@@ -219,7 +236,7 @@ const removeMember = async (serviceCondition, memberCondition) => {
 const removeMemberFromAllServices = async memberCondition => {
   const user = await UserService.get(memberCondition);
 
-  await ServiceMemberDao.removeAll({ user: user._id });
+  await ServiceMemberDao.removeMany({ user: user._id });
 
   return { statusCode: 200 };
 };
@@ -230,7 +247,7 @@ module.exports = {
   create,
   update,
   removeOne,
-  removeAll,
+  removeMany,
   addMember,
   updateMember,
   removeMember,

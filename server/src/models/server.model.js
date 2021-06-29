@@ -57,6 +57,10 @@ ServerSchema.pre('findOne', function populate() {
   this.populate({ path: 'cluster', select: 'name description' });
 });
 
+ServerSchema.pre('findOneAndUpdate', function populate() {
+  this.populate({ path: 'cluster', select: 'name description' });
+});
+
 ServerSchema.pre('findOneAndDelete', function populate() {
   this.populate({ path: 'services', select: '_id' });
 });

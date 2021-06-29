@@ -11,5 +11,6 @@ module.exports = {
     read: 'pull',
     write: 'push',
     admin: 'admin'
-  }
+  },
+  METRICS_QUERY_TIME_RANGE: '10s'
 };

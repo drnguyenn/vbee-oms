@@ -63,4 +63,8 @@ ServiceSchema.pre('findOne', function populate() {
   this.populate({ path: 'server', select: 'name ipAddress macAddress' });
 });
 
+ServiceSchema.pre('findOneAndUpdate', function populate() {
+  this.populate({ path: 'server' });
+});
+
 module.exports = mongoose.model('Service', ServiceSchema);

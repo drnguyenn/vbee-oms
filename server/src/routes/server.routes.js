@@ -3,13 +3,21 @@ const router = require('express').Router();
 const {
   searchServersValidator,
   createServerValidator,
-  updateServerValidator
+  updateServerValidator,
+  getServersMetricsValidator
 } = require('@validators/server.validators');
 
 const asyncMiddleware = require('@middlewares/async.middlewares');
 const { auth, systemAdminCheck } = require('@middlewares/user.middlewares');
 
 const ServerController = require('@controllers/server.controller');
+
+router.get(
+  '/servers/metrics',
+  auth,
+  getServersMetricsValidator,
+  asyncMiddleware(ServerController.getMetrics)
+);
 
 router.get('/servers/:id', auth, asyncMiddleware(ServerController.getServer));
 
@@ -46,12 +54,6 @@ router.get(
   '/servers/:id/ssl',
   auth,
   asyncMiddleware(ServerController.getAllServerDomainsSslStatus)
-);
-
-router.get(
-  '/servers/:id/metrics',
-  auth,
-  asyncMiddleware(ServerController.getServerMetrics)
 );
 
 module.exports = router;

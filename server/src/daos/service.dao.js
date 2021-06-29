@@ -7,6 +7,7 @@ const create = async data => {
   let service = await ServiceModel.create(data);
   service = await service
     .populate({ path: 'cluster', select: 'name' })
+    .populate({ path: 'server', select: 'name ipAddress macAddress' })
     .execPopulate();
   return service;
 };
@@ -89,7 +90,7 @@ const removeOne = async condition => {
   return null;
 };
 
-const removeAll = async condition => {
+const removeMany = async condition => {
   const services = await ServiceModel.deleteMany(condition);
   return services;
 };
@@ -101,5 +102,5 @@ module.exports = {
   search,
   update,
   removeOne,
-  removeAll
+  removeMany
 };

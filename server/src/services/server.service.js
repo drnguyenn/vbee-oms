@@ -2,16 +2,18 @@
 const {
   Types: { ObjectId }
 } = require('mongoose');
-const { Client } = require('@elastic/elasticsearch');
 
 const CustomError = require('@errors/custom-error');
 const errorCodes = require('@errors/code');
 
 const ServerDao = require('@daos/server.dao');
-const ServiceDao = require('@daos/server.dao');
 const DomainDao = require('@daos/domain.dao');
+const ClusterDao = require('@daos/cluster.dao');
+
+const ServiceService = require('@services/service.service');
 
 const { checkDomainsSslStatus } = require('@utils/domain.utils');
+const { getServerMetrics } = require('@utils/server.utils');
 
 const get = async (condition, projection) => {
   const server = await ServerDao.findOne(condition, projection);
@@ -21,45 +23,88 @@ const get = async (condition, projection) => {
   return server;
 };
 
-const create = async ({ ipAddress, serverId, ...rest }) => {
-  if (ipAddress)
-    if (await ServerDao.findOne({ ipAddress }))
-      throw new CustomError(
-        errorCodes.BAD_REQUEST,
-        `Server with IP address "${ipAddress}" already exists`
-      );
+const create = async ({
+  name,
+  ipAddress,
+  macAddress,
+  clusterId,
+  domains = [],
+  ...rest
+}) => {
+  if (await ServerDao.findOne({ name }))
+    throw new CustomError(
+      errorCodes.BAD_REQUEST,
+      `Server with name "${name}" already exists`
+    );
 
-  if (serverId)
-    if (!(await ServiceDao.findOne(serverId)))
-      throw new CustomError(errorCodes.NOT_FOUND, 'Service not found');
+  if (await ServerDao.findOne({ ipAddress }))
+    throw new CustomError(
+      errorCodes.BAD_REQUEST,
+      `Server with IP address "${ipAddress}" already exists`
+    );
 
-  const server = await ServerDao.create({
+  if (await ServerDao.findOne({ macAddress }))
+    throw new CustomError(
+      errorCodes.BAD_REQUEST,
+      `Server with MAC address "${macAddress}" already exists`
+    );
+
+  if (clusterId)
+    if (!(await ClusterDao.findOne(clusterId)))
+      throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
+
+  const existDomains = await DomainDao.findAll(
+    { value: { $in: domains } },
+    'value'
+  );
+
+  if (existDomains.length)
+    throw new CustomError(
+      errorCodes.BAD_REQUEST,
+      `Domains already exist:${existDomains.map(({ value }) => ` ${value}`)}`
+    );
+
+  let server = await ServerDao.create({
+    name,
     ipAddress,
-    server: serverId,
+    macAddress,
+    cluster: clusterId,
     ...rest
   });
+
+  await DomainDao.create(
+    domains.map(domain => ({
+      server: server._id,
+      value: domain
+    }))
+  );
+
+  server = await server.populate('domainCount').execPopulate();
 
   return server;
 };
 
-const update = async (condition, { ipAddress, serverId, ...rest }) => {
-  if (serverId)
-    if (!(await ServiceDao.findOne(serverId)))
-      throw new CustomError(errorCodes.NOT_FOUND, 'Service not found');
+const update = async (
+  condition,
+  { name, ipAddress, macAddress, clusterId, domains = [], ...rest }
+) => {
+  if (clusterId)
+    if (!(await ClusterDao.findOne(clusterId)))
+      throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
 
   // Find out whether any server has the same `ipAddress` with the `ipAddress`
   // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
 
-  if (ipAddress)
+  if (name || ipAddress || macAddress)
     if (ObjectId.isValid(condition))
       conditionAndException = {
-        ipAddress,
+        $or: [{ name }, { ipAddress }, { macAddress }],
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
       // Fields that identify instance
-      const conditionAvailableKeys = ['_id', 'ipAddress'];
+      const conditionAvailableKeys = ['_id', 'name', 'ipAddress', 'macAddress'];
 
       Object.keys(condition).forEach(key => {
         if (!conditionAvailableKeys.includes(key))
@@ -70,7 +115,7 @@ const update = async (condition, { ipAddress, serverId, ...rest }) => {
       });
 
       conditionAndException = {
-        ipAddress,
+        $or: [{ name }, { ipAddress }, { macAddress }],
         $and: [
           Object.keys(condition).reduce(
             (accumulator, currentValue) => ({
@@ -88,10 +133,19 @@ const update = async (condition, { ipAddress, serverId, ...rest }) => {
     throw new CustomError(errorCodes.BAD_REQUEST, 'Server already exists');
 
   const server = await ServerDao.update(condition, {
+    name,
     ipAddress,
-    server: serverId,
+    macAddress,
+    cluster: clusterId,
     ...rest
   });
+
+  await DomainDao.create(
+    domains.map(domain => ({
+      server: server._id,
+      value: domain
+    }))
+  );
 
   return {
     statusCode: server.createdAt === server.updatedAt ? 201 : 200,
@@ -104,23 +158,27 @@ const removeOne = async condition => {
 
   if (!server) throw new CustomError(errorCodes.NOT_FOUND, 'Server not found');
 
-  await DomainDao.removeAll({ server: server._id });
+  const { _id, services } = server;
+
+  await DomainDao.removeMany({ server: _id });
+
+  if (services.length)
+    await ServiceService.removeMany(services.map(service => service._id));
 
   return server;
 };
 
-const removeAll = async (servers = []) => {
-  const result = await ServerDao.removeAll({
-    _id: {
-      $in: servers.map(server => server._id)
-    }
-  });
+const removeMany = async (serverIds = []) => {
+  const result = await ServerDao.removeMany({ _id: { $in: serverIds } });
 
-  await DomainDao.removeAll({
-    server: {
-      $in: servers.map(server => server._id)
-    }
-  });
+  await DomainDao.removeMany({ server: { $in: serverIds } });
+
+  const services = await ServiceService.search(
+    { server: { $in: serverIds } },
+    '_id'
+  );
+  if (services.length)
+    await ServiceService.removeMany(services.map(service => service._id));
 
   return result;
 };
@@ -143,32 +201,27 @@ const getAllServerDomainsSslStatus = async serverCondition => {
   };
 };
 
-const getServerMetrics = async serverCondition => {
-  await get(serverCondition);
+const getMetrics = async (serverIds = []) => {
+  const servers = await ServerDao.findAll(
+    {
+      _id: {
+        $in: serverIds
+      }
+    },
+    '_id macAddress'
+  );
 
-  const client = new Client({
-    node: 'http://elasticsearch:9200',
-    auth: {
-      username: 'elastic',
-      password: 'changeme'
-    }
-  });
+  const metrics = await Promise.all(
+    servers.map(({ macAddress }) => getServerMetrics(macAddress))
+  );
 
-  const { body } = await client.search({
-    index: 'metricbeat-*',
-    body: {
-      sort: [
-        {
-          timestamp: {
-            order: 'desc'
-          }
-        }
-      ],
-      size: 1
-    }
-  });
-
-  return body.hits.hits;
+  return servers.reduce(
+    (accumulator, { _id }, currentIndex) => ({
+      ...accumulator,
+      [_id]: { ...metrics[currentIndex] }
+    }),
+    {}
+  );
 };
 
 module.exports = {
@@ -177,7 +230,7 @@ module.exports = {
   create,
   update,
   removeOne,
-  removeAll,
+  removeMany,
   getAllServerDomainsSslStatus,
-  getServerMetrics
+  getMetrics
 };

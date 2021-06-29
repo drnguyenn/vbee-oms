@@ -4,7 +4,10 @@ const {
 const ServerModel = require('@models/server.model');
 
 const create = async data => {
-  const server = await ServerModel.create(data);
+  let server = await ServerModel.create(data);
+  server = await server
+    .populate({ path: 'cluster', select: 'name' })
+    .execPopulate();
   return server;
 };
 
@@ -23,7 +26,13 @@ const findOne = async (condition, projection) => {
 };
 
 const findAll = async (condition, projection) => {
-  const servers = await ServerModel.find(condition, projection);
+  const servers = await ServerModel.find(condition, projection)
+    .populate('serviceCount')
+    .populate('domainCount')
+    .populate({
+      path: 'cluster',
+      select: 'name'
+    });
   return servers;
 };
 
@@ -66,7 +75,7 @@ const removeOne = async condition => {
   return null;
 };
 
-const removeAll = async condition => {
+const removeMany = async condition => {
   const servers = await ServerModel.deleteMany(condition);
   return servers;
 };
@@ -77,5 +86,5 @@ module.exports = {
   findAll,
   update,
   removeOne,
-  removeAll
+  removeMany
 };

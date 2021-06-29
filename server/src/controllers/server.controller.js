@@ -44,12 +44,12 @@ const getAllServerDomainsSslStatus = async (req, res) => {
   return res.json({ status: 1, result: { server } });
 };
 
-const getServerMetrics = async (req, res) => {
-  const { id } = req.params;
+const getMetrics = async (req, res) => {
+  const { ids } = req.query;
 
-  const metrics = await ServerService.getServerMetrics(id);
+  const results = await ServerService.getMetrics(ids);
 
-  return res.json({ status: 1, result: { metrics } });
+  return res.json({ status: 1, result: { ...results } });
 };
 
 module.exports = {
@@ -59,5 +59,5 @@ module.exports = {
   updateServer,
   deleteServer,
   getAllServerDomainsSslStatus,
-  getServerMetrics
+  getMetrics
 };
