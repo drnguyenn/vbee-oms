@@ -127,15 +127,16 @@ export const updateAvatar = async avatar => {
   throw new Error(response.message);
 };
 
-export const searchUsers = async (query = '') => {
+export const searchUsers = async query => {
   const accessToken = getCookie('accessToken');
 
   const response = await customAxios({
     method: 'GET',
-    url: `/users${query}`,
+    url: '/users',
     headers: {
       Authorization: `Bearer ${accessToken}`
-    }
+    },
+    params: query
   });
 
   if (response.status < 400) {

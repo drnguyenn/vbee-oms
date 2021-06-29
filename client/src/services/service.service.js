@@ -43,6 +43,27 @@ export const fetchService = async id => {
   throw new Error(message);
 };
 
+export const searchServices = async query => {
+  const accessToken = getCookie('accessToken');
+
+  const response = await customAxios({
+    method: 'GET',
+    url: '/services',
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    },
+    params: query
+  });
+
+  if (response.status < 400) {
+    const { services } = response.data.result;
+    return services;
+  }
+
+  const { message } = response.data;
+  throw new Error(message);
+};
+
 export const createService = async data => {
   const accessToken = getCookie('accessToken');
 

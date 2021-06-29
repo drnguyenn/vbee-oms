@@ -43,6 +43,27 @@ export const fetchServer = async id => {
   throw new Error(message);
 };
 
+export const searchServers = async query => {
+  const accessToken = getCookie('accessToken');
+
+  const response = await customAxios({
+    method: 'GET',
+    url: '/servers',
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    },
+    params: query
+  });
+
+  if (response.status < 400) {
+    const { servers } = response.data.result;
+    return servers;
+  }
+
+  const { message } = response.data;
+  throw new Error(message);
+};
+
 export const createServer = async data => {
   const accessToken = getCookie('accessToken');
 
@@ -101,6 +122,34 @@ export const deleteServer = async id => {
     return server;
   }
 
+  const { message } = response.data;
+  throw new Error(message);
+};
+
+export const fetchMetrics = async (serverIds = []) => {
+  const accessToken = getCookie('accessToken');
+
+  const response = await customAxios({
+    method: 'GET',
+    url: '/servers/metrics',
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    },
+    params: { ids: serverIds }
+  });
+
+  if (response.status < 400) {
+    const { result } = response.data;
+
+    // Convert all keys to lower case
+    return Object.keys(result).reduce(
+      (previousValue, currentValue) => ({
+        ...previousValue,
+        [currentValue.toLowerCase()]: result[currentValue]
+      }),
+      {}
+    );
+  }
   const { message } = response.data;
   throw new Error(message);
 };

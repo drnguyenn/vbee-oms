@@ -43,6 +43,27 @@ export const fetchCluster = async id => {
   throw new Error(message);
 };
 
+export const searchClusters = async query => {
+  const accessToken = getCookie('accessToken');
+
+  const response = await customAxios({
+    method: 'GET',
+    url: '/clusters',
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    },
+    params: query
+  });
+
+  if (response.status < 400) {
+    const { clusters } = response.data.result;
+    return clusters;
+  }
+
+  const { message } = response.data;
+  throw new Error(message);
+};
+
 export const createCluster = async ({ name, description }) => {
   const accessToken = getCookie('accessToken');
 
