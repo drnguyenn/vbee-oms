@@ -1,5 +1,7 @@
 import { takeLatest, all, call, put } from 'redux-saga/effects';
 
+import { Typography } from '@material-ui/core';
+
 import {
   fetchClusterDiagramSuccess,
   fetchClusterDiagramFailure,
@@ -24,7 +26,9 @@ import {
   updateClusterDiagramLinkSuccess,
   updateClusterDiagramLinkFailure,
   removeClusterDiagramLinkSuccess,
-  removeClusterDiagramLinkFailure
+  removeClusterDiagramLinkFailure,
+  linkNodeToServiceSuccess,
+  linkNodeToServiceFailure
 } from './diagram.actions';
 import { notify } from '../notification/notification.actions';
 
@@ -190,6 +194,42 @@ function* removeClusterDiagramLink({ payload: { linkId, callback } }) {
   }
 }
 
+function* linkNodeToService({ payload: { nodeId, serviceId } }) {
+  try {
+    const diagramNode = yield call(
+      DiagramService.updateClusterDiagramNode,
+      nodeId,
+      { serviceId }
+    );
+
+    yield put(linkNodeToServiceSuccess(diagramNode));
+
+    if (diagramNode.service) {
+      let SuccessMessage;
+
+      if (diagramNode.service.server)
+        SuccessMessage = () => (
+          <Typography variant='body2'>
+            Linked to service {diagramNode.service.name}.
+            <br />
+            Metrics will arrive soon.
+          </Typography>
+        );
+      else
+        SuccessMessage = () => (
+          <Typography variant='body2'>
+            Linked to service {diagramNode.service.name}
+          </Typography>
+        );
+
+      yield put(notify(<SuccessMessage />, { variant: 'success' }));
+    }
+  } catch (error) {
+    yield put(linkNodeToServiceFailure(error));
+    yield put(notify('Something went wrong', { variant: 'error' }));
+  }
+}
+
 function* onFetchClusterDiagramStart() {
   yield takeLatest(
     DiagramActionTypes.FETCH_CLUSTER_DIAGRAM_START,
@@ -274,6 +314,13 @@ function* onRemoveClusterDiagramLinkStart() {
   );
 }
 
+function* onLinkNodeToServiceStart() {
+  yield takeLatest(
+    DiagramActionTypes.LINK_NODE_TO_SERVICE_START,
+    linkNodeToService
+  );
+}
+
 export default function* diagramSagas() {
   yield all([
     call(onFetchClusterDiagramStart),
@@ -287,6 +334,7 @@ export default function* diagramSagas() {
     call(onRemoveClusterDiagramPortStart),
     call(onAddClusterDiagramLinkStart),
     call(onUpdateClusterDiagramLinkStart),
-    call(onRemoveClusterDiagramLinkStart)
+    call(onRemoveClusterDiagramLinkStart),
+    call(onLinkNodeToServiceStart)
   ]);
 }

@@ -1,4 +1,5 @@
 import DiagramActionTypes from './diagram.types';
+import ServerActionTypes from '../server/server.types';
 
 const INITIAL_STATE = {
   currentDiagram: null,
@@ -6,6 +7,9 @@ const INITIAL_STATE = {
   selectedElements: null,
   isFetchingDiagram: true,
   isSynchronizing: false,
+  isFetchingMetrics: false,
+  isLinkingNodeToService: false,
+  showDrawer: false,
   error: null
 };
 
@@ -57,14 +61,10 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
         currentDiagram: {
           ...state.currentDiagram,
           nodes: state.currentDiagram.nodes.map(node =>
-            Object.keys(nodes).includes(node.id)
-              ? { ...node, ...nodes[node.id] }
-              : node
+            node.id in nodes ? { ...node, ...nodes[node.id] } : node
           ),
           links: state.currentDiagram.links.map(link =>
-            Object.keys(links).includes(link.id)
-              ? { ...link, ...links[link.id] }
-              : link
+            link.id in links ? { ...link, ...links[link.id] } : link
           )
         },
         error: null
@@ -129,23 +129,33 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
         isSynchronizing: false,
         currentDiagram: {
           ...state.currentDiagram,
-          nodes: [...state.currentDiagram.nodes, { ...payload, ports: [] }]
+          nodes: [...state.currentDiagram.nodes, { ...payload }]
         },
         error: null
       };
 
-    case DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_NODE_SUCCESS:
+    case DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_NODE_SUCCESS: {
+      const { id, service, ...rest } = payload;
+
       return {
         ...state,
         isSynchronizing: false,
         currentDiagram: {
           ...state.currentDiagram,
           nodes: state.currentDiagram.nodes.map(node =>
-            node.id === payload.id ? { ...node, ...payload } : node
+            node.id === payload.id ? { ...node, ...rest } : node
           )
         },
+        selectedNode:
+          state.selectedNode && state.selectedNode.id === payload.id
+            ? {
+                ...state.selectedNode,
+                ...rest
+              }
+            : state.selectedNode,
         error: null
       };
+    }
 
     case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_NODE_SUCCESS: {
       const removedPortIds = payload.ports.map(port => port.id);
@@ -261,6 +271,91 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
           )
         },
         error: null
+      };
+
+    case ServerActionTypes.FETCH_SERVERS_METRICS_START:
+      return {
+        ...state,
+        isFetchingMetrics: true,
+        error: null
+      };
+
+    case ServerActionTypes.FETCH_SERVERS_METRICS_SUCCESS: {
+      const { selectedNode } = state;
+
+      if (
+        selectedNode &&
+        selectedNode.service &&
+        selectedNode.service.server &&
+        selectedNode.service.server.id in payload
+      )
+        selectedNode.service.server.metrics =
+          payload[selectedNode.service.server.id];
+
+      return {
+        ...state,
+        currentDiagram: {
+          ...state.currentDiagram,
+          nodes: state.currentDiagram.nodes.map(node => {
+            const tempNode = node;
+
+            if (node.service && node.service.server)
+              tempNode.service.server.metrics = payload[node.service.server.id];
+
+            return tempNode;
+          })
+        },
+        selectedNode,
+        isFetchingMetrics: false,
+        error: null
+      };
+    }
+
+    case ServerActionTypes.FETCH_SERVERS_METRICS_FAILURE:
+      return {
+        ...state,
+        isFetchingMetrics: false,
+        error: payload
+      };
+
+    case DiagramActionTypes.SET_SHOW_DRAWER:
+      return {
+        ...state,
+        showDrawer: payload
+      };
+
+    case DiagramActionTypes.LINK_NODE_TO_SERVICE_START:
+      return {
+        ...state,
+        isLinkingNodeToService: true,
+        error: null
+      };
+
+    case DiagramActionTypes.LINK_NODE_TO_SERVICE_SUCCESS:
+      return {
+        ...state,
+        isLinkingNodeToService: false,
+        currentDiagram: {
+          ...state.currentDiagram,
+          nodes: state.currentDiagram.nodes.map(node =>
+            node.id === payload.id ? { ...node, ...payload } : node
+          )
+        },
+        selectedNode:
+          state.selectedNode && state.selectedNode.id === payload.id
+            ? {
+                ...state.selectedNode,
+                ...payload
+              }
+            : state.selectedNode,
+        error: null
+      };
+
+    case DiagramActionTypes.LINK_NODE_TO_SERVICE_FAILURE:
+      return {
+        ...state,
+        isLinkingNodeToService: false,
+        error: payload
       };
 
     case DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_ELEMENTS_FAILURE:

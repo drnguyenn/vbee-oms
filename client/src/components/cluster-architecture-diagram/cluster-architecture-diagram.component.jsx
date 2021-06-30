@@ -225,18 +225,12 @@ const ClusterArchitectureDiagram = () => {
 
   useEffect(() => {
     const serverIds = currentDiagram.nodes
-      .filter(node => node.service)
+      .filter(node => node.service && node.service.server)
       .map(node => node.service.server.id);
 
     if (serverIds.length) {
       const intervalId = setInterval(() => {
-        dispatch(
-          fetchServersMetricsStart(
-            currentDiagram.nodes
-              .filter(node => node.service)
-              .map(node => node.service.server.id)
-          )
-        );
+        dispatch(fetchServersMetricsStart(serverIds));
       }, 10000);
 
       return () => clearInterval(intervalId);

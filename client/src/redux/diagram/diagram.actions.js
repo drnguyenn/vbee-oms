@@ -187,3 +187,23 @@ export const removeClusterDiagramLinkFailure = error => ({
   type: DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_LINK_FAILURE,
   payload: error
 });
+
+export const setShowDrawer = show => ({
+  type: DiagramActionTypes.SET_SHOW_DRAWER,
+  payload: show
+});
+
+export const linkNodeToServiceStart = (nodeId, serviceId) => ({
+  type: DiagramActionTypes.LINK_NODE_TO_SERVICE_START,
+  payload: { nodeId, serviceId }
+});
+
+export const linkNodeToServiceSuccess = node => ({
+  type: DiagramActionTypes.LINK_NODE_TO_SERVICE_SUCCESS,
+  payload: node
+});
+
+export const linkNodeToServiceFailure = error => ({
+  type: DiagramActionTypes.LINK_NODE_TO_SERVICE_FAILURE,
+  payload: error
+});

@@ -22,7 +22,7 @@ import {
   updateClusterDiagramNodeStart,
   setShowDrawer
 } from '../../../redux/diagram/diagram.actions';
-import { toggleDiagramNodeRemoveConfirmationModal } from '../../../redux/modal/modal.actions';
+import { setDiagramNodeRemovalConfirmationModalOpen } from '../../../redux/modal/modal.actions';
 
 import {
   CustomNodeStyles,
@@ -41,9 +41,6 @@ const useStyles = makeStyles(muiTheme => ({
   nodeActionMenuIcon: {
     marginRight: '1rem'
   },
-  tooltip: {
-    minWidth: 150
-  },
   metricsDefault: {},
   metricsLow: {
     color: muiTheme.palette.success.main
@@ -58,7 +55,7 @@ const useStyles = makeStyles(muiTheme => ({
 
 const MetricsTooltip = withStyles(() => ({
   tooltip: {
-    minWidth: 170,
+    minWidth: 200,
     padding: 10
   }
 }))(Tooltip);
@@ -93,7 +90,7 @@ const NodeActionMenu = memo(
           callback: () => node.remove()
         })
       );
-      dispatch(toggleDiagramNodeRemoveConfirmationModal());
+      dispatch(setDiagramNodeRemovalConfirmationModalOpen(true));
 
       handleClose();
     };
@@ -200,6 +197,8 @@ const CustomNodeWidget = ({ engine, node }) => {
   const handleNodeActionMenuOpen = event => {
     event.preventDefault();
 
+    dispatch(setSelectedDiagramNode(node));
+
     setNodeActionMenu({
       mouseX: event.clientX - 2,
       mouseY: event.clientY - 4
@@ -230,9 +229,90 @@ const CustomNodeWidget = ({ engine, node }) => {
     setEditMode(false);
   };
 
+  const getMetrics = () => {
+    if (service) {
+      if (service.server) {
+        const { metrics = {} } = service.server;
+
+        return (
+          <MetricsTooltip
+            interactive
+            arrow
+            title={
+              <>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>IP</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {service ? service.server.ipAddress : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>CPU</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {metrics.cpuUsage > 0
+                      ? `${metrics.cpuUsage.toFixed(1)}%`
+                      : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>RAM</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {metrics.memoryUsage > 0
+                      ? `${metrics.memoryUsage.toFixed(1)}%`
+                      : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>Net in</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {metrics.networkIn > 0
+                      ? `${metrics.networkIn.toFixed(1)} KB/s`
+                      : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+                <TooltipRowStyles>
+                  <TooltipRowTitleStyles>Net out</TooltipRowTitleStyles>
+                  <TooltipRowValueStyles>
+                    {metrics.networkOut > 0
+                      ? `${metrics.networkOut.toFixed(1)} KB/s`
+                      : '--'}
+                  </TooltipRowValueStyles>
+                </TooltipRowStyles>
+              </>
+            }
+          >
+            <Typography
+              className={
+                service.server.metrics
+                  ? classes[getMetricClassName(service.server.metrics.cpuUsage)]
+                  : classes.metricsDefault
+              }
+              variant='h6'
+              component='span'
+              display='inline'
+            >
+              {service.server.metrics && service.server.metrics.cpuUsage > 0
+                ? `${service.server.metrics.cpuUsage.toFixed(1)}%`
+                : '--'}
+            </Typography>
+          </MetricsTooltip>
+        );
+      }
+
+      return (
+        <Typography variant='h6' component='span' display='inline'>
+          --
+        </Typography>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <>
       <CustomNodeStyles
+        outlineBorderColor={theme.palette.primary.light}
         backgroundColor={theme.palette.background.paper}
         isSelected={node.serialize().selected}
         onClick={handleNodeClick}
@@ -257,92 +337,22 @@ const CustomNodeWidget = ({ engine, node }) => {
               </form>
             </Fade>
           ) : (
-            <TitleStyles
-              onDoubleClick={() => {
-                setEditMode(true);
-                setSelectedDiagramNode(node);
-              }}
-            >
-              {name}
-            </TitleStyles>
+            <Tooltip title={name} placement='top' arrow enterDelay={500}>
+              <TitleStyles
+                onDoubleClick={() => {
+                  setEditMode(true);
+                  setSelectedDiagramNode(node);
+                }}
+              >
+                {name.length <= 14 ? name : `${name.substring(0, 14)}...`}
+              </TitleStyles>
+            </Tooltip>
           )}
 
           {service && (
             <CheckCircle className={classes.success} color='primary' />
           )}
         </HeaderStyles>
-
-        {service && (
-          <MetricsTooltip
-            className={classes.tooltip}
-            interactive
-            arrow
-            title={
-              <>
-                <TooltipRowStyles>
-                  <TooltipRowTitleStyles>IP</TooltipRowTitleStyles>
-                  <TooltipRowValueStyles>
-                    {service ? service.server.ipAddress : '--'}
-                  </TooltipRowValueStyles>
-                </TooltipRowStyles>
-                <TooltipRowStyles>
-                  <TooltipRowTitleStyles>CPU</TooltipRowTitleStyles>
-                  <TooltipRowValueStyles>
-                    {service &&
-                    service.server.metrics &&
-                    service.server.metrics.cpuUsage > 0
-                      ? `${service.server.metrics.cpuUsage.toFixed(1)}%`
-                      : '--'}
-                  </TooltipRowValueStyles>
-                </TooltipRowStyles>
-                <TooltipRowStyles>
-                  <TooltipRowTitleStyles>RAM</TooltipRowTitleStyles>
-                  <TooltipRowValueStyles>
-                    {service &&
-                    service.server.metrics &&
-                    service.server.metrics.memoryUsage > 0
-                      ? `${service.server.metrics.memoryUsage.toFixed(1)}%`
-                      : '--'}
-                  </TooltipRowValueStyles>
-                </TooltipRowStyles>
-                <TooltipRowStyles>
-                  <TooltipRowTitleStyles>Net in</TooltipRowTitleStyles>
-                  <TooltipRowValueStyles>
-                    {service &&
-                    service.server.metrics &&
-                    service.server.metrics.networkIn > 0
-                      ? `${service.server.metrics.networkIn.toFixed(1)} KB/s`
-                      : '--'}
-                  </TooltipRowValueStyles>
-                </TooltipRowStyles>
-                <TooltipRowStyles>
-                  <TooltipRowTitleStyles>Net out</TooltipRowTitleStyles>
-                  <TooltipRowValueStyles>
-                    {service &&
-                    service.server.metrics &&
-                    service.server.metrics.networkOut > 0
-                      ? `${service.server.metrics.networkOut.toFixed(1)} KB/s`
-                      : '--'}
-                  </TooltipRowValueStyles>
-                </TooltipRowStyles>
-              </>
-            }
-          >
-            <Typography
-              className={
-                service.server.metrics
-                  ? classes[getMetricClassName(service.server.metrics.cpuUsage)]
-                  : classes.metricsDefault
-              }
-              variant='h6'
-              display='inline'
-            >
-              {service.server.metrics && service.server.metrics.cpuUsage > 0
-                ? `${service.server.metrics.cpuUsage.toFixed(1)}%`
-                : '--'}
-            </Typography>
-          </MetricsTooltip>
-        )}
 
         {Object.keys(ports).map(key => {
           const port = ports[key];
@@ -362,6 +372,8 @@ const CustomNodeWidget = ({ engine, node }) => {
             </PortWidget>
           );
         })}
+
+        {getMetrics()}
       </CustomNodeStyles>
 
       <NodeActionMenu

@@ -9,6 +9,7 @@ import Spinner from '../../components/spinner/spinner.component';
 import ClusterArchitectureDiagram from '../../components/cluster-architecture-diagram/cluster-architecture-diagram.component';
 import DiagramToolbar from '../../components/diagram/diagram-toolbar/diagram-toolbar.component';
 import SyncIndicator from '../../components/sync-indicator/sync-indicator.component';
+import Drawer from '../../components/drawer/drawer.component';
 
 import ROUTE_PATHS from '../../router/route-paths';
 
@@ -54,6 +55,7 @@ const ClusterArchitecturePage = () => {
         <ClusterArchitectureDiagram />
         <DiagramToolbar />
         <SyncIndicator spin={isSynchronizing} />
+        <Drawer />
       </BasePage>
     );
 
