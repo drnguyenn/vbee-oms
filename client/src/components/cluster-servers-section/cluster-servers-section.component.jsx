@@ -10,7 +10,7 @@ import {
   IconButton,
   makeStyles
 } from '@material-ui/core';
-import { Add, List, Web } from '@material-ui/icons';
+import { AccountTree, Add, List, Web } from '@material-ui/icons';
 
 import { setServerCreationModalOpen } from 'redux/modal/modal.actions';
 
@@ -45,12 +45,25 @@ const useStyles = makeStyles({
 const HeaderOptions = () => {
   const { isProcessing } = useSelector(state => state.server);
 
+  const { currentCluster } = useSelector(state => state.cluster);
+  const { id } = currentCluster;
+
+  const history = useHistory();
+
   const dispatch = useDispatch();
 
   const handleAddServerClick = () => dispatch(setServerCreationModalOpen(true));
 
+  const handleDiagramClick = () =>
+    history.push(`${ROUTE_PATHS.CLUSTERS}/${id}/architecture`);
+
   return (
-    <>
+    <div>
+      <Tooltip title='Show architecture in diagram' arrow>
+        <IconButton onClick={handleDiagramClick}>
+          <AccountTree />
+        </IconButton>
+      </Tooltip>
       {isProcessing ? (
         <CircularProgress size={25} />
       ) : (
@@ -60,7 +73,7 @@ const HeaderOptions = () => {
           </IconButton>
         </Tooltip>
       )}
-    </>
+    </div>
   );
 };
 

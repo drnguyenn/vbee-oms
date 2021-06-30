@@ -10,7 +10,7 @@ import {
   IconButton,
   makeStyles
 } from '@material-ui/core';
-import { AccountTree, Add, Kitchen, People } from '@material-ui/icons';
+import { Add, Kitchen, People } from '@material-ui/icons';
 
 import { setServiceCreationModalOpen } from 'redux/modal/modal.actions';
 
@@ -45,36 +45,19 @@ const useStyles = makeStyles({
 const HeaderOptions = () => {
   const { isProcessing } = useSelector(state => state.service);
 
-  const { currentCluster } = useSelector(state => state.cluster);
-  const { id } = currentCluster;
-
-  const history = useHistory();
-
   const dispatch = useDispatch();
 
   const handleAddServiceClick = () =>
     dispatch(setServiceCreationModalOpen(true));
 
-  const handleDiagramClick = () =>
-    history.push(`${ROUTE_PATHS.CLUSTERS}/${id}/architecture`);
-
-  return (
-    <div>
-      <Tooltip title='Show architecture in diagram' arrow>
-        <IconButton onClick={handleDiagramClick}>
-          <AccountTree />
-        </IconButton>
-      </Tooltip>
-      {isProcessing ? (
-        <CircularProgress size={25} />
-      ) : (
-        <Tooltip title='Add new service' arrow>
-          <IconButton onClick={handleAddServiceClick} color='primary'>
-            <Add />
-          </IconButton>
-        </Tooltip>
-      )}
-    </div>
+  return isProcessing ? (
+    <CircularProgress size={25} />
+  ) : (
+    <Tooltip title='Add new service' arrow>
+      <IconButton onClick={handleAddServiceClick} color='primary'>
+        <Add />
+      </IconButton>
+    </Tooltip>
   );
 };
 
