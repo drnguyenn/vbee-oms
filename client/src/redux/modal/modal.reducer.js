@@ -8,17 +8,19 @@ const INITIAL_STATE = {
   openClusterMemberAdditionModal: false,
   openClusterMemberRemovalConfirmationModal: false,
 
+  openServerCreationModal: false,
+  openServerDeleteConfirmationModal: false,
+  openServerDomainAdditionModal: false,
+  openServerDomainUpdateModal: false,
+  openServerDomainRemovalConfirmationModal: false,
+
   openServiceCreationModal: false,
   openServiceDeleteConfirmationModal: false,
   openServiceMemberAdditionModal: false,
   openServiceMemberRemovalConfirmationModal: false,
 
   openClusterDiagramNodeRemovalConfirmationModal: false,
-  openClusterDiagramElementsRemovalConfirmationModal: false,
-
-  openServerDomainAdditionModal: false,
-  openServerDomainUpdateModal: false,
-  openServerDomainRemovalConfirmationModal: false
+  openClusterDiagramElementsRemovalConfirmationModal: false
 };
 
 const modalReducer = (state = INITIAL_STATE, action) => {
@@ -55,6 +57,36 @@ const modalReducer = (state = INITIAL_STATE, action) => {
         openClusterMemberRemovalConfirmationModal: payload
       };
 
+    case ModalActionTypes.SET_SERVER_CREATION_MODAL_OPEN:
+      return {
+        ...state,
+        openServerCreationModal: payload
+      };
+
+    case ModalActionTypes.SET_SERVER_DELETE_CONFIRMATION_MODAL_OPEN:
+      return {
+        ...state,
+        openServerDeleteConfirmationModal: payload
+      };
+
+    case ModalActionTypes.SET_SERVER_DOMAIN_ADDITION_MODAL_OPEN:
+      return {
+        ...state,
+        openServerDomainAdditionModal: payload
+      };
+
+    case ModalActionTypes.SET_SERVER_DOMAIN_UPDATE_MODAL_OPEN:
+      return {
+        ...state,
+        openServerDomainUpdateModal: payload
+      };
+
+    case ModalActionTypes.SET_SERVER_DOMAIN_REMOVE_CONFIRMATION_MODAL_OPEN:
+      return {
+        ...state,
+        openServerDomainRemovalConfirmationModal: payload
+      };
+
     case ModalActionTypes.SET_SERVICE_CREATION_MODAL_OPEN:
       return {
         ...state,
@@ -89,24 +121,6 @@ const modalReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         openClusterDiagramElementsRemovalConfirmationModal: payload
-      };
-
-    case ModalActionTypes.SET_SERVER_DOMAIN_ADDITION_MODAL_OPEN:
-      return {
-        ...state,
-        openServerDomainAdditionModal: payload
-      };
-
-    case ModalActionTypes.SET_SERVER_DOMAIN_UPDATE_MODAL_OPEN:
-      return {
-        ...state,
-        openServerDomainUpdateModal: payload
-      };
-
-    case ModalActionTypes.SET_SERVER_DOMAIN_REMOVE_CONFIRMATION_MODAL_OPEN:
-      return {
-        ...state,
-        openServerDomainRemovalConfirmationModal: payload
       };
 
     default:
