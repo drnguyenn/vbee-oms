@@ -9,6 +9,8 @@ export default {
   CLUSTER_ARCHITECTURE: '/clusters/:id/architecture',
   SERVICES: '/services',
   SERVICE_DETAILS: '/services/:id',
+  SERVERS: '/servers',
+  SERVER_DETAILS: '/servers/:id',
   REPOSITORIES: '/repositories',
   MEMBERS: '/members'
 };

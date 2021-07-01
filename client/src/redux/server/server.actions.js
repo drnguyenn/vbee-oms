@@ -74,6 +74,11 @@ export const deleteServerFailure = error => ({
   payload: error
 });
 
+export const setCurrentServer = server => ({
+  type: ServerActionTypes.SET_CURRENT_SERVER,
+  payload: server
+});
+
 export const fetchServersMetricsStart = serverIds => ({
   type: ServerActionTypes.FETCH_SERVERS_METRICS_START,
   payload: serverIds

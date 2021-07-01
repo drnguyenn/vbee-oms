@@ -1,40 +1,41 @@
 /* eslint-disable global-require */
 import { lazy } from 'react';
 
-import ROUTE_PATHS from './route-paths';
+import ROUTE_PATHS from 'router/route-paths';
 
-const LoginPage = lazy(() => import('../pages/log-in/log-in.component'));
+const LoginPage = lazy(() => import('pages/log-in/log-in.component'));
 
-const NotFoundPage = lazy(() =>
-  import('../pages/not-found/not-found.component')
-);
+const NotFoundPage = lazy(() => import('pages/not-found/not-found.component'));
 
-const HomePage = lazy(() => import('../pages/home/home.component'));
+const HomePage = lazy(() => import('pages/home/home.component'));
 
-const ProfilePage = lazy(() => import('../pages/profile/profile.component'));
+const ProfilePage = lazy(() => import('pages/profile/profile.component'));
 
-const DashboardPage = lazy(() =>
-  import('../pages/dashboard/dashboard.component')
-);
+const DashboardPage = lazy(() => import('pages/dashboard/dashboard.component'));
 
-const ClustersPage = lazy(() => import('../pages/clusters/clusters.component'));
+const ClustersPage = lazy(() => import('pages/clusters/clusters.component'));
 const ClusterDetailsPage = lazy(() =>
-  import('../pages/cluster-details/cluster-details.component')
+  import('pages/cluster-details/cluster-details.component')
 );
 const ClusterArchitecturePage = lazy(() =>
-  import('../pages/cluster-architecture/cluster-architecture.component')
+  import('pages/cluster-architecture/cluster-architecture.component')
 );
 
-const ServicesPage = lazy(() => import('../pages/services/services.component'));
+const ServersPage = lazy(() => import('pages/servers/servers.component'));
+const ServerDetailsPage = lazy(() =>
+  import('pages/server-details/server-details.component')
+);
+
+const ServicesPage = lazy(() => import('pages/services/services.component'));
 const ServiceDetailsPage = lazy(() =>
-  import('../pages/service-details/service-details.component')
+  import('pages/service-details/service-details.component')
 );
 
 const RepositoriesPage = lazy(() =>
-  import('../pages/repositories/repositories.component')
+  import('pages/repositories/repositories.component')
 );
 
-const MembersPage = lazy(() => import('../pages/members/members.component'));
+const MembersPage = lazy(() => import('pages/members/members.component'));
 
 export default [
   {
@@ -89,6 +90,20 @@ export default [
   {
     path: ROUTE_PATHS.CLUSTER_ARCHITECTURE,
     component: ClusterArchitecturePage,
+    exact: true,
+    restricted: false,
+    isPrivate: true
+  },
+  {
+    path: ROUTE_PATHS.SERVERS,
+    component: ServersPage,
+    exact: true,
+    restricted: false,
+    isPrivate: true
+  },
+  {
+    path: ROUTE_PATHS.SERVER_DETAILS,
+    component: ServerDetailsPage,
     exact: true,
     restricted: false,
     isPrivate: true

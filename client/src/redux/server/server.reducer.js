@@ -1,11 +1,12 @@
-import ServerActionTypes from './server.types';
+import ServerActionTypes from 'redux/server/server.types';
+import ServiceActionTypes from 'redux/service/service.types';
 
 const INITIAL_STATE = {
   servers: [],
   currentServer: null,
   currentDomain: null,
-  isFetchingServers: true,
-  isFetchingCurrentServer: true,
+  isFetchingServers: false,
+  isFetchingCurrentServer: false,
   isProcessing: false,
   isUpdatingInfo: false,
   isGettingSslStatus: false,
@@ -140,6 +141,13 @@ const serverReducer = (state = INITIAL_STATE, action) => {
         error: payload
       };
 
+    case ServerActionTypes.SET_CURRENT_SERVER: {
+      return {
+        ...state,
+        currentServer: payload
+      };
+    }
+
     case ServerActionTypes.SET_CURRENT_SERVER_DOMAIN:
       return {
         ...state,
@@ -211,6 +219,7 @@ const serverReducer = (state = INITIAL_STATE, action) => {
         isAddingDomains: false,
         currentServer: {
           ...state.currentServer,
+          domainCount: state.currentServer.domainCount + payload.length,
           domains: [...state.currentServer.domains, ...payload]
         },
         error: null
@@ -264,6 +273,7 @@ const serverReducer = (state = INITIAL_STATE, action) => {
         currentDomain: null,
         currentServer: {
           ...state.currentServer,
+          domainCount: state.currentServer.domainCount - 1,
           domains: state.currentServer.domains.filter(
             domain => domain.id !== payload.id
           )
@@ -276,6 +286,21 @@ const serverReducer = (state = INITIAL_STATE, action) => {
         ...state,
         isRemovingDomains: false,
         error: payload
+      };
+
+    case ServiceActionTypes.CREATE_SERVICE_SUCCESS:
+      return {
+        ...state,
+        currentServer:
+          state.currentServer &&
+          payload.server &&
+          state.currentServer.id === payload.server.id
+            ? {
+                ...state.currentServer,
+                serviceCount: state.currentServer.serviceCount + 1,
+                services: [...state.currentServer.services, payload]
+              }
+            : state.currentServer
       };
 
     default:
