@@ -43,8 +43,17 @@ app.use(errorHandler);
 
 const initialSetup = require('@services');
 
-app.listen(SERVER_PORT, async () => {
+const server = app.listen(SERVER_PORT, async () => {
   await initialSetup();
 
-  console.log(`Server is running on port ${SERVER_PORT}`);
+  console.info(`Server is running on port ${SERVER_PORT}`);
 });
+
+const gracefulShutdown = () => {
+  console.info('SIGTERM/SIGINT signal received: closing HTTP server');
+
+  server.close(() => console.info('HTTP server closed'));
+};
+
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
