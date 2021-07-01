@@ -4,8 +4,8 @@ const INITIAL_STATE = {
   services: [],
   currentService: null,
   currentMember: null,
-  isFetchingServices: true,
-  isFetchingCurrentService: true,
+  isFetchingServices: false,
+  isFetchingCurrentService: false,
   isProcessing: false,
   isUpdatingInfo: false,
   isAddingMembers: false,
@@ -98,7 +98,7 @@ const serviceReducer = (state = INITIAL_STATE, action) => {
       };
 
     case ServiceActionTypes.UPDATE_SERVICE_SUCCESS: {
-      const { id, cluster, server, ...rest } = payload;
+      const { id, cluster, ...rest } = payload;
 
       return {
         ...state,

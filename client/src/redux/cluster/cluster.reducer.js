@@ -1,13 +1,14 @@
-import ClusterActionTypes from './cluster.types';
-import ServiceActionTypes from '../service/service.types';
+import ClusterActionTypes from 'redux/cluster/cluster.types';
+import ServerActionTypes from 'redux/server/server.types';
+import ServiceActionTypes from 'redux/service/service.types';
 
 const INITIAL_STATE = {
   clusters: [],
   currentCluster: null,
   currentMember: null,
   diagram: null,
-  isFetchingClusters: true,
-  isFetchingCurrentCluster: true,
+  isFetchingClusters: false,
+  isFetchingCurrentCluster: false,
   isProcessing: false,
   isUpdatingInfo: false,
   isAddingMembers: false,
@@ -236,6 +237,19 @@ const clusterReducer = (state = INITIAL_STATE, action) => {
         ...state,
         isRemovingMembers: false,
         error: payload
+      };
+
+    case ServerActionTypes.CREATE_SERVER_SUCCESS:
+      return {
+        ...state,
+        currentCluster:
+          state.currentCluster && state.currentCluster.id === payload.cluster.id
+            ? {
+                ...state.currentCluster,
+                serverCount: state.currentCluster.serverCount + 1,
+                servers: [...state.currentCluster.servers, payload]
+              }
+            : state.currentCluster
       };
 
     case ServiceActionTypes.CREATE_SERVICE_SUCCESS:
