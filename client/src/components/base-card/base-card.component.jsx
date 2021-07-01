@@ -9,10 +9,14 @@ import {
 
 import Spinner from 'components/spinner/spinner.component';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   card: {
     width: 350,
-    cursor: 'pointer'
+    cursor: 'pointer',
+
+    [theme.breakpoints.down('xs')]: {
+      width: 250
+    }
   },
   cardContent: {
     display: 'flex',
@@ -33,7 +37,7 @@ const useStyles = makeStyles({
     opacity: 0.9,
     whiteSpace: 'pre-wrap'
   }
-});
+}));
 
 const BaseCard = ({
   title = '',
