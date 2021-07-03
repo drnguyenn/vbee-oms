@@ -29,7 +29,6 @@ const findOne = async (condition, projection) => {
 const findAll = async (condition, projection) => {
   const services = await ServiceModel.find(condition, projection)
     .populate('memberCount')
-    .populate('repositoryCount')
     .populate({
       path: 'cluster',
       select: 'name'

@@ -5,27 +5,9 @@ const RepositorySchema = new mongoose.Schema(
     name: { type: String, require: true },
     url: { type: String, require: true },
     owner: { type: String, require: true },
-    members: [
-      {
-        _id: { type: mongoose.Types.ObjectId, ref: 'User' },
-        permission: {
-          type: String,
-          enum: ['read', 'write', 'admin'],
-          default: 'write'
-        },
-        invitation: {
-          githubId: { type: String },
-          status: {
-            type: String,
-            enum: ['pending', 'accepted'],
-            default: 'pending'
-          }
-        }
-      }
-    ],
-    githubId: { type: String, unique: true, sparse: true },
-    ghAppInstallationId: { type: String },
-    service: { type: mongoose.Types.ObjectId, ref: 'Service' }
+    private: { type: Boolean, default: false },
+    githubId: { type: String, require: true, unique: true },
+    ghAppInstallationId: { type: String, require: true }
   },
   {
     timestamps: true,
@@ -45,22 +27,41 @@ RepositorySchema.index(
   }
 );
 
-RepositorySchema.virtual('members.details', {
-  ref: 'User',
-  localField: 'members._id',
-  foreignField: '_id',
-  justOne: true
+RepositorySchema.virtual('members', {
+  ref: 'RepositoryMember',
+  localField: '_id',
+  foreignField: 'repository'
 });
 
 RepositorySchema.virtual('memberCount', {
-  ref: 'User',
-  localField: 'members._id',
-  foreignField: '_id',
+  ref: 'RepositoryMember',
+  localField: '_id',
+  foreignField: 'repository',
+  count: true
+});
+
+RepositorySchema.virtual('services', {
+  ref: 'Service',
+  localField: '_id',
+  foreignField: 'repository'
+});
+
+RepositorySchema.virtual('serviceCount', {
+  ref: 'Service',
+  localField: '_id',
+  foreignField: 'repository',
   count: true
 });
 
 RepositorySchema.pre('findOne', function populate() {
   this.populate('memberCount');
+  this.populate('serviceCount');
+  this.populate({ path: 'members', select: 'role -_id  -repository' });
+  this.populate({
+    path: 'services',
+    select: 'name description version -repository',
+    populate: { path: 'memberCount' }
+  });
 });
 
 module.exports = mongoose.model('Repository', RepositorySchema);

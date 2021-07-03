@@ -2,10 +2,9 @@ const router = require('express').Router();
 
 const {
   searchRepositoriesValidator,
-  createRepositoryValidator,
-  updateRepositoryValidator,
+  // createRepositoryValidator,
+  // updateRepositoryValidator,
   addMemberValidator,
-  updateMemberValidator,
   updatePRReviewProtectionValidator
 } = require('@validators/repository.validators');
 
@@ -31,25 +30,25 @@ router.get(
   asyncMiddleware(RepositoryController.searchRepositories)
 );
 
-router.post(
-  '/repositories',
-  auth,
-  createRepositoryValidator,
-  asyncMiddleware(RepositoryController.createRepository)
-);
+// router.post(
+//   '/repositories',
+//   auth,
+//   createRepositoryValidator,
+//   asyncMiddleware(RepositoryController.createRepository)
+// );
 
-router.put(
-  '/repositories/:id',
-  auth,
-  updateRepositoryValidator,
-  asyncMiddleware(RepositoryController.updateRepository)
-);
+// router.put(
+//   '/repositories/:id',
+//   auth,
+//   updateRepositoryValidator,
+//   asyncMiddleware(RepositoryController.updateRepository)
+// );
 
-router.delete(
-  '/repositories/:id',
-  auth,
-  asyncMiddleware(RepositoryController.deleteRepository)
-);
+// router.delete(
+//   '/repositories/:id',
+//   auth,
+//   asyncMiddleware(RepositoryController.deleteRepository)
+// );
 
 router.post(
   '/repositories/:id/members/:userId',
@@ -59,12 +58,12 @@ router.post(
   asyncMiddleware(RepositoryController.addMember)
 );
 
-router.put(
-  '/repositories/:id/members/:userId',
+router.post(
+  '/repositories/:id/github-members/:githubUsername',
   auth,
-  updateMemberValidator,
+  addMemberValidator,
   ghAppInstallationToken,
-  asyncMiddleware(RepositoryController.updateMember)
+  asyncMiddleware(RepositoryController.addMemberFromGitHub)
 );
 
 router.delete(

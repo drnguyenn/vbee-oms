@@ -77,7 +77,7 @@ ClusterSchema.pre('findOne', function populate() {
   this.populate({
     path: 'services',
     select: 'name description version -cluster',
-    populate: { path: 'memberCount repositoryCount' }
+    populate: { path: 'memberCount' }
   });
 });
 

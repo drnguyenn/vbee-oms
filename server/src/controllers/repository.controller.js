@@ -8,31 +8,6 @@ const getRepository = async (req, res) => {
   return res.json({ status: 1, result: { repository } });
 };
 
-const createRepository = async (req, res) => {
-  const repository = await RepositoryService.create(req.body);
-
-  return res.status(201).json({ status: 1, result: { repository } });
-};
-
-const updateRepository = async (req, res) => {
-  const { id } = req.params;
-
-  const { repository, statusCode } = await RepositoryService.update(
-    id,
-    req.body
-  );
-
-  return res.status(statusCode).json({ status: 1, result: { repository } });
-};
-
-const deleteRepository = async (req, res) => {
-  const { id } = req.params;
-
-  const repository = await RepositoryService.remove(id);
-
-  return res.json({ status: 1, result: { repository } });
-};
-
 const searchRepositories = async (req, res) => {
   const repositories = await RepositoryService.search(req.query);
 
@@ -43,39 +18,42 @@ const addMember = async (req, res) => {
   const { id, userId } = req.params;
   const { permission } = req.body;
 
-  const { repository, statusCode } = await RepositoryService.addMember(
+  const { member, statusCode } = await RepositoryService.addMember(
     id,
-    { _id: userId, permission },
+    userId,
+    { permission },
+    req.user._id,
     req.ghAppInstallationToken
   );
 
   return res.status(statusCode).json({
     status: statusCode < 400 ? 1 : 0,
-    result: { repository }
+    result: { member }
   });
 };
 
-const updateMember = async (req, res) => {
-  const { id, userId } = req.params;
-  const { permission, invitation } = req.body;
+const addMemberFromGitHub = async (req, res) => {
+  const { id, githubUsername } = req.params;
+  const { permission } = req.body;
 
-  const { repository, statusCode } = await RepositoryService.updateMember(
+  const { member, statusCode } = await RepositoryService.addMember(
     id,
-    userId,
-    { permission, invitation },
+    { githubUsername },
+    { permission },
+    req.user._id,
     req.ghAppInstallationToken
   );
 
   return res.status(statusCode).json({
     status: statusCode < 400 ? 1 : 0,
-    result: { repository }
+    result: { member }
   });
 };
 
 const removeMember = async (req, res) => {
   const { id, userId } = req.params;
 
-  const { repository, statusCode } = await RepositoryService.removeMember(
+  const { member, statusCode } = await RepositoryService.removeMember(
     id,
     userId,
     req.ghAppInstallationToken
@@ -83,7 +61,7 @@ const removeMember = async (req, res) => {
 
   return res.status(statusCode).json({
     status: statusCode < 400 ? 1 : 0,
-    result: { repository }
+    result: { member }
   });
 };
 
@@ -114,11 +92,8 @@ const updatePRReviewProtection = async (req, res) => {
 module.exports = {
   getRepository,
   searchRepositories,
-  createRepository,
-  updateRepository,
-  deleteRepository,
   addMember,
-  updateMember,
+  addMemberFromGitHub,
   removeMember,
   removeMemberFromAllRepositories,
   updatePRReviewProtection

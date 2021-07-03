@@ -29,42 +29,22 @@ const searchRepositoriesValidation = {
 const createRepositoryValidation = {
   body: Joi.object({
     name: Joi.string().trim().required(),
-    url: Joi.string().trim().required(),
     owner: Joi.string().trim().required(),
-    githubId: Joi.string().trim(),
-    ghAppInstallationId: Joi.string().trim(),
-    serviceId: Joi.string()
-      .trim()
-      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
+    ghAppInstallationId: Joi.string().trim()
   }).unknown(false)
 };
 
 const updateRepositoryValidation = {
   body: Joi.object({
     name: Joi.string().trim(),
-    url: Joi.string().trim(),
     owner: Joi.string().trim(),
-    githubId: Joi.string().trim(),
-    ghAppInstallationId: Joi.string().trim(),
-    serviceId: Joi.string()
-      .trim()
-      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
+    ghAppInstallationId: Joi.string().trim()
   }).unknown(false)
 };
 
 const addMemberValidation = {
   body: Joi.object({
     permission: Joi.string().trim().valid('read', 'write', 'admin')
-  }).unknown(false)
-};
-
-const updateMemberValidation = {
-  body: Joi.object({
-    permission: Joi.string().trim().valid('read', 'write', 'admin'),
-    invitation: Joi.object({
-      githubId: Joi.string().trim(),
-      status: Joi.string().trim().valid('pending', 'accepted')
-    }).unknown(false)
   }).unknown(false)
 };
 
@@ -91,9 +71,6 @@ module.exports = {
     keyByField: true
   }),
   addMemberValidator: validate(addMemberValidation, {
-    keyByField: true
-  }),
-  updateMemberValidator: validate(updateMemberValidation, {
     keyByField: true
   }),
   updatePRReviewProtectionValidator: validate(

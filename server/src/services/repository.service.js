@@ -1,16 +1,15 @@
 /* eslint-disable no-console */
-const {
-  Types: { ObjectId }
-} = require('mongoose');
-
 const CustomError = require('@errors/custom-error');
 const errorCodes = require('@errors/code');
 
 const RepositoryDao = require('@daos/repository.dao');
-const { github } = require('@utils/repository.utils');
+const RepositoryMemberDao = require('@daos/repository-member.dao');
+const UserDao = require('@daos/user.dao');
 
-const UserService = require('./user.service');
-const GhAppInstallationService = require('./gh-app-installation.service');
+const UserService = require('@services/user.service');
+const GhAppInstallationService = require('@services/gh-app-installation.service');
+
+const GitHubUtils = require('@utils/github.utils');
 
 const get = async (condition, projection) => {
   const repository = await RepositoryDao.findOne(condition, projection);
@@ -21,71 +20,74 @@ const get = async (condition, projection) => {
   return repository;
 };
 
-const create = async data => {
-  if (await RepositoryDao.findOne({ githubId: data.githubId }))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      `Repository with GitHub ID "${data.githubId}" already exists`
-    );
+const update = async ({ githubId: repoGitHubId }, data, requesterId) => {
+  const repository = await RepositoryDao.update(
+    { githubId: repoGitHubId },
+    data
+  );
+  const { ghAppInstallationId, owner, name } = repository;
 
-  const repository = await RepositoryDao.create(data);
+  const ghAppInstallationToken =
+    await GhAppInstallationService.getGhAppInstallationToken({
+      githubId: ghAppInstallationId
+    });
+
+  const collaborators = await GitHubUtils.repository.listCollaborators(
+    ghAppInstallationToken,
+    owner,
+    name
+  );
+
+  await Promise.all(
+    collaborators.map(
+      async ({ id: githubId, login: githubUsername, permissions }) => {
+        let user = await UserDao.findOne({ githubId });
+
+        if (user) user = await UserDao.update({ githubId }, { githubUsername });
+        else user = await UserService.create(requesterId, { githubUsername });
+
+        RepositoryMemberDao.update(
+          { repository: repository._id, user: user._id },
+          {
+            permission:
+              GitHubUtils.repository.getPermissionToStore(permissions),
+            invitation: { status: 'accepted' }
+          }
+        );
+      }
+    )
+  );
+
+  const invitations = await GitHubUtils.repository.listInvitations(
+    ghAppInstallationToken,
+    owner,
+    name
+  );
+
+  await Promise.all(
+    invitations.map(
+      async ({
+        id: invitationGithubId,
+        invitee: { id: githubId, login: githubUsername },
+        permissions
+      }) => {
+        let user = await UserDao.findOne({ githubId });
+
+        if (user) user = await UserDao.update({ githubId }, { githubUsername });
+        else user = await UserService.create(requesterId, { githubUsername });
+
+        RepositoryMemberDao.update(
+          { repository: repository._id, user: user._id },
+          {
+            permission: permissions,
+            invitation: { githubId: invitationGithubId, status: 'pending' }
+          }
+        );
+      }
+    )
+  );
 
   return repository;
-};
-
-const update = async (condition, data) => {
-  // Find out whether any repository has the same `githubID` with the `githubID`
-  // that is requested to be changed to, except the one that matched the `condition`
-  let conditionAndException;
-
-  if (data.githubId)
-    if (ObjectId.isValid(condition))
-      conditionAndException = {
-        $or: [{ githubId: data.githubId }],
-        $and: [{ _id: { $ne: condition } }]
-      };
-    else if (typeof condition === 'object' && condition) {
-      // Fields that identify instance
-      const conditionAvailableKeys = ['_id', 'githubId'];
-
-      Object.keys(condition).forEach(key => {
-        if (!conditionAvailableKeys.includes(key))
-          throw new CustomError(
-            errorCodes.BAD_REQUEST,
-            'Invalid repository condition'
-          );
-      });
-
-      conditionAndException = {
-        $or: [{ githubId: data.githubId }],
-        $and: [
-          Object.keys(condition).reduce(
-            (accumulator, currentValue) => ({
-              ...accumulator,
-              [currentValue]: { $ne: condition[currentValue] }
-            }),
-            {}
-          )
-        ]
-      };
-    } else
-      throw new CustomError(
-        errorCodes.BAD_REQUEST,
-        'Invalid repository condition'
-      );
-
-  if (await RepositoryDao.findOne(conditionAndException))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      "Repository's GitHub ID already exists"
-    );
-
-  const repository = await RepositoryDao.update(condition, data);
-
-  return {
-    statusCode: repository.createdAt === repository.updatedAt ? 201 : 200,
-    repository
-  };
 };
 
 const remove = async condition => {
@@ -93,6 +95,8 @@ const remove = async condition => {
 
   if (!repository)
     throw new CustomError(errorCodes.NOT_FOUND, 'Repository not found');
+
+  await RepositoryMemberDao.removeMany({ repository: repository._id });
 
   return repository;
 };
@@ -112,21 +116,43 @@ const search = async (
 
 const addMember = async (
   repoCondition,
-  { _id, permission, invitation },
+  memberCondition,
+  { permission, invitation },
+  requesterId,
   ghAppInstallationToken
 ) => {
-  let repository = await get(repoCondition);
+  const repository = await get(repoCondition);
 
-  const user = await UserService.get(_id);
+  let user,
+    checkRepoMember = true;
 
-  if (repository.members.filter(mem => mem._id.equals(_id)).length)
+  const { githubUsername } = memberCondition;
+
+  if (githubUsername) {
+    user = await UserDao.findOne({ githubUsername });
+
+    if (!user) {
+      checkRepoMember = false;
+      user = await UserService.create(requesterId, { githubUsername });
+    }
+  } else {
+    user = await UserService.get(memberCondition);
+  }
+
+  if (
+    checkRepoMember &&
+    (await RepositoryMemberDao.findOne({
+      user: user._id,
+      repository: repository._id
+    }))
+  )
     throw new CustomError(errorCodes.BAD_REQUEST, 'Member is already added');
 
   if (ghAppInstallationToken) {
     const { name, owner } = repository;
 
     // Add member to GitHub repository using GitHub API
-    const response = await github.addMember(
+    const response = await GitHubUtils.repository.addCollaborator(
       ghAppInstallationToken,
       owner,
       name,
@@ -141,13 +167,14 @@ const addMember = async (
         } = response;
 
         // Add member to repository in Vbee OMS database
-        await RepositoryDao.addMember(repository, {
-          _id,
+        const member = await RepositoryMemberDao.create({
+          user: user._id,
+          repository: repository._id,
           permission,
           invitation: { githubId: id, status: 'pending' }
         });
 
-        return { repository, statusCode: 201 };
+        return { member, statusCode: 201 };
       }
 
       const { message } = response.data;
@@ -156,34 +183,54 @@ const addMember = async (
   }
 
   // Add member to repository in Vbee OMS database
-  repository = await RepositoryDao.addMember(repository, {
-    _id,
+  const member = await RepositoryMemberDao.create({
+    user: user._id,
+    repository: repository._id,
     permission,
     invitation
   });
 
-  return { repository, statusCode: 201 };
+  return { member, statusCode: 201 };
 };
 
 const updateMember = async (
   repoCondition,
   memberCondition,
   { permission, invitation },
+  requesterId,
   ghAppInstallationToken
 ) => {
-  let repository = await get(repoCondition);
+  const repository = await get(repoCondition);
 
-  const user = await UserService.get(memberCondition);
-  const { _id } = user;
+  let user,
+    checkRepoMember = true;
 
-  const member = repository.members.filter(mem => mem._id.equals(_id))[0];
+  const { githubUsername } = memberCondition;
 
-  if (!member) {
+  if (githubUsername) {
+    user = await UserDao.findOne({ githubUsername });
+
+    if (!user) {
+      checkRepoMember = false;
+      user = await UserService.create(requesterId, { githubUsername });
+    }
+  } else {
+    user = await UserService.get(memberCondition);
+  }
+
+  let member;
+  if (checkRepoMember)
+    member = await RepositoryMemberDao.findOne({
+      user: user._id,
+      repository: repository._id
+    });
+
+  if (!member)
     if (ghAppInstallationToken) {
       const { name, owner } = repository;
 
       // Add member to GitHub repository using GitHub API
-      const response = await github.addMember(
+      const response = await GitHubUtils.repository.addCollaborator(
         ghAppInstallationToken,
         owner,
         name,
@@ -198,13 +245,14 @@ const updateMember = async (
           } = response;
 
           // Add member to repository in Vbee OMS database
-          await RepositoryDao.addMember(repository, {
-            _id,
+          member = await RepositoryMemberDao.create({
+            user: user._id,
+            repository: repository._id,
             permission,
             invitation: { githubId: id, status: 'pending' }
           });
 
-          return { repository, statusCode: 201 };
+          return { member, statusCode: 201 };
         }
 
         const { message } = response.data;
@@ -212,35 +260,15 @@ const updateMember = async (
       }
     }
 
-    // Add member to repository in Vbee OMS database
-    repository = await RepositoryDao.addMember(repository, {
-      _id,
-      permission,
-      invitation
-    });
+  member = await RepositoryMemberDao.update(
+    {
+      user: user._id,
+      repository: repository._id
+    },
+    { permission, invitation }
+  );
 
-    return { repository, statusCode: 201 };
-  }
-
-  // Update member of GitHub repository using GitHub API
-  // if (ghAppInstallationToken) {
-  //   const { name, owner } = repository;
-
-  //   await github.updateMember(
-  //     ghAppInstallationToken,
-  //     owner,
-  //     name,
-  //     user.githubUsername,
-  //     permission
-  //   )
-  // }
-
-  // Update member of repository in Vbee OMS database
-  repository = await RepositoryDao.updateMember(repository, member, {
-    invitation: { ...member.invitation, ...invitation }
-  });
-
-  return { repository, statusCode: 200 };
+  return { member, statusCode: 200 };
 };
 
 const removeMember = async (
@@ -248,23 +276,27 @@ const removeMember = async (
   memberCondition,
   ghAppInstallationToken
 ) => {
-  let repository = await get(repoCondition);
+  const repository = await get(repoCondition);
 
   const user = await UserService.get(memberCondition);
-  const { _id } = user;
 
   if (ghAppInstallationToken) {
-    const member = repository.members.filter(mem => mem._id.equals(_id))[0];
+    let member = await RepositoryMemberDao.findOne({
+      repository: repository._id,
+      user: user._id
+    });
     if (!member)
       throw new CustomError(errorCodes.BAD_REQUEST, 'Member not found');
 
     const { name, owner } = repository;
     const { invitation } = member;
 
+    let response;
+
     switch (invitation.status) {
       case 'pending':
         // Delete member invitation of GitHub repository using GitHub API
-        await github.deleteInvitation(
+        response = await GitHubUtils.repository.deleteInvitation(
           ghAppInstallationToken,
           owner,
           name,
@@ -274,7 +306,7 @@ const removeMember = async (
 
       case 'accepted':
         // Remove member of GitHub repository using GitHub API
-        await github.removeMember(
+        response = await GitHubUtils.repository.removeCollaborator(
           ghAppInstallationToken,
           owner,
           name,
@@ -285,25 +317,42 @@ const removeMember = async (
       default:
         break;
     }
+
+    if (response.status) {
+      if (response.status < 400) {
+        // Remove member from repository in Vbee OMS database
+        member = await RepositoryMemberDao.removeOne({
+          repository: repository._id,
+          user: user._id
+        });
+
+        return { member, statusCode: 200 };
+      }
+
+      const { message } = response.data;
+      throw new CustomError(response.status, message);
+    }
   }
 
   // Remove member of repository from Vbee OMS database
-  repository = await RepositoryDao.removeMember(repository, _id);
+  const member = await RepositoryMemberDao.removeOne({
+    repository: repository._id,
+    user: user._id
+  });
 
-  return { repository, statusCode: 200 };
+  return { member, statusCode: 200 };
 };
 
 const removeMemberFromAllRepositories = async memberCondition => {
   const user = await UserService.get(memberCondition);
-  const { _id } = user;
 
-  const repositories = await RepositoryDao.findAll(
-    { 'members._id': _id },
-    'ghAppInstallationId'
+  const repositories = await RepositoryMemberDao.findAll(
+    { user: user._id },
+    'repository'
   );
 
   await Promise.all(
-    repositories.map(async repository =>
+    repositories.map(async ({ repository }) =>
       removeMember(
         repository._id,
         memberCondition,
@@ -327,7 +376,7 @@ const updatePRReviewProtection = async (
   const { owner, name } = repository;
 
   if (ghAppInstallationToken) {
-    const response = await github.updatePRReviewProtection(
+    const response = await GitHubUtils.repository.updatePRReviewProtection(
       ghAppInstallationToken,
       owner,
       name,
@@ -353,7 +402,6 @@ const updatePRReviewProtection = async (
 module.exports = {
   get,
   search,
-  create,
   update,
   remove,
   addMember,

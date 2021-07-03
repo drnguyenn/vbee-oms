@@ -87,38 +87,11 @@ const remove = async condition => {
   return null;
 };
 
-const addMember = async (repository, member) => {
-  repository.members.push(member);
-  await repository.save();
-
-  return repository;
-};
-
-const updateMember = async (repository, member, data) => {
-  repository.members[repository.members.indexOf(member)] = {
-    ...member._doc,
-    ...data
-  };
-  await repository.save();
-
-  return repository;
-};
-
-const removeMember = async (repository, userId) => {
-  repository.members.pull(userId);
-  await repository.save();
-
-  return repository;
-};
-
 module.exports = {
   create,
   findOne,
   findAll,
   search,
   update,
-  remove,
-  addMember,
-  updateMember,
-  removeMember
+  remove
 };
