@@ -3,18 +3,20 @@ const GhAppInstallationService = require('./gh-app-installation.service');
 
 const RepositoryService = require('./repository.service');
 
-const handleInstallationEvent = async (action, installation, repositories) => {
+const handleInstallationEvent = async (
+  action,
+  installation,
+  repositories,
+  deliveryId
+) => {
   const { id: githubId, account } = installation;
 
   const data = { githubId, account: account.login };
 
   switch (action) {
     case 'created': {
-      await GhAppInstallationService.create({
-        ...data,
-        status: 'available'
-      });
-      addRepositories(repositories, githubId);
+      await GhAppInstallationService.create({ ...data, status: 'available' });
+      addRepositories(repositories, githubId, deliveryId);
 
       return { statusCode: 201 };
     }
@@ -22,10 +24,7 @@ const handleInstallationEvent = async (action, installation, repositories) => {
     case 'unsuspend': {
       const { statusCode } = await GhAppInstallationService.update(
         { githubId },
-        {
-          ...data,
-          status: 'available'
-        }
+        { ...data, status: 'available' }
       );
 
       return { statusCode };
@@ -34,10 +33,7 @@ const handleInstallationEvent = async (action, installation, repositories) => {
     case 'suspend': {
       const { statusCode } = await GhAppInstallationService.update(
         { githubId },
-        {
-          ...data,
-          status: 'suspended'
-        }
+        { ...data, status: 'suspended' }
       );
 
       return { statusCode };
@@ -61,16 +57,19 @@ const handleInstallationRepositoriesEvent = async (
   action,
   installation,
   addedRepositories,
-  removedRepositories
+  removedRepositories,
+  deliveryId
 ) => {
   const { id: ghAppInstallationId } = installation;
 
   switch (action) {
     case 'added':
-      return addRepositories(addedRepositories, ghAppInstallationId);
+      addRepositories(addedRepositories, ghAppInstallationId, deliveryId);
+      return { statusCode: 202 };
 
     case 'removed':
-      return removeRepositories(removedRepositories);
+      removeRepositories(removedRepositories);
+      return { statusCode: 202 };
 
     default:
       console.log(`GitHub installation event action: ${action}`);
@@ -80,19 +79,24 @@ const handleInstallationRepositoriesEvent = async (
   return { statusCode: 204 };
 };
 
-const handleMemberEvent = async (action, member, changes, repository) => {
+const handleMemberEvent = async (
+  action,
+  member,
+  changes,
+  repository,
+  deliveryId
+) => {
   switch (action) {
     case 'added': {
       const { statusCode } = await RepositoryService.updateMember(
         { githubId: repository.id },
-        { githubId: member.id },
+        { githubUsername: member.login },
         {
           permission: changes.permission.to,
-          invitation: {
-            githubId: null,
-            status: 'accepted'
-          }
-        }
+          invitation: { status: 'accepted' },
+          $unset: { 'invitation.githubId': '' }
+        },
+        deliveryId
       );
       return { statusCode };
     }
@@ -116,38 +120,37 @@ const handleMemberEvent = async (action, member, changes, repository) => {
   return { statusCode: 204 };
 };
 
-const addRepositories = (addedRepositories, ghAppInstallationId) => {
-  // eslint-disable-next-line one-var
-  let githubId, name, fullName, data;
-
-  return Promise.all(
+const addRepositories = (addedRepositories, ghAppInstallationId, deliveryId) =>
+  Promise.all(
     addedRepositories.map(addedRepository => {
-      ({ id: githubId, name, fullName } = addedRepository);
+      const {
+        id: githubId,
+        name,
+        fullName,
+        private: isPrivate
+      } = addedRepository;
 
-      data = {
+      const data = {
         name,
         url: `https://github.com/${fullName}`,
         owner: fullName.split('/')[0],
+        private: isPrivate,
         githubId,
         ghAppInstallationId
       };
 
-      return RepositoryService.update({ githubId }, data);
+      return RepositoryService.update({ githubId }, data, deliveryId);
     })
   );
-};
 
-const removeRepositories = removedRepositories => {
-  let githubId;
-
-  return Promise.all(
+const removeRepositories = removedRepositories =>
+  Promise.all(
     removedRepositories.map(removedRepository => {
-      ({ id: githubId } = removedRepository);
+      const { id: githubId } = removedRepository;
 
       return RepositoryService.remove({ githubId });
     })
   );
-};
 
 module.exports = {
   handleInstallationEvent,
