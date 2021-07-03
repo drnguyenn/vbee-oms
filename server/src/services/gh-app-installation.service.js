@@ -8,7 +8,7 @@ const errorCodes = require('@errors/code');
 
 const GhAppInstallationDao = require('@daos/gh-app-installation.dao');
 
-const { generateGhAppInstallationToken } = require('@utils/gh-app.utils');
+const GitHub = require('@utils/github.utils');
 
 const get = async (condition, projection) => {
   const ghAppInstallation = await GhAppInstallationDao.findOne(
@@ -47,7 +47,18 @@ const update = async (condition, data) => {
       $or: [{ githubId: data.githubId }],
       $and: [{ _id: { $ne: condition } }]
     };
-  else if (typeof condition === 'object' && condition)
+  else if (typeof condition === 'object' && condition) {
+    // Fields that identify instance
+    const conditionAvailableKeys = ['_id', 'githubId'];
+
+    Object.keys(condition).forEach(key => {
+      if (!conditionAvailableKeys.includes(key))
+        throw new CustomError(
+          errorCodes.BAD_REQUEST,
+          'Invalid GitHub App installation condition'
+        );
+    });
+
     conditionAndException = {
       $or: [{ githubId: data.githubId }],
       $and: [
@@ -60,7 +71,7 @@ const update = async (condition, data) => {
         )
       ]
     };
-  else
+  } else
     throw new CustomError(
       errorCodes.BAD_REQUEST,
       'Invalid GitHub app installation condition'
@@ -112,9 +123,8 @@ const getGhAppInstallationToken = async installationCondition => {
       return accessToken.token;
     }
 
-  const newGhAppInstallationToken = await generateGhAppInstallationToken(
-    githubId
-  );
+  const newGhAppInstallationToken =
+    await GitHub.app.generateGhAppInstallationToken(githubId);
   await update({ githubId }, { accessToken: newGhAppInstallationToken });
 
   return newGhAppInstallationToken.token;
