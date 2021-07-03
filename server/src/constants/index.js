@@ -12,5 +12,6 @@ module.exports = {
     write: 'push',
     admin: 'admin'
   },
-  METRICS_QUERY_TIME_RANGE: '10s'
+  METRICS_QUERY_TIME_RANGE: '10s',
+  GOOGLE_APP_STATE_TOKEN_EXPIRATION_TIME: 600000 // 10 minutes
 };

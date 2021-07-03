@@ -5,17 +5,17 @@ const asyncMiddleware = require('./async.middlewares');
 
 const verifyOAuth2Callback = async (req, res, next) => {
   const { state } = req.query;
-  const { userId, token } = JSON.parse(state);
+  const { requesterId, token } = JSON.parse(state);
 
-  const storedToken = STATE_TOKENS[userId];
+  const storedToken = STATE_TOKENS[requesterId];
 
-  if (!userId || !token || !storedToken)
+  if (!requesterId || !token || !storedToken)
     throw new CustomError(errorCodes.UNAUTHORIZED);
 
-  if (STATE_TOKENS[userId] !== token)
+  if (STATE_TOKENS[requesterId] !== token)
     throw new CustomError(errorCodes.FORBIDDEN, 'Invalid state token');
 
-  delete STATE_TOKENS[userId];
+  delete STATE_TOKENS[requesterId];
 
   return next();
 };
