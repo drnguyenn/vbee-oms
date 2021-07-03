@@ -1,4 +1,13 @@
-const getAccountRegistrationEmailTemplate = (email, password) => `
+const { capitalize } = require('lodash');
+
+const getAccountRegistrationEmailTemplate = (
+  email,
+  password,
+  username,
+  githubId,
+  githubUsername,
+  role
+) => `
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html
     xmlns="http://www.w3.org/1999/xhtml"
@@ -21,6 +30,7 @@ const getAccountRegistrationEmailTemplate = (email, password) => `
           font-family: 'Ubuntu', sans-serif;
           margin: 0 20%;
           color: rgba(0, 0, 0, 0.65);
+          font-size: 1rem;
         }
 
         .header {
@@ -57,12 +67,12 @@ const getAccountRegistrationEmailTemplate = (email, password) => `
         }
 
         .account-credentials {
-          height: 50px;
+          min-height: 200px;
           margin: 20px 0;
         }
 
         .account-credentials > tbody > tr > td {
-          min-width: 90px;
+          min-width: 18ch;
         }
 
         .login-button {
@@ -99,7 +109,7 @@ const getAccountRegistrationEmailTemplate = (email, password) => `
           color: #f6c90e;
         }
 
-        @media only screen and (max-width: 650px) {
+        @media screen and (max-width: 650px) {
           #body {
             margin: 0;
           }
@@ -146,6 +156,22 @@ const getAccountRegistrationEmailTemplate = (email, password) => `
             <tr>
               <td>Password:</td>
               <td>${password}</td>
+            </tr>
+            <tr>
+              <td>Username:</td>
+              <td>${username}</td>
+            </tr>
+            <tr>
+              <td>GitHub ID:</td>
+              <td>${githubId}</td>
+            </tr>
+            <tr>
+              <td>GitHub username:</td>
+              <td>${githubUsername}</td>
+            </tr>
+            <tr>
+              <td>Role:</td>
+              <td>${capitalize(role)}</td>
             </tr>
           </table>
           <a href="https://oms.vbee.vn/" target="_blank" class="login-button">
