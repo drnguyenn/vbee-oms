@@ -5,19 +5,11 @@ const asyncMiddleware = require('@middlewares/async.middlewares');
 const { auth, systemAdminCheck } = require('@middlewares/user.middlewares');
 const {
   loginValidator,
-  registerValidator,
+  createUserValidator,
   searchUsersValidator
 } = require('@validators/user.validators');
 
 const UserController = require('@controllers/user.controller');
-
-router.post(
-  '/auth/register',
-  auth,
-  systemAdminCheck,
-  registerValidator,
-  asyncMiddleware(UserController.register)
-);
 
 router.post(
   '/auth/login',
@@ -37,6 +29,14 @@ router.get(
   systemAdminCheck,
   searchUsersValidator,
   asyncMiddleware(UserController.searchUsers)
+);
+
+router.post(
+  '/users',
+  auth,
+  systemAdminCheck,
+  createUserValidator,
+  asyncMiddleware(UserController.createUser)
 );
 
 module.exports = router;

@@ -1,17 +1,21 @@
-/* eslint-disable no-console */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
-const customAxios = require('@customs/axios.custom');
 
 const CustomError = require('@errors/custom-error');
 const errorCodes = require('@errors/code');
 
 const UserDao = require('@daos/user.dao');
-const { generateRandomString } = require('@utils/random.utils');
 
-const { JWT_SECRET_KEY, JWT_EXPIRES_TIME } = require('@configs');
-const { GITHUB_API } = require('@constants');
+const GhAppInstallationService = require('@services/gh-app-installation.service');
+const { sendMail } = require('@services/mail.service');
+
+const { generateRandomString } = require('@utils/random.utils');
+const { getAccountRegistrationEmailTemplate } = require('@utils/mail.utils');
+const GithubUtils = require('@utils/github.utils');
+
+const { JWT_SECRET_KEY, JWT_EXPIRATION_TIME } = require('@configs');
+
+const { GOOGLE_APP_USER_EMAIL } = process.env;
 
 const get = async (condition, projection) => {
   const user = await UserDao.findOne(condition, projection);
@@ -19,6 +23,104 @@ const get = async (condition, projection) => {
   if (!user) throw new CustomError(errorCodes.NOT_FOUND, 'User not found');
 
   return user;
+};
+
+const create = async (
+  requesterId,
+  { email, username, role, fullName, githubUsername }
+) => {
+  if (email && (await UserDao.findOne({ email })))
+    throw new CustomError(
+      errorCodes.BAD_REQUEST,
+      'Email has already been taken'
+    );
+
+  if (username && (await UserDao.findOne({ username })))
+    throw new CustomError(
+      errorCodes.BAD_REQUEST,
+      'Username has already been taken'
+    );
+
+  if (await UserDao.findOne({ githubUsername }))
+    throw new CustomError(
+      errorCodes.BAD_REQUEST,
+      `A user with the GitHub username "${githubUsername}" already exists`
+    );
+
+  let ghAppInstallationToken;
+
+  const ghAppInstallations = await GhAppInstallationService.search();
+  if (ghAppInstallations.length)
+    ghAppInstallationToken =
+      await GhAppInstallationService.getGhAppInstallationToken(
+        ghAppInstallations[0]._id
+      );
+
+  let githubId, name, githubEmail;
+
+  const response = await GithubUtils.user.getUser(
+    ghAppInstallationToken,
+    githubUsername
+  );
+
+  if (response.status) {
+    if (response.status < 400) {
+      ({ id: githubId, name, email: githubEmail } = response.data);
+
+      const user = await UserDao.findOne({ githubId });
+      if (user)
+        throw new CustomError(
+          errorCodes.CONFLICT,
+          `A GitHub user with the username "${githubUsername}" has the same GitHub ID
+          "${githubId}" with a user that holds the GitHub username"${user.githubUsername}"
+          stored in the system. This occurs because the user may have changed his
+          username on GitHub and the data between Vbee OMS and GitHub is not in sync.
+          To resolve this issue, please ask the mentioned user to update his GitHub
+          username in Vbee OMS or execute data synchronization and then perform
+          this action again.`
+        );
+    } else {
+      const { message } = response.data;
+      throw new CustomError(
+        response.status,
+        response.status === 404
+          ? `GitHub username "${githubUsername}" not found`
+          : message
+      );
+    }
+  }
+
+  const receiverEmail = email || githubEmail || GOOGLE_APP_USER_EMAIL;
+  const accountUsername = username || `${githubUsername}-${Date.now()}`;
+
+  const salt = generateSalt(10);
+  const password = generateRandomString(16);
+  const hashedPassword = await hashBcrypt(password, salt);
+
+  await sendMail(requesterId, {
+    receiverEmails: receiverEmail,
+    subject: 'Vbee OMS Account Registration',
+    htmlContent: getAccountRegistrationEmailTemplate(
+      email || githubEmail || '',
+      password,
+      accountUsername,
+      githubId,
+      githubUsername,
+      role
+    )
+  });
+
+  const user = await UserDao.create({
+    email: email || githubEmail || undefined,
+    username: accountUsername,
+    password: hashedPassword,
+    role,
+    fullName: fullName || name || '',
+    githubId,
+    githubUsername
+  });
+
+  return omitPasswordField(user._doc);
 };
 
 const update = async (condition, data) => {
@@ -40,6 +142,43 @@ const search = async (
   projection = '-password -createdAt -updatedAt'
 ) => {
   if (condition.q) {
+    if (condition.githubSearch) {
+      let ghAppInstallationToken;
+
+      const ghAppInstallations = await GhAppInstallationService.search();
+      if (ghAppInstallations.length)
+        ghAppInstallationToken =
+          await GhAppInstallationService.getGhAppInstallationToken(
+            ghAppInstallations[0]._id
+          );
+
+      const getGitHubUsers = async () => {
+        const users = await GithubUtils.search.searchUsers(
+          ghAppInstallationToken,
+          condition.q
+        );
+
+        return users.map(({ id, login }) => ({
+          source: 'GitHub',
+          githubId: id,
+          githubUsername: login
+        }));
+      };
+
+      const getVbeeOMSUsers = async () => {
+        const users = await UserDao.search(condition.q, projection);
+
+        return users.map(({ _doc: { preferences, role, ...rest } }) => ({
+          source: 'Vbee OMS',
+          ...rest
+        }));
+      };
+
+      const users = await Promise.all([getGitHubUsers(), getVbeeOMSUsers()]);
+
+      return users;
+    }
+
     const users = await UserDao.search(condition.q, projection);
     return users;
   }
@@ -59,65 +198,9 @@ const login = async (email, password) => {
   return accessToken;
 };
 
-const register = async ({
-  email,
-  username,
-  password,
-  role,
-  fullName,
-  githubId,
-  githubUsername
-}) => {
-  if (await UserDao.findOne({ email }))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      'Email has already been taken'
-    );
-
-  if (await UserDao.findOne({ username }))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      'Username has already been taken'
-    );
-
-  const salt = generateSalt(10);
-  password = password || generateRandomString(16);
-  password = await hashBcrypt(password, salt);
-
-  if (!githubId) {
-    try {
-      const response = await customAxios({
-        method: 'GET',
-        url: `${GITHUB_API.BASE_URL}/users/${githubUsername}`,
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: GITHUB_API.HEADERS.ACCEPT
-        }
-      });
-
-      githubId = response.data.id;
-    } catch (error) {
-      console.error(error);
-      throw new Error(error.message);
-    }
-  }
-
-  const user = await UserDao.create({
-    email,
-    username,
-    password,
-    role,
-    fullName,
-    githubId,
-    githubUsername
-  });
-
-  return omitPasswordField(user._doc);
-};
-
 const generateAccessToken = async userId => {
   const accessToken = await jwt.sign({ userId }, JWT_SECRET_KEY, {
-    expiresIn: JWT_EXPIRES_TIME
+    expiresIn: JWT_EXPIRATION_TIME
   });
   return accessToken;
 };
@@ -157,9 +240,9 @@ const omitPasswordField = ({ password, ...rest }) => ({ ...rest });
 module.exports = {
   get,
   search,
+  create,
   update,
   remove,
   login,
-  register,
   verifyAccessToken
 };

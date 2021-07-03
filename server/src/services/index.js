@@ -15,7 +15,7 @@ const initialSetup = async () => {
 
   try {
     if (!admins.length)
-      await UserService.register({
+      await UserService.create({
         email: INITIAL_ADMIN_EMAIL,
         username: INITIAL_ADMIN_USERNAME,
         password: INITIAL_ADMIN_PASSWORD,

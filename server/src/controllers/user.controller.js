@@ -6,8 +6,8 @@ const searchUsers = async (req, res) => {
   return res.json({ status: 1, result: { users } });
 };
 
-const register = async (req, res) => {
-  const user = await UserService.register(req.user._id, req.body);
+const createUser = async (req, res) => {
+  const user = await UserService.create(req.user._id, req.body);
   return res.status(201).json({ status: 1, result: { user } });
 };
 
@@ -23,4 +23,4 @@ const verifyAccessToken = async (req, res) => {
   return res.json({ status: 1, result: { user } });
 };
 
-module.exports = { register, login, verifyAccessToken, searchUsers };
+module.exports = { createUser, login, verifyAccessToken, searchUsers };

@@ -7,21 +7,20 @@ const loginValidation = {
   }).unknown(false)
 };
 
-const registerValidation = {
+const createUserValidation = {
   body: Joi.object({
     email: Joi.string().email().trim().lowercase().required(),
     username: Joi.string().trim().required(),
-    password: Joi.string().trim().required(),
     role: Joi.string().trim().valid('admin', 'member').required(),
     fullName: Joi.string().trim(),
-    githubId: Joi.string().trim(),
-    githubUsername: Joi.string().trim()
+    githubUsername: Joi.string().trim().required()
   }).unknown(false)
 };
 
 const searchUsersValidation = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
+    githubSearch: Joi.boolean(),
     email: Joi.string().email().trim().lowercase(),
     username: Joi.string().trim(),
     role: Joi.string().trim().valid('admin', 'member'),
@@ -35,6 +34,6 @@ const searchUsersValidation = {
 
 module.exports = {
   loginValidator: validate(loginValidation, { keyByField: true }),
-  registerValidator: validate(registerValidation, { keyByField: true }),
+  createUserValidator: validate(createUserValidation, { keyByField: true }),
   searchUsersValidator: validate(searchUsersValidation, { keyByField: true })
 };
