@@ -9,7 +9,6 @@ const errorCodes = require('@errors/code');
 const ServiceDao = require('@daos/service.dao');
 const ServiceMemberDao = require('@daos/service-member.dao');
 const ClusterDao = require('@daos/cluster.dao');
-const ClusterMemberDao = require('@daos/cluster-member.dao');
 const ServerDao = require('@daos/server.dao');
 
 const UserService = require('./user.service');
@@ -127,16 +126,6 @@ const update = async (condition, { name, clusterId, serverId, ...rest }) => {
     ...rest
   });
 
-  const members = await ServiceMemberDao.findAll(
-    { service: service._id },
-    'user'
-  );
-  Promise.all(
-    members.map(({ user }) =>
-      ClusterMemberDao.update({ user, cluster: clusterId })
-    )
-  );
-
   return {
     statusCode: service.createdAt === service.updatedAt ? 201 : 200,
     service
@@ -189,11 +178,6 @@ const addMember = async (serviceCondition, memberCondition, data) => {
     ...data
   });
 
-  ClusterMemberDao.update({
-    user: user._id,
-    cluster: service.cluster._id
-  });
-
   return { member, statusCode: 201 };
 };
 
@@ -206,11 +190,6 @@ const updateMember = async (serviceCondition, memberCondition, data) => {
     { user: user._id, service: service._id },
     data
   );
-
-  await ClusterMemberDao.update({
-    user: user._id,
-    cluster: service.cluster._id
-  });
 
   return {
     member,

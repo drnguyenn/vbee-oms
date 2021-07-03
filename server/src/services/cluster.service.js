@@ -8,13 +8,10 @@ const errorCodes = require('@errors/code');
 
 const ClusterDao = require('@daos/cluster.dao');
 const ClusterMemberDao = require('@daos/cluster-member.dao');
-const ServiceMemberDao = require('@daos/service-member.dao');
 const DiagramDao = require('@daos/diagram.dao');
-const DiagramNodeDao = require('@daos/diagram-node.dao');
-const DiagramLinkDao = require('@daos/diagram-link.dao');
 
 const UserService = require('./user.service');
-const ServiceService = require('./service.service');
+const ServerService = require('./server.service');
 const DiagramService = require('./diagram.service');
 
 const get = async (condition, projection) => {
@@ -103,13 +100,14 @@ const remove = async condition => {
   if (!cluster)
     throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
 
-  const { _id, services } = cluster;
+  const { _id, servers } = cluster;
 
-  await ClusterMemberDao.removeAll({ cluster: _id });
-
-  if (services.length) await ServiceService.removeAll(services);
+  await ClusterMemberDao.removeMany({ cluster: _id });
 
   await DiagramService.remove({ cluster: _id });
+
+  if (servers.length)
+    await ServerService.removeMany(servers.map(server => server._id));
 
   return cluster;
 };
@@ -169,111 +167,15 @@ const removeMember = async (clusterCondition, memberCondition) => {
 
   if (!member) throw new CustomError(errorCodes.NOT_FOUND, 'Member not found');
 
-  await ServiceMemberDao.removeAll({
-    service: {
-      $in: cluster.services.map(service => service._id)
-    }
-  });
-
   return { member, statusCode: 200 };
 };
 
 const removeMemberFromAllClusters = async memberCondition => {
   const user = await UserService.get(memberCondition);
 
-  await ClusterMemberDao.removeAll({ user: user._id });
+  await ClusterMemberDao.removeMany({ user: user._id });
 
   return { statusCode: 200 };
-};
-
-const addDiagramNode = async (clusterCondition, { serviceId, ...rest }) => {
-  const cluster = await get(clusterCondition);
-
-  if (serviceId) await ServiceService.get(serviceId);
-
-  const diagram = await DiagramDao.findOne({ cluster: cluster._id });
-
-  const diagramNode = await DiagramNodeDao.create({
-    diagram: diagram._id,
-    service: serviceId,
-    ...rest
-  });
-
-  return { diagramNode, statusCode: 201 };
-};
-
-const updateDiagramNode = async (
-  clusterCondition,
-  nodeCondition,
-  { serviceId, ...rest }
-) => {
-  const cluster = await get(clusterCondition);
-
-  if (serviceId) await ServiceService.get(serviceId);
-
-  const diagram = await DiagramDao.findOne({ cluster: cluster._id });
-
-  const diagramNode = await DiagramNodeDao.update(nodeCondition, {
-    diagram: diagram._id,
-    service: serviceId,
-    ...rest
-  });
-
-  return {
-    diagramNode,
-    statusCode: diagramNode.createdAt === diagramNode.updatedAt ? 201 : 200
-  };
-};
-
-const removeDiagramNode = async (clusterCondition, nodeCondition) => {
-  await get(clusterCondition);
-
-  const diagramNode = await DiagramNodeDao.remove(nodeCondition);
-
-  if (!diagramNode)
-    throw new CustomError(errorCodes.NOT_FOUND, 'Diagram node not found');
-
-  return { diagramNode, statusCode: 200 };
-};
-
-const addDiagramLink = async (clusterCondition, data) => {
-  const cluster = await get(clusterCondition);
-
-  const diagram = await DiagramDao.findOne({ cluster: cluster._id });
-
-  const diagramLink = await DiagramLinkDao.create({
-    ...data,
-    diagram: diagram._id
-  });
-
-  return { diagramLink, statusCode: 201 };
-};
-
-const updateDiagramLink = async (clusterCondition, linkCondition, data) => {
-  const cluster = await get(clusterCondition);
-
-  const diagram = await DiagramDao.findOne({ cluster: cluster._id });
-
-  const diagramLink = await DiagramLinkDao.update(linkCondition, {
-    ...data,
-    diagram: diagram._id
-  });
-
-  return {
-    diagramLink,
-    statusCode: diagramLink.createdAt === diagramLink.updatedAt ? 201 : 200
-  };
-};
-
-const removeDiagramLink = async (clusterCondition, linkCondition) => {
-  await get(clusterCondition);
-
-  const diagramLink = await DiagramLinkDao.remove(linkCondition);
-
-  if (!diagramLink)
-    throw new CustomError(errorCodes.NOT_FOUND, 'Diagram link not found');
-
-  return { diagramLink, statusCode: 200 };
 };
 
 module.exports = {
@@ -285,11 +187,5 @@ module.exports = {
   addMember,
   updateMember,
   removeMember,
-  removeMemberFromAllClusters,
-  addDiagramNode,
-  updateDiagramNode,
-  removeDiagramNode,
-  addDiagramLink,
-  updateDiagramLink,
-  removeDiagramLink
+  removeMemberFromAllClusters
 };
