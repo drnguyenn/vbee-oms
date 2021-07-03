@@ -2,9 +2,9 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const snakecaseKeys = require('snakecase-keys');
 
-const { GITHUB_API, GITHUB_REPOSITORY_PERMISSIONS } = require('@constants');
-
 const customAxios = require('@customs/axios.custom');
+
+const { GITHUB_API, GITHUB_REPOSITORY_PERMISSIONS } = require('@constants');
 
 const generateGhAppJwt = appId => {
   const privateKey = fs.readFileSync(
@@ -215,6 +215,35 @@ const getUser = async (ghAppInstallationToken, githubUsername) => {
   return response;
 };
 
+const searchUsers = async (
+  ghAppInstallationToken,
+  query,
+  perPage = 30,
+  page = 1
+) => {
+  const authHeader = {};
+
+  if (ghAppInstallationToken)
+    authHeader.Authorization = `token ${ghAppInstallationToken}`;
+
+  const response = await customAxios({
+    method: 'GET',
+    url: `${GITHUB_API.BASE_URL}/search/users`,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: GITHUB_API.HEADERS.ACCEPT,
+      ...authHeader
+    },
+    params: {
+      q: query,
+      per_page: perPage,
+      page
+    }
+  });
+
+  return response.data.items;
+};
+
 module.exports = {
   app: {
     generateGhAppInstallationToken
@@ -230,5 +259,8 @@ module.exports = {
   },
   user: {
     getUser
+  },
+  search: {
+    searchUsers
   }
 };
