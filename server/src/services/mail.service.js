@@ -9,12 +9,11 @@ const { authorize } = require('@services/google-app.service');
 const {
   GOOGLE_APP_USER_EMAIL,
   GOOGLE_APP_CLIENT_ID,
-  GOOGLE_APP_CLIENT_SECRET,
-  GOOGLE_APP_REDIRECT_URI
+  GOOGLE_APP_CLIENT_SECRET
 } = process.env;
 
 const sendMail = async (
-  currentUserId,
+  requesterId,
   { receiverEmails, subject, textContent = '', htmlContent = '' }
 ) => {
   let tokens = {};
@@ -25,12 +24,7 @@ const sendMail = async (
     if (error.message.includes('Cannot find module')) {
       console.log('Google App tokens not found');
 
-      const authUrl = authorize(
-        currentUserId,
-        GOOGLE_APP_CLIENT_ID,
-        GOOGLE_APP_CLIENT_SECRET,
-        GOOGLE_APP_REDIRECT_URI
-      );
+      const authUrl = authorize(requesterId);
 
       throw new CustomError(
         errorCodes.UNPROCESSABLE_ENTITY,
@@ -68,12 +62,7 @@ const sendMail = async (
     if (
       error.message.includes('invalid_grant: Token has been expired or revoked')
     ) {
-      const authUrl = authorize(
-        currentUserId,
-        GOOGLE_APP_CLIENT_ID,
-        GOOGLE_APP_CLIENT_SECRET,
-        GOOGLE_APP_REDIRECT_URI
-      );
+      const authUrl = authorize(requesterId);
 
       throw new CustomError(
         errorCodes.UNPROCESSABLE_ENTITY,

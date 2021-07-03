@@ -3,6 +3,8 @@ const crypto = require('crypto');
 const fs = require('fs');
 const { google } = require('googleapis');
 
+const { GOOGLE_APP_STATE_TOKEN_EXPIRATION_TIME } = require('@constants');
+
 const {
   GOOGLE_APP_CLIENT_ID,
   GOOGLE_APP_CLIENT_SECRET,
@@ -16,32 +18,32 @@ const SCOPES = ['https://mail.google.com/'];
 
 const STATE_TOKENS = {};
 
+const oAuth2Client = new google.auth.OAuth2(
+  GOOGLE_APP_CLIENT_ID,
+  GOOGLE_APP_CLIENT_SECRET,
+  GOOGLE_APP_REDIRECT_URI
+);
+
 /**
  * Create an OAuth2 client with the given credentials, and then return a URL for
  * the app authorization.
- * @param {string} currentUserId ID of the user who submitted the request (used
+ * @param {string} requesterId ID of the actor that submitted the request (used
  * for state token verification when redirecting)
- * @param {string} clientId Google App's client ID.
- * @param {string} clientSecret Google App's client secret.
- * @param {string} redirectUri Google App's redirect URI after successfully
- * authorizing.
  * @returns {string} The authorization URL for the Google App.
  */
-const authorize = (currentUserId, clientId, clientSecret, redirectUri) => {
-  const oAuth2Client = new google.auth.OAuth2(
-    clientId,
-    clientSecret,
-    redirectUri
-  );
+const authorize = requesterId => {
+  STATE_TOKENS[requesterId] = crypto.randomBytes(20).toString('hex');
 
-  STATE_TOKENS[currentUserId] = crypto.randomBytes(20).toString('hex');
+  setTimeout(() => {
+    delete STATE_TOKENS[requesterId];
+  }, GOOGLE_APP_STATE_TOKEN_EXPIRATION_TIME);
 
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES,
     state: JSON.stringify({
-      userId: currentUserId,
-      token: STATE_TOKENS[currentUserId]
+      requesterId,
+      token: STATE_TOKENS[requesterId]
     })
   });
 
@@ -49,12 +51,6 @@ const authorize = (currentUserId, clientId, clientSecret, redirectUri) => {
 };
 
 const getAndStoreNewTokens = async authCode => {
-  const oAuth2Client = new google.auth.OAuth2(
-    GOOGLE_APP_CLIENT_ID,
-    GOOGLE_APP_CLIENT_SECRET,
-    GOOGLE_APP_REDIRECT_URI
-  );
-
   const { tokens } = await oAuth2Client.getToken(authCode);
 
   oAuth2Client.setCredentials(tokens);
