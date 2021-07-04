@@ -7,7 +7,7 @@ const ClusterMemberSchema = new mongoose.Schema(
       required: true,
       ref: 'User',
       autopopulate: {
-        select: '-password -createdAt -updatedAt'
+        select: '-password -preferences -createdAt -updatedAt'
       }
     },
     cluster: {

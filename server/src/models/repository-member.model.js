@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { A_WEEK } = require('@constants');
+
 const RepositoryMemberSchema = new mongoose.Schema(
   {
     user: {
@@ -7,7 +9,7 @@ const RepositoryMemberSchema = new mongoose.Schema(
       required: true,
       ref: 'User',
       autopopulate: {
-        select: '-password -createdAt -updatedAt'
+        select: '-password -preferences -createdAt -updatedAt'
       }
     },
     repository: {
@@ -26,7 +28,8 @@ const RepositoryMemberSchema = new mongoose.Schema(
         type: String,
         enum: ['pending', 'accepted'],
         default: 'pending'
-      }
+      },
+      expiresAt: { type: Date, default: Date.now() + A_WEEK }
     }
   },
   {
@@ -39,9 +42,5 @@ const RepositoryMemberSchema = new mongoose.Schema(
 RepositoryMemberSchema.index({ user: 1, repository: 1 }, { unique: true });
 
 RepositoryMemberSchema.plugin(require('mongoose-autopopulate'));
-
-RepositoryMemberSchema.pre('find', function populate() {
-  this.populate('repository');
-});
 
 module.exports = mongoose.model('RepositoryMember', RepositoryMemberSchema);
