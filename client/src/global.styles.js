@@ -16,6 +16,11 @@ const GlobalStyles = createGlobalStyle`
 
   a {
     text-decoration: none;
+    color: ${({ boldTextColor }) => boldTextColor || '#f6c90e'};
+
+    :hover {
+      text-decoration: underline;
+    }
   }
 
   b {
