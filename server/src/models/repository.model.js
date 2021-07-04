@@ -56,7 +56,7 @@ RepositorySchema.virtual('serviceCount', {
 RepositorySchema.pre('findOne', function populate() {
   this.populate('memberCount');
   this.populate('serviceCount');
-  this.populate({ path: 'members', select: 'role -_id  -repository' });
+  this.populate({ path: 'members', select: '-_id -createdAt -updatedAt' });
   this.populate({
     path: 'services',
     select: 'name description version -repository',

@@ -14,6 +14,14 @@ const searchRepositories = async (req, res) => {
   return res.json({ status: 1, result: { repositories } });
 };
 
+const listMembers = async (req, res) => {
+  const { id } = req.params;
+
+  const result = await RepositoryService.listMembers(id);
+
+  return res.json({ status: 1, result: { ...result } });
+};
+
 const addMember = async (req, res) => {
   const { id, userId } = req.params;
   const { permission } = req.body;
@@ -92,6 +100,7 @@ const updatePRReviewProtection = async (req, res) => {
 module.exports = {
   getRepository,
   searchRepositories,
+  listMembers,
   addMember,
   addMemberFromGitHub,
   removeMember,

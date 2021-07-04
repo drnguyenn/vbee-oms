@@ -10,13 +10,7 @@ const create = async data => {
 
 const findOne = async (condition, projection) => {
   if (ObjectId.isValid(condition)) {
-    const repository = await RepositoryModel.findById(
-      condition,
-      projection
-    ).populate({
-      path: 'members.details',
-      select: 'username email fullName githubId githubUsername avatarUrl'
-    });
+    const repository = await RepositoryModel.findById(condition, projection);
     return repository;
   }
 

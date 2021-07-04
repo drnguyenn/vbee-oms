@@ -106,12 +106,20 @@ const search = async (
   projection = { createdAt: 0, updatedAt: 0 }
 ) => {
   if (condition.q) {
-    const services = await RepositoryDao.search(condition.q, projection);
-    return services;
+    const repositories = await RepositoryDao.search(condition.q, projection);
+    return repositories;
   }
 
-  const services = await RepositoryDao.findAll(condition, projection);
-  return services;
+  const repositories = await RepositoryDao.findAll(condition, projection);
+  return repositories;
+};
+
+const listMembers = async repoCondition => {
+  const repository = await get(repoCondition);
+
+  const { memberCount, members } = repository;
+
+  return { memberCount, members };
 };
 
 const addMember = async (
@@ -404,6 +412,7 @@ module.exports = {
   search,
   update,
   remove,
+  listMembers,
   addMember,
   updateMember,
   removeMember,

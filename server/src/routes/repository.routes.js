@@ -50,6 +50,12 @@ router.get(
 //   asyncMiddleware(RepositoryController.deleteRepository)
 // );
 
+router.get(
+  '/repositories/:id/members',
+  auth,
+  asyncMiddleware(RepositoryController.listMembers)
+);
+
 router.post(
   '/repositories/:id/members/:userId',
   auth,
