@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import customAxios from '../customs/axios.custom';
 
 import { getCookie } from '../utils/cookie.utils';
