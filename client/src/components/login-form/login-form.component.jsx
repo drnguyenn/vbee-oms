@@ -19,7 +19,8 @@ import { emailSignInStart } from '../../redux/user/user.actions';
 import { LoginFormStyles, ActionStyles } from './login-form.styles';
 
 const useStyles = makeStyles(theme => ({
-  primary: {
+  fab: {
+    margin: '12px 12px 12px 0',
     color: theme.palette.grey[900]
   }
 }));
@@ -100,16 +101,15 @@ const LoginForm = () => {
 
       <ActionStyles>
         <Fab
-          className={classes.primary}
+          className={classes.fab}
           variant='extended'
           color='primary'
           type='submit'
-          style={{ margin: '12px 0' }}
           disabled={isProcessing}
         >
           Log in
         </Fab>
-        {isProcessing && <CircularProgress size={25} />}
+        {isProcessing && <CircularProgress size={20} />}
       </ActionStyles>
     </LoginFormStyles>
   );
