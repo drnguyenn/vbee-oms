@@ -13,8 +13,6 @@ const snakeCaseRes = require('@middlewares/snake-case-res.middlewares');
 const rawBodySaver = require('@middlewares/raw-body-saver.middlewares');
 const errorHandler = require('@middlewares/error-handler.middlewares');
 
-require('@models');
-
 const { SERVER_PORT } = require('@configs');
 
 const app = express();
@@ -25,6 +23,8 @@ if (process.env.NODE_ENV !== 'production') {
   const morgan = require('morgan');
   app.use(morgan('dev'));
 }
+
+require('@models');
 
 app.use(cors());
 app.use(helmet());
