@@ -49,7 +49,7 @@ const remove = async condition => {
 
   const { nodes } = diagram;
 
-  if (nodes.length) await removeAllNodes(nodes.map(node => node._id));
+  if (nodes.length) await removeManyNodes(nodes.map(node => node._id));
 
   return diagram;
 };
@@ -73,9 +73,9 @@ const updateElements = async ({ nodes = {}, ports = {}, links = {} }) => {
 
 const removeElements = async ({ nodes = [], ports = [], links = [] }) => {
   await Promise.all([
-    removeAllNodes(nodes),
-    removeAllPorts(ports),
-    removeAllLinks(links)
+    removeManyNodes(nodes),
+    removeManyPorts(ports),
+    removeManyLinks(links)
   ]);
 
   return {
@@ -125,7 +125,7 @@ const updateNode = async (
   const diagramNode = await DiagramNodeDao.update(nodeCondition, {
     name: name || service.name,
     diagram: diagramId,
-    service: serviceId,
+    service: serviceId || null,
     ...rest
   });
 
@@ -143,12 +143,12 @@ const removeNode = async nodeCondition => {
 
   const { ports } = diagramNode;
 
-  if (ports.length) await removeAllPorts(ports.map(port => port._id));
+  if (ports.length) await removeManyPorts(ports.map(port => port._id));
 
   return { diagramNode, statusCode: 200 };
 };
 
-const removeAllNodes = async (nodeIds = []) => {
+const removeManyNodes = async (nodeIds = []) => {
   const ports = await DiagramPortDao.findAll(
     {
       node: { $in: nodeIds }
@@ -156,9 +156,9 @@ const removeAllNodes = async (nodeIds = []) => {
     '_id'
   );
 
-  if (ports.length) await removeAllPorts(ports.map(port => port._id));
+  if (ports.length) await removeManyPorts(ports.map(port => port._id));
 
-  const result = await DiagramNodeDao.removeAll({
+  const result = await DiagramNodeDao.removeMany({
     _id: { $in: nodeIds }
   });
 
@@ -207,13 +207,13 @@ const removePort = async portCondition => {
 
   const links = [...diagramPort.inLinks, ...diagramPort.outLinks];
 
-  if (links.length) await removeAllLinks(links.map(link => link._id));
+  if (links.length) await removeManyLinks(links.map(link => link._id));
 
   return { diagramPort, statusCode: 200 };
 };
 
-const removeAllPorts = async (portIds = []) => {
-  await DiagramLinkDao.removeAll({
+const removeManyPorts = async (portIds = []) => {
+  await DiagramLinkDao.removeMany({
     $or: [
       {
         sourcePort: { $in: portIds }
@@ -224,7 +224,7 @@ const removeAllPorts = async (portIds = []) => {
     ]
   });
 
-  const result = await DiagramPortDao.removeAll({
+  const result = await DiagramPortDao.removeMany({
     _id: { $in: portIds }
   });
 
@@ -318,8 +318,8 @@ const removeLink = async linkCondition => {
   return { diagramLink, statusCode: 200 };
 };
 
-const removeAllLinks = async (linkIds = []) => {
-  const result = await DiagramLinkDao.removeAll({
+const removeManyLinks = async (linkIds = []) => {
+  const result = await DiagramLinkDao.removeMany({
     _id: { $in: linkIds }
   });
 

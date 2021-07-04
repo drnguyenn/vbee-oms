@@ -66,7 +66,7 @@ const removeOne = async condition => {
   return null;
 };
 
-const removeAll = async condition => {
+const removeMany = async condition => {
   const domains = await DomainModel.deleteMany(condition);
   return domains;
 };
@@ -77,5 +77,5 @@ module.exports = {
   findAll,
   update,
   removeOne,
-  removeAll
+  removeMany
 };

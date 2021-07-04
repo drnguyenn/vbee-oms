@@ -112,12 +112,8 @@ const removeOne = async condition => {
   return domain;
 };
 
-const removeAll = async (domains = []) => {
-  const result = await DomainDao.removeAll({
-    _id: {
-      $in: domains.map(domain => domain._id)
-    }
-  });
+const removeMany = async (domainIds = []) => {
+  const result = await DomainDao.removeMany({ _id: { $in: domainIds } });
 
   return result;
 };
@@ -142,6 +138,6 @@ module.exports = {
   create,
   update,
   removeOne,
-  removeAll,
+  removeMany,
   getSslStatus
 };
