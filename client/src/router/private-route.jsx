@@ -1,25 +1,30 @@
 import { Route, Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-import Spinner from '../components/spinner/spinner.component';
+import Spinner from 'components/spinner/spinner.component';
 
 import ROUTE_PATHS from './route-paths';
 
 const PrivateRoute = ({ Component, ...rest }) => {
   const { currentUser, isLoading } = useSelector(state => state.user);
 
+  if (isLoading) return <Spinner />;
+
   return (
     <Route
       {...rest}
-      render={props => {
-        if (isLoading) return <Spinner />;
-
-        return currentUser ? (
+      render={props =>
+        currentUser ? (
           <Component {...props} />
         ) : (
-          <Redirect to={ROUTE_PATHS.LOGIN} />
-        );
-      }}
+          <Redirect
+            to={{
+              pathname: ROUTE_PATHS.LOGIN,
+              state: { from: props.location }
+            }}
+          />
+        )
+      }
     />
   );
 };
