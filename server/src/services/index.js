@@ -11,9 +11,9 @@ const {
 } = process.env;
 
 const initialSetup = async () => {
-  const admins = await UserService.search({ role: 'admin' });
-
   try {
+    const admins = await UserService.search({ role: 'admin' });
+
     if (!admins.length)
       await UserService.create({
         email: INITIAL_ADMIN_EMAIL,
