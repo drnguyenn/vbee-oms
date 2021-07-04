@@ -304,7 +304,7 @@ const Drawer = () => {
                 <TextField
                   {...params}
                   label='Choose a service'
-                  placeholder="Enter service's ID, name, or description"
+                  placeholder="Search by service's name, description, or ID"
                   margin='normal'
                   variant='outlined'
                   InputProps={{

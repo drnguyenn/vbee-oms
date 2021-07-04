@@ -125,8 +125,8 @@ const ClusterMemberAdditionModal = () => {
                 {...params}
                 required
                 autoFocus
-                label='Choose a member'
-                placeholder="Enter member's username, full name, or GitHub username, etc."
+                label='Choose a user'
+                placeholder='Search by username, full name, GitHub username, email, etc.'
                 margin='normal'
                 variant='outlined'
                 InputProps={{

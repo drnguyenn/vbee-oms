@@ -127,7 +127,7 @@ const ServerCreationModal = () => {
                 {...params}
                 required
                 label='Choose a cluster'
-                placeholder="Enter cluster's ID, name, or description"
+                placeholder="Search by cluster's name, description, or ID"
                 margin='normal'
                 variant='outlined'
                 InputProps={{
