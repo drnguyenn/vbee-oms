@@ -12,9 +12,9 @@ import {
 } from '@material-ui/core';
 import { Close, Check, Edit } from '@material-ui/icons';
 
-import { updateClusterStart } from '../../redux/cluster/cluster.actions';
+import { updateClusterStart } from 'redux/cluster/cluster.actions';
 
-import Section from '../section/section.component';
+import Section from 'components/section/section.component';
 
 import {
   SectionRowStyles,
@@ -31,8 +31,9 @@ const useStyles = makeStyles({
 const ClusterBasicInfoSection = () => {
   const classes = useStyles();
 
-  const { currentCluster, isFetchingCurrentCluster, isUpdatingInfo } =
-    useSelector(state => state.cluster);
+  const { currentCluster, isUpdatingInfo } = useSelector(
+    state => state.cluster
+  );
 
   const [editMode, setEditMode] = useState(false);
 
@@ -45,12 +46,12 @@ const ClusterBasicInfoSection = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (currentCluster && !isFetchingCurrentCluster && !isUpdatingInfo)
+    if (currentCluster && !isUpdatingInfo)
       setClusterInfo({
         name: currentCluster.name || '',
         description: currentCluster.description || ''
       });
-  }, [currentCluster, isFetchingCurrentCluster, isUpdatingInfo]);
+  }, [currentCluster, isUpdatingInfo]);
 
   const handleEditClick = () => setEditMode(true);
 

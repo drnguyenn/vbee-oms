@@ -51,12 +51,15 @@ const BaseCard = ({
   const classes = useStyles();
 
   const Description = useMemo(() => {
-    if (description)
+    if (typeof description === 'string') {
+      if (!description.length) return <em>No description provided</em>;
+
       return description.length <= 95
         ? description
         : `${description.substring(0, 95)}...`;
+    }
 
-    return <em>No description provided</em>;
+    return description;
   }, [description]);
 
   return (

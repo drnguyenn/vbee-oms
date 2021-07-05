@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { debounce } from 'lodash';
 
 import {
   Divider,
@@ -15,16 +17,23 @@ import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { Close, Check, Edit } from '@material-ui/icons';
 
 import { searchServers } from 'services/server.service';
+import { searchRepositories } from 'services/repository.service';
 
 import { updateServiceStart } from 'redux/service/service.actions';
 
+import { useAutocompleteLogic } from 'hooks/autocomplete.hooks';
+
 import Section from 'components/section/section.component';
+
+import ROUTE_PATHS from 'router/route-paths';
 
 import {
   SectionRowStyles,
   SectionRowTitleStyles,
   SectionRowValueStyles
-} from '../section/section.styles';
+} from 'components/section/section.styles';
+
+import { DEBOUNCE_SEARCH_WAIT_TIME } from 'constants/index';
 
 const useStyles = makeStyles({
   textField: {
@@ -38,6 +47,15 @@ const handleSearchServers = async (query = {}, callback = () => {}) => {
   callback(servers);
 };
 
+const handleSearchRepositories = debounce(
+  async (query = {}, callback = () => {}) => {
+    const repositories = await searchRepositories(query);
+
+    callback(repositories);
+  },
+  DEBOUNCE_SEARCH_WAIT_TIME
+);
+
 const serverFilterOptions = createFilterOptions({
   stringify: ({ id, name, ipAddress, macAddress }) =>
     `${id}${name}${ipAddress}${macAddress}`,
@@ -47,8 +65,9 @@ const serverFilterOptions = createFilterOptions({
 const ServiceBasicInfoSection = () => {
   const classes = useStyles();
 
-  const { currentService, isFetchingCurrentService, isUpdatingInfo } =
-    useSelector(state => state.service);
+  const { currentService, isUpdatingInfo } = useSelector(
+    state => state.service
+  );
 
   const dispatch = useDispatch();
 
@@ -66,14 +85,23 @@ const ServiceBasicInfoSection = () => {
   const [serverInputValue, setServerInputValue] = useState('');
   const [isFetchingServer, setIsFetchingServer] = useState(false);
 
+  const {
+    options: repoOptions,
+    value: repoValue,
+    inputValue: repoInputValue,
+    isSearching: isSearchingRepo,
+    handleValueChange: handleRepoValueChange,
+    handleInputChange: handleRepoInputChange
+  } = useAutocompleteLogic(handleSearchRepositories, 'q', 'name', 'id');
+
   useEffect(() => {
-    if (currentService && !isFetchingCurrentService && !isUpdatingInfo)
+    if (currentService && !isUpdatingInfo)
       setServiceInfo({
         name: currentService.name || '',
         description: currentService.description || '',
         version: currentService.version || ''
       });
-  }, [currentService, isFetchingCurrentService, isUpdatingInfo]);
+  }, [currentService, isUpdatingInfo]);
 
   useEffect(() => {
     if (currentService.server) {
@@ -126,7 +154,8 @@ const ServiceBasicInfoSection = () => {
     dispatch(
       updateServiceStart(currentService.id, {
         ...serviceInfo,
-        serverId: serverValue ? serverValue.id : null
+        serverId: serverValue ? serverValue.id : null,
+        repositoryId: repoValue ? repoValue.id : null
       })
     );
 
@@ -246,7 +275,7 @@ const ServiceBasicInfoSection = () => {
                   <TextField
                     {...params}
                     label='Choose a server'
-                    placeholder="Enter server's ID, name, IP address, or MAC address, etc."
+                    placeholder="Search by server's name, IP address, MAC address, or ID"
                     margin='normal'
                     variant='outlined'
                     InputProps={{
@@ -273,6 +302,69 @@ const ServiceBasicInfoSection = () => {
               />
             </Fade>
           </SectionRowStyles>
+          <Divider />
+          <SectionRowStyles>
+            <SectionRowTitleStyles>Repository</SectionRowTitleStyles>
+            <Fade in timeout={500}>
+              <Autocomplete
+                className={classes.textField}
+                value={repoValue}
+                inputValue={repoInputValue}
+                onChange={handleRepoValueChange}
+                onInputChange={handleRepoInputChange}
+                filterOptions={option => option}
+                includeInputInList
+                getOptionSelected={(option, selectedValue) =>
+                  option.id === selectedValue.id
+                }
+                getOptionLabel={option => option.name}
+                options={repoOptions}
+                noOptionsText='No matching results found'
+                loading={isSearchingRepo && !repoOptions.length}
+                loadingText='Searching...'
+                renderInput={params => (
+                  <TextField
+                    {...params}
+                    label='Choose a repository'
+                    placeholder="Search by repository's name, owner, URL, ID, or GitHub ID"
+                    margin='normal'
+                    variant='outlined'
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {isSearchingRepo ? (
+                            <CircularProgress color='inherit' size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      )
+                    }}
+                  />
+                )}
+                renderOption={({ name: repoName, url, owner }) => (
+                  <div>
+                    <Typography>
+                      <a href={url} target='_blank' rel='noopener noreferrer'>
+                        {repoName}
+                      </a>
+                    </Typography>
+                    <Typography color='textSecondary' variant='body2'>
+                      of{' '}
+                      <a
+                        href={`https://github.com/${owner}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        <b>{owner}</b>
+                      </a>
+                    </Typography>
+                  </div>
+                )}
+              />
+            </Fade>
+          </SectionRowStyles>
+
           <input type='submit' hidden />
         </form>
       ) : (
@@ -311,10 +403,12 @@ const ServiceBasicInfoSection = () => {
             <SectionRowTitleStyles>Cluster</SectionRowTitleStyles>
             <Fade in timeout={500}>
               <SectionRowValueStyles>
-                {currentService.cluster ? (
-                  currentService.cluster.name
-                ) : (
-                  <em>No information</em>
+                {currentService.cluster && (
+                  <Link
+                    to={`${ROUTE_PATHS.CLUSTERS}/${currentService.cluster.id}`}
+                  >
+                    {currentService.cluster.name}
+                  </Link>
                 )}
               </SectionRowValueStyles>
             </Fade>
@@ -325,7 +419,28 @@ const ServiceBasicInfoSection = () => {
             <Fade in timeout={500}>
               <SectionRowValueStyles>
                 {currentService.server ? (
-                  currentService.server.name
+                  <Link
+                    to={`${ROUTE_PATHS.SERVERS}/${currentService.server.id}`}
+                  >
+                    {currentService.server.name}
+                  </Link>
+                ) : (
+                  <em>No information</em>
+                )}
+              </SectionRowValueStyles>
+            </Fade>
+          </SectionRowStyles>
+          <Divider />
+          <SectionRowStyles>
+            <SectionRowTitleStyles>Repository</SectionRowTitleStyles>
+            <Fade in timeout={500}>
+              <SectionRowValueStyles>
+                {currentService.repository ? (
+                  <Link
+                    to={`${ROUTE_PATHS.REPOSITORIES}/${currentService.repository.id}`}
+                  >
+                    {currentService.repository.name}
+                  </Link>
                 ) : (
                   <em>No information</em>
                 )}

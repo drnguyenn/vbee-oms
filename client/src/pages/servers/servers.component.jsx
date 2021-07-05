@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -46,6 +46,8 @@ const useStyles = makeStyles(theme => ({
     zIndex: 1100
   }
 }));
+
+const handleLinkClick = event => event.stopPropagation();
 
 const ServersPage = () => {
   const classes = useStyles();
@@ -101,7 +103,13 @@ const ServersPage = () => {
                   cluster &&
                   cluster.name && (
                     <span>
-                      of <b>{cluster.name}</b>
+                      of{' '}
+                      <Link
+                        to={`${ROUTE_PATHS.CLUSTERS}/${cluster.id}`}
+                        onClick={handleLinkClick}
+                      >
+                        <b>{cluster.name}</b>
+                      </Link>
                     </span>
                   )
                 }

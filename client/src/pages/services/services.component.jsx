@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -40,6 +40,9 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center'
   },
+  version: {
+    margin: '0.6rem 0'
+  },
   icon: {
     marginRight: '0.625rem'
   },
@@ -47,6 +50,8 @@ const useStyles = makeStyles(theme => ({
     zIndex: 1100
   }
 }));
+
+const handleLinkClick = event => event.stopPropagation();
 
 const ServicesPage = () => {
   const classes = useStyles();
@@ -90,7 +95,13 @@ const ServicesPage = () => {
                   cluster &&
                   cluster.name && (
                     <span>
-                      of <b>{cluster.name}</b>
+                      of{' '}
+                      <Link
+                        to={`${ROUTE_PATHS.CLUSTERS}/${cluster.id}`}
+                        onClick={handleLinkClick}
+                      >
+                        <b>{cluster.name}</b>
+                      </Link>
                     </span>
                   )
                 }
@@ -135,7 +146,7 @@ const ServicesPage = () => {
           )}
         </Grid>
         <Grid item>
-          <Tooltip title='Create new cluster' placement='left' arrow>
+          <Tooltip title='Create new service' placement='left' arrow>
             <Fab color='primary' onClick={handleAddButtonClick}>
               <Add />
             </Fab>

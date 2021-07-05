@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -16,11 +17,13 @@ import { updateServerStart } from 'redux/server/server.actions';
 
 import Section from 'components/section/section.component';
 
+import ROUTE_PATHS from 'router/route-paths';
+
 import {
   SectionRowStyles,
   SectionRowTitleStyles,
   SectionRowValueStyles
-} from '../section/section.styles';
+} from 'components/section/section.styles';
 
 const useStyles = makeStyles({
   textField: {
@@ -31,8 +34,7 @@ const useStyles = makeStyles({
 const ServerBasicInfoSection = () => {
   const classes = useStyles();
 
-  const { currentServer, isFetchingCurrentServer, isUpdatingInfo } =
-    useSelector(state => state.server);
+  const { currentServer, isUpdatingInfo } = useSelector(state => state.server);
 
   const [editMode, setEditMode] = useState(false);
 
@@ -46,13 +48,13 @@ const ServerBasicInfoSection = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (currentServer && !isFetchingCurrentServer && !isUpdatingInfo)
+    if (currentServer && !isUpdatingInfo)
       setServerInfo({
         name: currentServer.name || '',
         ipAddress: currentServer.ipAddress || '',
         macAddress: currentServer.macAddress || ''
       });
-  }, [currentServer, isFetchingCurrentServer, isUpdatingInfo]);
+  }, [currentServer, isUpdatingInfo]);
 
   const handleEditClick = () => setEditMode(true);
 
@@ -209,7 +211,13 @@ const ServerBasicInfoSection = () => {
             <SectionRowTitleStyles>Cluster</SectionRowTitleStyles>
             <Fade in timeout={500}>
               <SectionRowValueStyles>
-                {currentServer.cluster && currentServer.cluster.name}
+                {currentServer.cluster && (
+                  <Link
+                    to={`${ROUTE_PATHS.CLUSTERS}/${currentServer.cluster.id}`}
+                  >
+                    {currentServer.cluster.name}
+                  </Link>
+                )}
               </SectionRowValueStyles>
             </Fade>
           </SectionRowStyles>
