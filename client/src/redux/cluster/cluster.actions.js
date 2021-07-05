@@ -128,8 +128,3 @@ export const removeClusterMemberFailure = error => ({
   type: ClusterActionTypes.REMOVE_CLUSTER_MEMBER_FAILURE,
   payload: error
 });
-
-export const addService = service => ({
-  type: ClusterActionTypes.ADD_SERVICE,
-  payload: service
-});
