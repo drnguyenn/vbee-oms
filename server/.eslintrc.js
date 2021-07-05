@@ -23,7 +23,8 @@ module.exports = {
     // 'no-await-in-loop': 'off',
     'no-use-before-define': 'off',
     'no-restricted-syntax': 'off',
-    'global-require': 'off'
+    'global-require': 'off',
+    'one-var': 'off'
   },
   settings: {
     'import/resolver': {
