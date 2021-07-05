@@ -42,40 +42,41 @@ const update = async (condition, data) => {
   // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
 
-  if (ObjectId.isValid(condition))
-    conditionAndException = {
-      $or: [{ githubId: data.githubId }],
-      $and: [{ _id: { $ne: condition } }]
-    };
-  else if (typeof condition === 'object' && condition) {
-    // Fields that identify instance
-    const conditionAvailableKeys = ['_id', 'githubId'];
+  if (data.githubId)
+    if (ObjectId.isValid(condition))
+      conditionAndException = {
+        $or: [{ githubId: data.githubId }],
+        $and: [{ _id: { $ne: condition } }]
+      };
+    else if (typeof condition === 'object' && condition) {
+      // Fields that identify instance
+      const conditionAvailableKeys = ['_id', 'githubId'];
 
-    Object.keys(condition).forEach(key => {
-      if (!conditionAvailableKeys.includes(key))
-        throw new CustomError(
-          errorCodes.BAD_REQUEST,
-          'Invalid GitHub App installation condition'
-        );
-    });
+      Object.keys(condition).forEach(key => {
+        if (!conditionAvailableKeys.includes(key))
+          throw new CustomError(
+            errorCodes.BAD_REQUEST,
+            'Invalid GitHub App installation condition'
+          );
+      });
 
-    conditionAndException = {
-      $or: [{ githubId: data.githubId }],
-      $and: [
-        Object.keys(condition).reduce(
-          (accumulator, currentValue) => ({
-            ...accumulator,
-            [currentValue]: { $ne: condition[currentValue] }
-          }),
-          {}
-        )
-      ]
-    };
-  } else
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      'Invalid GitHub app installation condition'
-    );
+      conditionAndException = {
+        $or: [{ githubId: data.githubId }],
+        $and: [
+          Object.keys(condition).reduce(
+            (accumulator, currentValue) => ({
+              ...accumulator,
+              [currentValue]: { $ne: condition[currentValue] }
+            }),
+            {}
+          )
+        ]
+      };
+    } else
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        'Invalid GitHub app installation condition'
+      );
 
   if (await GhAppInstallationDao.findOne(conditionAndException))
     throw new CustomError(
@@ -124,7 +125,7 @@ const getGhAppInstallationToken = async installationCondition => {
     }
 
   const newGhAppInstallationToken =
-    await GitHub.app.generateGhAppInstallationToken(githubId);
+    await GitHub.app.createGhAppInstallationToken(githubId);
   await update({ githubId }, { accessToken: newGhAppInstallationToken });
 
   return newGhAppInstallationToken.token;

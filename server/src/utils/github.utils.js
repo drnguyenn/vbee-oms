@@ -6,11 +6,12 @@ const customAxios = require('@customs/axios.custom');
 
 const { GITHUB_API, GITHUB_REPOSITORY_PERMISSIONS } = require('@constants');
 
+const EXPIRATION_TIME = 60; // 60 seconds
+
 const generateGhAppJwt = appId => {
   const privateKey = fs.readFileSync(
     'credentials/vbee-oms.gh-app-private-key.pem'
   );
-  const EXPIRATION_TIME = 60; // 60 seconds
 
   const token = jwt.sign(
     {
@@ -24,7 +25,7 @@ const generateGhAppJwt = appId => {
   return token;
 };
 
-const generateGhAppInstallationToken = async installationGhId => {
+const createGhAppInstallationToken = async installationGhId => {
   const { GITHUB_APP_ID } = process.env;
   const ghAppJwt = generateGhAppJwt(GITHUB_APP_ID);
 
@@ -114,7 +115,7 @@ const addCollaborator = async (
   owner,
   repoName,
   githubUsername,
-  permission
+  permission = 'write'
 ) => {
   const response = await customAxios({
     method: 'PUT',
@@ -143,6 +144,29 @@ const removeCollaborator = async (
       'Content-Type': 'application/json',
       Accept: GITHUB_API.HEADERS.ACCEPT,
       Authorization: `token ${ghAppInstallationToken}`
+    }
+  });
+
+  return response;
+};
+
+const updateInvitation = async (
+  ghAppInstallationToken,
+  owner,
+  repoName,
+  invitationGitHubId,
+  permission = 'write'
+) => {
+  const response = await customAxios({
+    method: 'PATCH',
+    url: `${GITHUB_API.BASE_URL}/repos/${owner}/${repoName}/invitations/${invitationGitHubId}`,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: GITHUB_API.HEADERS.ACCEPT,
+      Authorization: `token ${ghAppInstallationToken}`
+    },
+    data: {
+      permissions: permission
     }
   });
 
@@ -246,13 +270,14 @@ const searchUsers = async (
 
 module.exports = {
   app: {
-    generateGhAppInstallationToken
+    createGhAppInstallationToken
   },
   repository: {
     listCollaborators,
     listInvitations,
     addCollaborator,
     removeCollaborator,
+    updateInvitation,
     deleteInvitation,
     updatePRReviewProtection,
     getPermissionToStore
