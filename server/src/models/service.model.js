@@ -43,11 +43,12 @@ ServiceSchema.pre('findOne', function populate() {
   this.populate({ path: 'members', select: 'role -_id -service' });
   this.populate({ path: 'cluster', select: 'name' });
   this.populate({ path: 'server', select: 'name ipAddress macAddress' });
-  this.populate({ path: 'repository', select: 'name description' });
+  this.populate({ path: 'repository', select: 'name owner url' });
 });
 
 ServiceSchema.pre('findOneAndUpdate', function populate() {
   this.populate({ path: 'server' });
+  this.populate({ path: 'repository', select: 'name owner url' });
 });
 
 module.exports = mongoose.model('Service', ServiceSchema);

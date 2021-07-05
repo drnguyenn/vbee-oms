@@ -10,6 +10,7 @@ const ServiceDao = require('@daos/service.dao');
 const ServiceMemberDao = require('@daos/service-member.dao');
 const ClusterDao = require('@daos/cluster.dao');
 const ServerDao = require('@daos/server.dao');
+const RepositoryDao = require('@daos/repository.dao');
 
 const UserService = require('./user.service');
 
@@ -22,7 +23,7 @@ const get = async (condition, projection) => {
   return service;
 };
 
-const create = async ({ name, clusterId, serverId, ...rest }) => {
+const create = async ({ name, clusterId, serverId, repositoryId, ...rest }) => {
   if (!(await ClusterDao.findOne(clusterId)))
     throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
 
@@ -45,20 +46,26 @@ const create = async ({ name, clusterId, serverId, ...rest }) => {
       );
   }
 
+  if (repositoryId && !(await RepositoryDao.findOne(repositoryId)))
+    throw new CustomError(errorCodes.NOT_FOUND, 'Repository not found');
+
   const service = await ServiceDao.create({
     name,
     cluster: clusterId,
     server: serverId,
+    repository: repositoryId || null,
     ...rest
   });
 
   return service;
 };
 
-const update = async (condition, { name, clusterId, serverId, ...rest }) => {
-  if (clusterId)
-    if (!(await ClusterDao.findOne(clusterId)))
-      throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
+const update = async (
+  condition,
+  { name, clusterId, serverId, repositoryId, ...rest }
+) => {
+  if (clusterId && !(await ClusterDao.findOne(clusterId)))
+    throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
 
   if (serverId) {
     const server = await ServerDao.findOne(serverId);
@@ -72,6 +79,9 @@ const update = async (condition, { name, clusterId, serverId, ...rest }) => {
         `Server "${server.name}" does not belong to the specified cluster`
       );
   }
+
+  if (repositoryId && !(await RepositoryDao.findOne(repositoryId)))
+    throw new CustomError(errorCodes.NOT_FOUND, 'Repository not found');
 
   // Find out whether any service has the same `name` with the `name`
   // that is requested to be changed to, except the one that matched the `condition`
@@ -123,6 +133,7 @@ const update = async (condition, { name, clusterId, serverId, ...rest }) => {
     name,
     cluster: clusterId,
     server: serverId || null,
+    repository: repositoryId || null,
     ...rest
   });
 

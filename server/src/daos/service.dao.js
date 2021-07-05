@@ -8,6 +8,7 @@ const create = async data => {
   service = await service
     .populate({ path: 'cluster', select: 'name' })
     .populate({ path: 'server', select: 'name ipAddress macAddress' })
+    .populate({ path: 'repository', select: 'name owner url' })
     .execPopulate();
   return service;
 };

@@ -17,6 +17,12 @@ const searchServicesValidation = {
     cluster: Joi.string()
       .trim()
       .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator'),
+    server: Joi.string()
+      .trim()
+      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator'),
+    repository: Joi.string()
+      .trim()
+      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator'),
     createdAt: Joi.date(),
     updatedAt: Joi.date()
   }).unknown(false)
@@ -38,8 +44,10 @@ const createServiceValidation = {
       .required(),
     serverId: Joi.string()
       .trim()
+      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator'),
+    repositoryId: Joi.string()
+      .trim()
       .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
-      .allow('')
   }).unknown(false)
 };
 
@@ -57,6 +65,9 @@ const updateServiceValidation = {
       .trim()
       .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator'),
     serverId: Joi.string()
+      .trim()
+      .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator'),
+    repositoryId: Joi.string()
       .trim()
       .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
   }).unknown(false)
