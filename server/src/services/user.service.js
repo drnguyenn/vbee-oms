@@ -12,6 +12,7 @@ const { sendMail } = require('@services/mail.service');
 const { generateRandomString } = require('@utils/random.utils');
 const { getAccountRegistrationEmailTemplate } = require('@utils/mail.utils');
 const GithubUtils = require('@utils/github.utils');
+const { parseBoolean } = require('@utils');
 
 const { JWT_SECRET_KEY, JWT_EXPIRATION_TIME } = require('@configs');
 
@@ -142,7 +143,7 @@ const search = async (
   projection = '-password -createdAt -updatedAt'
 ) => {
   if (condition.q) {
-    if (condition.githubSearch) {
+    if (parseBoolean(condition.githubSearch)) {
       let ghAppInstallationToken;
 
       const ghAppInstallations = await GhAppInstallationService.search();
@@ -158,10 +159,11 @@ const search = async (
           condition.q
         );
 
-        return users.map(({ id, login }) => ({
+        return users.map(({ id, login, htmlUrl }) => ({
           source: 'GitHub',
           githubId: id,
-          githubUsername: login
+          githubUsername: login,
+          url: htmlUrl
         }));
       };
 
