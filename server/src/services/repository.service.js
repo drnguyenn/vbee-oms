@@ -41,19 +41,25 @@ const update = async ({ githubId: repoGitHubId }, data, requesterId) => {
   await Promise.all(
     collaborators.map(
       async ({ id: githubId, login: githubUsername, permissions }) => {
-        let user = await UserDao.findOne({ githubId });
+        // Do not store repository owner in DB
+        if (githubUsername !== owner) {
+          let user = await UserDao.findOne({ githubId });
 
-        if (user) user = await UserDao.update({ githubId }, { githubUsername });
-        else user = await UserService.create(requesterId, { githubUsername });
+          if (user)
+            user = await UserDao.update({ githubId }, { githubUsername });
+          else user = await UserService.create(requesterId, { githubUsername });
 
-        RepositoryMemberDao.update(
-          { repository: repository._id, user: user._id },
-          {
-            permission:
-              GitHubUtils.repository.getPermissionToStore(permissions),
-            invitation: { status: 'accepted' }
-          }
-        );
+          return RepositoryMemberDao.update(
+            { repository: repository._id, user: user._id },
+            {
+              permission:
+                GitHubUtils.repository.getPermissionToStore(permissions),
+              invitation: { status: 'accepted' }
+            }
+          );
+        }
+
+        return null;
       }
     )
   );
@@ -125,7 +131,7 @@ const listMembers = async repoCondition => {
 const addMember = async (
   repoCondition,
   memberCondition,
-  { permission, invitation },
+  data,
   requesterId,
   ghAppInstallationToken
 ) => {
@@ -137,6 +143,12 @@ const addMember = async (
   const { githubUsername } = memberCondition;
 
   if (githubUsername) {
+    if (githubUsername === repository.owner)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        'Can not add an owner to his own repositories'
+      );
+
     user = await UserDao.findOne({ githubUsername });
 
     if (!user) {
@@ -147,14 +159,21 @@ const addMember = async (
     user = await UserService.get(memberCondition);
   }
 
-  if (
-    checkRepoMember &&
-    (await RepositoryMemberDao.findOne({
-      user: user._id,
-      repository: repository._id
-    }))
-  )
-    throw new CustomError(errorCodes.BAD_REQUEST, 'Member is already added');
+  if (checkRepoMember) {
+    if (user.githubUsername === repository.owner)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        'Can not add an owner to his own repositories'
+      );
+
+    if (
+      await RepositoryMemberDao.findOne({
+        user: user._id,
+        repository: repository._id
+      })
+    )
+      throw new CustomError(errorCodes.BAD_REQUEST, 'Member is already added');
+  }
 
   if (ghAppInstallationToken) {
     const { name, owner } = repository;
@@ -165,7 +184,7 @@ const addMember = async (
       owner,
       name,
       user.githubUsername,
-      permission
+      data.permission
     );
 
     if (response.status) {
@@ -178,7 +197,7 @@ const addMember = async (
         const member = await RepositoryMemberDao.create({
           user: user._id,
           repository: repository._id,
-          permission,
+          permission: data.permission,
           invitation: { githubId: id, status: 'pending' }
         });
 
@@ -194,8 +213,7 @@ const addMember = async (
   const member = await RepositoryMemberDao.create({
     user: user._id,
     repository: repository._id,
-    permission,
-    invitation
+    ...data
   });
 
   return { member, statusCode: 201 };
@@ -204,7 +222,7 @@ const addMember = async (
 const updateMember = async (
   repoCondition,
   memberCondition,
-  { permission, invitation },
+  data,
   requesterId,
   ghAppInstallationToken
 ) => {
@@ -216,6 +234,12 @@ const updateMember = async (
   const { githubUsername } = memberCondition;
 
   if (githubUsername) {
+    if (githubUsername === repository.owner)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        'Can not add an owner to his own repositories'
+      );
+
     user = await UserDao.findOne({ githubUsername });
 
     if (!user) {
@@ -227,11 +251,18 @@ const updateMember = async (
   }
 
   let member;
-  if (checkRepoMember)
+  if (checkRepoMember) {
+    if (user.githubUsername === repository.owner)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        'Can not add an owner to his own repositories'
+      );
+
     member = await RepositoryMemberDao.findOne({
       user: user._id,
       repository: repository._id
     });
+  }
 
   if (!member)
     if (ghAppInstallationToken) {
@@ -243,7 +274,7 @@ const updateMember = async (
         owner,
         name,
         user.githubUsername,
-        permission
+        data.permission
       );
 
       if (response.status) {
@@ -256,7 +287,7 @@ const updateMember = async (
           member = await RepositoryMemberDao.create({
             user: user._id,
             repository: repository._id,
-            permission,
+            permission: data.permission,
             invitation: { githubId: id, status: 'pending' }
           });
 
@@ -273,7 +304,7 @@ const updateMember = async (
       user: user._id,
       repository: repository._id
     },
-    { permission, invitation }
+    { ...data }
   );
 
   return { member, statusCode: 200 };
@@ -334,7 +365,7 @@ const removeMember = async (
           user: user._id
         });
 
-        return { member, statusCode: 200 };
+        return { member, statusCode: response.status };
       }
 
       const { message } = response.data;
@@ -374,6 +405,73 @@ const removeMemberFromAllRepositories = async memberCondition => {
   return { statusCode: 200 };
 };
 
+const updateInvitation = async (
+  repoCondition,
+  memberCondition,
+  permission,
+  ghAppInstallationToken
+) => {
+  const repository = await get(repoCondition);
+
+  const user = await UserService.get(memberCondition);
+
+  if (ghAppInstallationToken) {
+    let member = await RepositoryMemberDao.findOne({
+      repository: repository._id,
+      user: user._id
+    });
+    if (!member)
+      throw new CustomError(errorCodes.BAD_REQUEST, 'Member not found');
+
+    const { name, owner } = repository;
+    const { invitation } = member;
+
+    if (!invitation.githubId)
+      throw new CustomError(errorCodes.NOT_FOUND, 'Invitation not found');
+
+    if (Date.now() >= new Date(invitation.expiresAt).getTime())
+      throw new CustomError(
+        errorCodes.UNPROCESSABLE_ENTITY,
+        'Invitation expired'
+      );
+
+    const response = await GitHubUtils.repository.updateInvitation(
+      ghAppInstallationToken,
+      owner,
+      name,
+      invitation.githubId,
+      permission
+    );
+
+    if (response.status) {
+      if (response.status < 400) {
+        member = await RepositoryMemberDao.update(
+          {
+            repository: repository._id,
+            user: user._id
+          },
+          { permission }
+        );
+
+        return { member, statusCode: response.status };
+      }
+
+      const { message } = response.data;
+      throw new CustomError(response.status, message);
+    }
+  }
+
+  const member = await RepositoryMemberDao.update(
+    {
+      repository: repository._id,
+      user: user._id
+    },
+    { permission }
+  );
+
+  return { member, statusCode: 200 };
+};
+
 const updatePRReviewProtection = async (
   repoCondition,
   branch,
@@ -404,7 +502,7 @@ const updatePRReviewProtection = async (
     }
   }
 
-  return { statusCode: 204 };
+  return { statusCode: 200 };
 };
 
 module.exports = {
@@ -417,5 +515,6 @@ module.exports = {
   updateMember,
   removeMember,
   removeMemberFromAllRepositories,
+  updateInvitation,
   updatePRReviewProtection
 };

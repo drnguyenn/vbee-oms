@@ -5,6 +5,7 @@ const {
   // createRepositoryValidator,
   // updateRepositoryValidator,
   addMemberValidator,
+  updateInvitationValidator,
   updatePRReviewProtectionValidator
 } = require('@validators/repository.validators');
 
@@ -83,6 +84,14 @@ router.delete(
   '/repositories/members/:userId',
   auth,
   asyncMiddleware(RepositoryController.removeMemberFromAllRepositories)
+);
+
+router.patch(
+  '/repositories/:id/members/:userId',
+  auth,
+  updateInvitationValidator,
+  ghAppInstallationToken,
+  asyncMiddleware(RepositoryController.updateInvitation)
 );
 
 router.patch(

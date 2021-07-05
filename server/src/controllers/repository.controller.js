@@ -82,6 +82,23 @@ const removeMemberFromAllRepositories = async (req, res) => {
   return res.status(statusCode).json({ status: statusCode < 400 ? 1 : 0 });
 };
 
+const updateInvitation = async (req, res) => {
+  const { id, userId } = req.params;
+  const { permission } = req.body;
+
+  const { member, statusCode } = await RepositoryService.updateInvitation(
+    id,
+    userId,
+    permission,
+    req.ghAppInstallationToken
+  );
+
+  return res.status(statusCode).json({
+    status: statusCode < 400 ? 1 : 0,
+    result: { member }
+  });
+};
+
 const updatePRReviewProtection = async (req, res) => {
   const { id, branch } = req.params;
 
@@ -105,5 +122,6 @@ module.exports = {
   addMemberFromGitHub,
   removeMember,
   removeMemberFromAllRepositories,
+  updateInvitation,
   updatePRReviewProtection
 };

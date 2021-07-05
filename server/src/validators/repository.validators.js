@@ -48,6 +48,12 @@ const addMemberValidation = {
   }).unknown(false)
 };
 
+const updateInvitationValidation = {
+  body: Joi.object({
+    permission: Joi.string().trim().valid('read', 'write', 'admin').required()
+  }).unknown(false)
+};
+
 const updatePRReviewProtectionValidation = {
   body: Joi.object({
     dismissalRestrictions: Joi.object({
@@ -71,6 +77,9 @@ module.exports = {
     keyByField: true
   }),
   addMemberValidator: validate(addMemberValidation, {
+    keyByField: true
+  }),
+  updateInvitationValidator: validate(updateInvitationValidation, {
     keyByField: true
   }),
   updatePRReviewProtectionValidator: validate(

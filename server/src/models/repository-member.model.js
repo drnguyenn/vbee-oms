@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-const { A_WEEK } = require('@constants');
-
 const RepositoryMemberSchema = new mongoose.Schema(
   {
     user: {
@@ -29,7 +27,7 @@ const RepositoryMemberSchema = new mongoose.Schema(
         enum: ['pending', 'accepted'],
         default: 'pending'
       },
-      expiresAt: { type: Date, default: Date.now() + A_WEEK }
+      expiresAt: { type: Date }
     }
   },
   {

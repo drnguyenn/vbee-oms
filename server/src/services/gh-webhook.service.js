@@ -93,8 +93,7 @@ const handleMemberEvent = async (
         { githubUsername: member.login },
         {
           permission: changes.permission.to,
-          invitation: { status: 'accepted' },
-          $unset: { 'invitation.githubId': '' }
+          invitation: { status: 'accepted' }
         },
         deliveryId
       );
