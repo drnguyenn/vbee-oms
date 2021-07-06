@@ -11,6 +11,8 @@ const GhAppInstallationService = require('@services/gh-app-installation.service'
 
 const GitHubUtils = require('@utils/github.utils');
 
+const { A_WEEK } = require('@constants');
+
 const get = async (condition, projection) => {
   const repository = await RepositoryDao.findOne(condition, projection);
 
@@ -198,7 +200,11 @@ const addMember = async (
           user: user._id,
           repository: repository._id,
           permission: data.permission,
-          invitation: { githubId: id, status: 'pending' }
+          invitation: {
+            githubId: id,
+            status: 'pending',
+            expiresAt: Date.now() + A_WEEK
+          }
         });
 
         return { member, statusCode: 201 };
@@ -288,7 +294,11 @@ const updateMember = async (
             user: user._id,
             repository: repository._id,
             permission: data.permission,
-            invitation: { githubId: id, status: 'pending' }
+            invitation: {
+              githubId: id,
+              status: 'pending',
+              expiresAt: Date.now() + A_WEEK
+            }
           });
 
           return { member, statusCode: 201 };
@@ -364,6 +374,7 @@ const removeMember = async (
           repository: repository._id,
           user: user._id
         });
+        console.log(member);
 
         return { member, statusCode: response.status };
       }
