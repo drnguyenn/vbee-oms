@@ -8,7 +8,8 @@ import { TableStyles } from './table.styles';
 const useStyles = makeStyles({
   linearProgress: {
     position: 'absolute',
-    width: '100%'
+    width: '100%',
+    borderRadius: '8px 8px 0 0'
   }
 });
 
