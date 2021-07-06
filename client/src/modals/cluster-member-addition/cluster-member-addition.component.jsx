@@ -29,7 +29,7 @@ import { addClusterMemberStart } from 'redux/cluster/cluster.actions';
 
 import { useAutocompleteLogic } from 'hooks/autocomplete.hooks';
 
-import { DEBOUNCE_SEARCH_WAIT_TIME } from '../../constants';
+import { DEBOUNCE_SEARCH_WAIT_TIME } from 'constants/index';
 
 const useStyles = makeStyles({
   additionalStatus: {
@@ -51,12 +51,15 @@ const ClusterMemberAdditionModal = () => {
   );
 
   const preprocessResults = useCallback(
-    results =>
-      results.map(result =>
-        currentCluster.members.map(({ user: { id } }) => id).includes(result.id)
+    results => {
+      const userIds = currentCluster.members.map(({ user: { id } }) => id);
+
+      return results.map(result =>
+        userIds.includes(result.id)
           ? { ...result, isAdded: true }
           : { ...result, isAdded: false }
-      ),
+      );
+    },
     [currentCluster.members]
   );
 
@@ -148,9 +151,9 @@ const ClusterMemberAdditionModal = () => {
                   <Avatar src={option.avatarUrl} alt={option.username} />
                 </Grid>
                 <Grid item xs>
-                  {option.fullName}
+                  {`${option.username}`}
                   <Typography variant='body2' color='textSecondary'>
-                    {`@${option.username}`}
+                    {option.fullName}
                   </Typography>
                 </Grid>
                 <Grid>

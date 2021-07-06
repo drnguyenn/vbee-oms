@@ -29,7 +29,7 @@ import { addServiceMemberStart } from 'redux/service/service.actions';
 
 import { useAutocompleteLogic } from 'hooks/autocomplete.hooks';
 
-import { DEBOUNCE_SEARCH_WAIT_TIME } from '../../constants';
+import { DEBOUNCE_SEARCH_WAIT_TIME } from 'constants/index';
 
 const useStyles = makeStyles({
   additionalStatus: {
@@ -51,12 +51,15 @@ const ServiceMemberAdditionModal = () => {
   );
 
   const preprocessResults = useCallback(
-    results =>
-      results.map(result =>
-        currentService.members.map(({ user: { id } }) => id).includes(result.id)
+    results => {
+      const userIds = currentService.members.map(({ user: { id } }) => id);
+
+      return results.map(result =>
+        userIds.includes(result.id)
           ? { ...result, isAdded: true }
           : { ...result, isAdded: false }
-      ),
+      );
+    },
     [currentService.members]
   );
 
@@ -148,9 +151,9 @@ const ServiceMemberAdditionModal = () => {
                   <Avatar src={option.avatarUrl} alt={option.username} />
                 </Grid>
                 <Grid item xs>
-                  {option.fullName}
+                  {`${option.username}`}
                   <Typography variant='body2' color='textSecondary'>
-                    {`@${option.username}`}
+                    {option.fullName}
                   </Typography>
                 </Grid>
                 <Grid>
