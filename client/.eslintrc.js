@@ -66,6 +66,7 @@ module.exports = {
           ['components', path.resolve(__dirname, 'src/components')],
           ['constants', path.resolve(__dirname, 'src/constants')],
           ['customs', path.resolve(__dirname, 'src/customs')],
+          ['hooks', path.resolve(__dirname, 'src/hooks')],
           ['modals', path.resolve(__dirname, 'src/modals')],
           ['pages', path.resolve(__dirname, 'src/pages')],
           ['redux', path.resolve(__dirname, 'src/redux')],
