@@ -10,8 +10,6 @@ services:
     volumes:
       - ./mongo-data:/data/db
     environment:
-      - TZ=Asia/Ho_Chi_Minh
-
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     networks:
@@ -20,7 +18,7 @@ services:
   server:
     build:
       context: ./server
-      target: development
+      target: ${STAGE}
     container_name: vbee-oms-server
     working_dir: /usr/src/app
     restart: unless-stopped
@@ -31,18 +29,7 @@ services:
     volumes:
       - ./server:/usr/src/app
       - /usr/src/app/node_modules
-    environment:
-      - TZ=Asia/Ho_Chi_Minh
-      - SERVER_PORT=${SERVER_PORT}
-
-      - MONGO_HOST=${MONGO_HOST}
-      - MONGO_PORT=${MONGO_PORT}
-      - MONGO_USERNAME=${MONGO_USERNAME}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_DATABASE=${MONGO_DATABASE}
-
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - JWT_EXPIRATION_TIME=${JWT_EXPIRATION_TIME}
+    env_file: ./server/.env
     command: yarn dev
     networks:
       - vbee-oms-network
@@ -50,12 +37,12 @@ services:
   client:
     build:
       context: ./client
-      target: development
+      target: ${STAGE}
     container_name: vbee-oms-client
     working_dir: /usr/src/app
     restart: unless-stopped
     ports:
-      - 3000:3000
+      - ${CLIENT_PORT}:${CLIENT_PORT}
     volumes:
       - ./client:/usr/src/app
       - /usr/src/app/node_modules
@@ -67,9 +54,3 @@ networks:
   vbee-oms-network:
     driver: bridge
     name: vbee-oms-network
-
-volumes:
-  mongo-data:
-  node_modules:
-  web-root:
-    driver: local
