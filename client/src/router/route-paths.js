@@ -7,10 +7,11 @@ export default {
   CLUSTERS: '/clusters',
   CLUSTER_DETAILS: '/clusters/:id',
   CLUSTER_ARCHITECTURE: '/clusters/:id/architecture',
-  SERVICES: '/services',
-  SERVICE_DETAILS: '/services/:id',
   SERVERS: '/servers',
   SERVER_DETAILS: '/servers/:id',
+  SERVICES: '/services',
+  SERVICE_DETAILS: '/services/:id',
   REPOSITORIES: '/repositories',
+  REPOSITORY_DETAILS: '/repositories/:id',
   MEMBERS: '/members'
 };

@@ -26,13 +26,16 @@ const ServerDetailsPage = lazy(() =>
   import('pages/server-details/server-details.component')
 );
 
+const RepositoriesPage = lazy(() =>
+  import('pages/repositories/repositories.component')
+);
+const RepositoryDetailsPage = lazy(() =>
+  import('pages/repository-details/repository-details.component')
+);
+
 const ServicesPage = lazy(() => import('pages/services/services.component'));
 const ServiceDetailsPage = lazy(() =>
   import('pages/service-details/service-details.component')
-);
-
-const RepositoriesPage = lazy(() =>
-  import('pages/repositories/repositories.component')
 );
 
 const MembersPage = lazy(() => import('pages/members/members.component'));
@@ -109,6 +112,20 @@ export default [
     isPrivate: true
   },
   {
+    path: ROUTE_PATHS.REPOSITORIES,
+    component: RepositoriesPage,
+    exact: true,
+    restricted: false,
+    isPrivate: true
+  },
+  {
+    path: ROUTE_PATHS.REPOSITORY_DETAILS,
+    component: RepositoryDetailsPage,
+    exact: true,
+    restricted: false,
+    isPrivate: true
+  },
+  {
     path: ROUTE_PATHS.SERVICES,
     component: ServicesPage,
     exact: true,
@@ -122,13 +139,7 @@ export default [
     restricted: false,
     isPrivate: true
   },
-  {
-    path: ROUTE_PATHS.REPOSITORIES,
-    component: RepositoriesPage,
-    exact: true,
-    restricted: false,
-    isPrivate: true
-  },
+
   {
     path: ROUTE_PATHS.MEMBERS,
     component: MembersPage,
