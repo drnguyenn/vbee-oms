@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 import { Menu, MenuItem, Avatar, IconButton } from '@material-ui/core';
 
-import { signOutStart } from '../../redux/user/user.actions';
+import { signOutStart } from '../../redux/auth/auth.actions';
 
 import ROUTE_PATHS from '../../router/route-paths';
 
@@ -15,7 +15,7 @@ const AvatarDropdown = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  const { currentUser } = useSelector(state => state.user);
+  const { currentUser } = useSelector(state => state.auth);
 
   const handleMenu = event => {
     setAnchorEl(event.currentTarget);

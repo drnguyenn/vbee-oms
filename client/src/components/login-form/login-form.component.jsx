@@ -14,7 +14,7 @@ import {
 } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 
-import { emailSignInStart } from '../../redux/user/user.actions';
+import { emailSignInStart } from 'redux/auth/auth.actions';
 
 import { LoginFormStyles, ActionStyles } from './login-form.styles';
 
@@ -36,7 +36,7 @@ const LoginForm = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { isProcessing } = useSelector(state => state.user);
+  const { isProcessing } = useSelector(state => state.auth);
 
   const dispatch = useDispatch();
 

@@ -16,7 +16,7 @@ import {
   FileInput
 } from './profile-avatar.styles';
 
-// import { updateAvatarStart } from '../../redux/user/user.actions';
+// import { updateAvatarStart } from '../../redux/auth/auth.actions';
 
 const useStyles = makeStyles({
   backdrop: { position: 'absolute', zIndex: 1 }
@@ -25,7 +25,7 @@ const useStyles = makeStyles({
 const ProfileAvatar = () => {
   const classes = useStyles();
 
-  const { currentUser, isUpdatingAvatar } = useSelector(state => state.user);
+  const { currentUser, isUpdatingAvatar } = useSelector(state => state.auth);
 
   // const dispatch = useDispatch();
 

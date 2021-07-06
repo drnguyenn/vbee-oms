@@ -24,7 +24,7 @@ import InputGroup, {
 } from 'components/input-group/input-group.component';
 import { useAutocompleteLogic } from 'hooks/autocomplete.hooks';
 
-import { DEBOUNCE_SEARCH_WAIT_TIME } from '../../constants';
+import { DEBOUNCE_SEARCH_WAIT_TIME } from 'constants/index';
 
 const handleSearchClusters = debounce(
   async (query = {}, callback = () => {}) => {

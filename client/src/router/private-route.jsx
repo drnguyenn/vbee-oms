@@ -6,7 +6,7 @@ import Spinner from 'components/spinner/spinner.component';
 import ROUTE_PATHS from './route-paths';
 
 const PrivateRoute = ({ Component, ...rest }) => {
-  const { currentUser, isLoading } = useSelector(state => state.user);
+  const { currentUser, isLoading } = useSelector(state => state.auth);
 
   if (isLoading) return <Spinner />;
 

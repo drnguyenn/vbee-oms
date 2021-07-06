@@ -30,9 +30,10 @@ import { SidebarStyles, LogoContainer, Logo } from './sidebar.styles';
 const SIDEBAR_ROUTE_PATHS = [
   ROUTE_PATHS.DASHBOARD,
   ROUTE_PATHS.CLUSTERS,
-  ROUTE_PATHS.SERVICES,
+  ROUTE_PATHS.SERVERS,
   ROUTE_PATHS.REPOSITORIES,
-  ROUTE_PATHS.MEMBERS
+  ROUTE_PATHS.SERVICES,
+  ROUTE_PATHS.USERS
 ];
 
 const Sidebar = () => {
@@ -96,16 +97,16 @@ const Sidebar = () => {
         <CustomToggleButton title='Servers' value={ROUTE_PATHS.SERVERS}>
           <Storage />
         </CustomToggleButton>
-        <CustomToggleButton title='Services' value={ROUTE_PATHS.SERVICES}>
-          <Web />
-        </CustomToggleButton>
         <CustomToggleButton
           title='Repositories'
           value={ROUTE_PATHS.REPOSITORIES}
         >
           <Kitchen />
         </CustomToggleButton>
-        <CustomToggleButton title='Members' value={ROUTE_PATHS.MEMBERS}>
+        <CustomToggleButton title='Services' value={ROUTE_PATHS.SERVICES}>
+          <Web />
+        </CustomToggleButton>
+        <CustomToggleButton title='Users' value={ROUTE_PATHS.USERS}>
           <People />
         </CustomToggleButton>
       </CustomToggleButtonGroup>

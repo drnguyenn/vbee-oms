@@ -4,7 +4,7 @@ import { startCase } from 'lodash';
 
 import { TextField, Fab, Backdrop, CircularProgress } from '@material-ui/core';
 
-// import { updateProfileStart } from '../../redux/user/user.actions';
+// import { updateProfileStart } from '../../redux/auth/auth.actions';
 
 import {
   ProfileInputFormStyles,
@@ -12,7 +12,7 @@ import {
 } from './profile-input-form.styles';
 
 const ProfileInputForm = () => {
-  const { currentUser, isUpdatingProfile } = useSelector(state => state.user);
+  const { currentUser, isUpdatingProfile } = useSelector(state => state.auth);
 
   // const dispatch = useDispatch();
 

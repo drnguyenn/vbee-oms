@@ -19,7 +19,7 @@ import ModalRegistrar from './modals/modal-registrar.component';
 import Header from './components/header/header.component';
 import Sidebar from './components/sidebar/sidebar.component';
 
-import { getCurrentUser } from './redux/user/user.actions';
+import { getCurrentUser } from './redux/auth/auth.actions';
 import { switchTheme } from './redux/theme/theme.actions';
 
 import GlobalStyles from './global.styles';
@@ -33,7 +33,7 @@ const App = () => {
   const dispatch = useDispatch();
 
   const { type } = useSelector(state => state.theme);
-  const { currentUser } = useSelector(state => state.user);
+  const { currentUser } = useSelector(state => state.auth);
 
   useEffect(() => {
     dispatch(getCurrentUser());

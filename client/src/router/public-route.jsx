@@ -7,7 +7,7 @@ import Spinner from 'components/spinner/spinner.component';
 import ROUTE_PATHS from './route-paths';
 
 const PublicRoute = ({ Component, restricted, ...rest }) => {
-  const { currentUser, isLoading } = useSelector(state => state.user);
+  const { currentUser, isLoading } = useSelector(state => state.auth);
 
   const history = useHistory();
   const location = useLocation();
