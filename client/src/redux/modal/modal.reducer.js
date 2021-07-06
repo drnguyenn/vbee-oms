@@ -14,6 +14,9 @@ const INITIAL_STATE = {
   openServerDomainUpdateModal: false,
   openServerDomainRemovalConfirmationModal: false,
 
+  openRepositoryMemberAdditionModal: false,
+  openRepositoryMemberRemovalConfirmationModal: false,
+
   openServiceCreationModal: false,
   openServiceDeleteConfirmationModal: false,
   openServiceMemberAdditionModal: false,
@@ -51,7 +54,7 @@ const modalReducer = (state = INITIAL_STATE, action) => {
         openClusterMemberAdditionModal: payload
       };
 
-    case ModalActionTypes.SET_CLUSTER_MEMBER_REMOVE_CONFIRMATION_MODAL_OPEN:
+    case ModalActionTypes.SET_CLUSTER_MEMBER_REMOVAL_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
         openClusterMemberRemovalConfirmationModal: payload
@@ -81,10 +84,22 @@ const modalReducer = (state = INITIAL_STATE, action) => {
         openServerDomainUpdateModal: payload
       };
 
-    case ModalActionTypes.SET_SERVER_DOMAIN_REMOVE_CONFIRMATION_MODAL_OPEN:
+    case ModalActionTypes.SET_SERVER_DOMAIN_REMOVAL_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
         openServerDomainRemovalConfirmationModal: payload
+      };
+
+    case ModalActionTypes.SET_REPOSITORY_MEMBER_ADDITION_MODAL_OPEN:
+      return {
+        ...state,
+        openRepositoryMemberAdditionModal: payload
+      };
+
+    case ModalActionTypes.SET_REPOSITORY_MEMBER_REMOVAL_CONFIRMATION_MODAL_OPEN:
+      return {
+        ...state,
+        openRepositoryMemberRemovalConfirmationModal: payload
       };
 
     case ModalActionTypes.SET_SERVICE_CREATION_MODAL_OPEN:
@@ -105,19 +120,19 @@ const modalReducer = (state = INITIAL_STATE, action) => {
         openServiceMemberAdditionModal: payload
       };
 
-    case ModalActionTypes.SET_SERVICE_MEMBER_REMOVE_CONFIRMATION_MODAL_OPEN:
+    case ModalActionTypes.SET_SERVICE_MEMBER_REMOVAL_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
         openServiceMemberRemovalConfirmationModal: payload
       };
 
-    case ModalActionTypes.SET_CLUSTER_DIAGRAM_NODE_REMOVE_CONFIRMATION_MODAL_OPEN:
+    case ModalActionTypes.SET_CLUSTER_DIAGRAM_NODE_REMOVAL_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
         openClusterDiagramNodeRemovalConfirmationModal: payload
       };
 
-    case ModalActionTypes.SET_CLUSTER_DIAGRAM_ELEMENTS_REMOVE_CONFIRMATION_MODAL_OPEN:
+    case ModalActionTypes.SET_CLUSTER_DIAGRAM_ELEMENTS_REMOVAL_CONFIRMATION_MODAL_OPEN:
       return {
         ...state,
         openClusterDiagramElementsRemovalConfirmationModal: payload

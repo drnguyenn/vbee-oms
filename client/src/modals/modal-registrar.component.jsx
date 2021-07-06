@@ -10,6 +10,8 @@ import ServerDeleteConfirmationModal from 'modals/server-delete-confirmation/ser
 import ServerDomainAdditionModal from 'modals/server-domain-addition/server-domain-addition.component';
 import ServerDomainUpdateModal from 'modals/server-domain-update/server-domain-update.component';
 import ServerDomainRemovalConfirmationModal from 'modals/server-domain-removal-confirmation/server-domain-removal-confirmation.component';
+import RepositoryMemberAdditionModal from 'modals/repository-member-addition/repository-member-addition.component';
+import RepositoryMemberRemovalConfirmationModal from 'modals/repository-member-removal-confirmation/repository-member-removal-confirmation.component';
 import ServiceCreationModal from 'modals/service-creation/service-creation.component';
 import ServiceDeleteConfirmationModal from 'modals/service-delete-confirmation/service-delete-confirmation.component';
 import ServiceMemberAdditionModal from 'modals/service-member-addition/service-member-addition.component';
@@ -31,6 +33,9 @@ const ModalRegistrar = () => {
     openServerDomainAdditionModal,
     openServerDomainUpdateModal,
     openServerDomainRemovalConfirmationModal,
+
+    openRepositoryMemberAdditionModal,
+    openRepositoryMemberRemovalConfirmationModal,
 
     openServiceCreationModal,
     openServiceDeleteConfirmationModal,
@@ -58,6 +63,11 @@ const ModalRegistrar = () => {
       {openServerDomainUpdateModal && <ServerDomainUpdateModal />}
       {openServerDomainRemovalConfirmationModal && (
         <ServerDomainRemovalConfirmationModal />
+      )}
+
+      {openRepositoryMemberAdditionModal && <RepositoryMemberAdditionModal />}
+      {openRepositoryMemberRemovalConfirmationModal && (
+        <RepositoryMemberRemovalConfirmationModal />
       )}
 
       {openServiceCreationModal && <ServiceCreationModal />}
