@@ -16,19 +16,29 @@ import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 
 import { searchClusters } from 'services/cluster.service';
 import { searchServers } from 'services/server.service';
+import { searchRepositories } from 'services/repository.service';
 
 import { setServiceCreationModalOpen } from 'redux/modal/modal.actions';
 import { createServiceStart } from 'redux/service/service.actions';
 
 import { useAutocompleteLogic } from 'hooks/autocomplete.hooks';
 
-import { DEBOUNCE_SEARCH_WAIT_TIME } from '../../constants';
+import { DEBOUNCE_SEARCH_WAIT_TIME } from 'constants/index';
 
 const handleSearchClusters = debounce(
   async (query = {}, callback = () => {}) => {
     const clusters = await searchClusters(query);
 
     callback(clusters);
+  },
+  DEBOUNCE_SEARCH_WAIT_TIME
+);
+
+const handleSearchRepositories = debounce(
+  async (query = {}, callback = () => {}) => {
+    const repositories = await searchRepositories(query);
+
+    callback(repositories);
   },
   DEBOUNCE_SEARCH_WAIT_TIME
 );
@@ -50,6 +60,8 @@ const ServiceCreationModal = () => {
 
   const { currentServer } = useSelector(state => state.server);
 
+  const { currentRepository } = useSelector(state => state.repository);
+
   const [serviceInfo, setServiceInfo] = useState({
     name: '',
     description: '',
@@ -66,6 +78,16 @@ const ServiceCreationModal = () => {
     handleInputChange: handleClusterInputChange,
     setValue: setClusterValue
   } = useAutocompleteLogic(handleSearchClusters, 'q', 'name', 'id');
+
+  const {
+    options: repoOptions,
+    value: repoValue,
+    inputValue: repoInputValue,
+    isSearching: isSearchingRepo,
+    handleValueChange: handleRepoValueChange,
+    handleInputChange: handleRepoInputChange,
+    setValue: setRepoValue
+  } = useAutocompleteLogic(handleSearchRepositories, 'q', 'name', 'id');
 
   const [serverOptions, setServerOptions] = useState([]);
   const [serverValue, setServerValue] = useState(null);
@@ -102,8 +124,16 @@ const ServiceCreationModal = () => {
 
       setServerOptions([currentServer]);
       setServerValue(currentServer);
+    } else if (currentRepository) {
+      setRepoValue(currentRepository);
     }
-  }, [currentCluster, currentServer, setClusterValue]);
+  }, [
+    currentCluster,
+    currentRepository,
+    currentServer,
+    setClusterValue,
+    setRepoValue
+  ]);
 
   const customHandleClusterValueChange = (event, newValue) => {
     handleClusterValueChange(event, newValue);
@@ -138,7 +168,8 @@ const ServiceCreationModal = () => {
         createServiceStart({
           ...serviceInfo,
           clusterId: clusterValue.id,
-          serverId: serverValue ? serverValue.id : null
+          serverId: serverValue ? serverValue.id : null,
+          repositoryId: repoValue ? repoValue.id : null
         })
       );
   };
@@ -163,6 +194,7 @@ const ServiceCreationModal = () => {
             variant='outlined'
             fullWidth
           />
+
           <Autocomplete
             fullWidth
             value={clusterValue}
@@ -184,7 +216,7 @@ const ServiceCreationModal = () => {
                 {...params}
                 required
                 label='Choose a cluster'
-                placeholder="Enter cluster's ID, name, or description"
+                placeholder="Search by cluster's name, description, or ID"
                 margin='normal'
                 variant='outlined'
                 InputProps={{
@@ -234,7 +266,7 @@ const ServiceCreationModal = () => {
                 <TextField
                   {...params}
                   label='Choose a server'
-                  placeholder="Enter server's ID, name, IP address, or MAC address, etc."
+                  placeholder="Search by server's name, IP address, MAC address, or ID."
                   margin='normal'
                   variant='outlined'
                   InputProps={{
@@ -260,6 +292,64 @@ const ServiceCreationModal = () => {
               )}
             />
           )}
+
+          <Autocomplete
+            fullWidth
+            value={repoValue}
+            inputValue={repoInputValue}
+            onChange={handleRepoValueChange}
+            onInputChange={handleRepoInputChange}
+            filterOptions={option => option}
+            includeInputInList
+            getOptionSelected={(option, selectedValue) =>
+              option.id === selectedValue.id
+            }
+            getOptionLabel={option => option.name}
+            options={repoOptions}
+            noOptionsText='No matching results found'
+            loading={isSearchingRepo && !repoOptions.length}
+            loadingText='Searching...'
+            renderInput={params => (
+              <TextField
+                {...params}
+                label='Choose a repository'
+                placeholder="Search by repository's name, owner, URL, ID, or GitHub ID"
+                margin='normal'
+                variant='outlined'
+                InputProps={{
+                  ...params.InputProps,
+                  endAdornment: (
+                    <>
+                      {isSearchingRepo ? (
+                        <CircularProgress color='inherit' size={20} />
+                      ) : null}
+                      {params.InputProps.endAdornment}
+                    </>
+                  )
+                }}
+              />
+            )}
+            renderOption={({ name: repoName, url, owner }) => (
+              <div>
+                <Typography>
+                  <a href={url} target='_blank' rel='noopener noreferrer'>
+                    {repoName}
+                  </a>
+                </Typography>
+                <Typography color='textSecondary' variant='body2'>
+                  of{' '}
+                  <a
+                    href={`https://github.com/${owner}`}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <b>{owner}</b>
+                  </a>
+                </Typography>
+              </div>
+            )}
+          />
+
           <TextField
             autoComplete='off'
             name='description'
