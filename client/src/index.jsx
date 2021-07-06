@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
@@ -8,6 +9,14 @@ import store from './redux/store';
 import App from './App';
 
 import reportWebVitals from './reportWebVitals';
+
+const noop = () => {};
+
+if (process.env.NODE_ENV === 'production') {
+  console.log = noop;
+  console.warn = noop;
+  console.error = noop;
+}
 
 ReactDOM.render(
   <StrictMode>
