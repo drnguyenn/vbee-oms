@@ -65,7 +65,7 @@ const HeaderOptions = () => {
         </IconButton>
       </Tooltip>
       {isProcessing ? (
-        <CircularProgress size={25} />
+        <CircularProgress size={20} />
       ) : (
         <Tooltip title='Add new server' arrow>
           <IconButton onClick={handleAddServerClick} color='primary'>

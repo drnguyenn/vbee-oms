@@ -51,7 +51,7 @@ const HeaderOptions = () => {
     dispatch(setServiceCreationModalOpen(true));
 
   return isProcessing ? (
-    <CircularProgress size={25} />
+    <CircularProgress size={20} />
   ) : (
     <Tooltip title='Add new service' arrow>
       <IconButton onClick={handleAddServiceClick} color='primary'>

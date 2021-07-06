@@ -186,7 +186,7 @@ const ServiceBasicInfoSection = () => {
       );
 
     return isUpdatingInfo ? (
-      <CircularProgress size={25} />
+      <CircularProgress size={20} />
     ) : (
       <Tooltip title='Edit' arrow>
         <IconButton onClick={handleEditClick}>

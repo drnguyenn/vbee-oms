@@ -55,6 +55,12 @@ const useStyles = makeStyles(muiTheme => ({
   circularProgress: {
     margin: 14,
     verticalAlign: 'middle'
+  },
+  rowLoader: {
+    width: 48,
+    height: 48,
+    textAlign: 'center',
+    padding: 12
   }
 }));
 
@@ -102,7 +108,7 @@ const CustomToolbar = () => {
       )}
 
       {isAddingDomains ? (
-        <Tooltip title='Fetching data...'>
+        <Tooltip title='Processing...'>
           <CircularProgress className={classes.circularProgress} size={20} />
         </Tooltip>
       ) : (
@@ -154,6 +160,7 @@ const ServerDomainsSection = () => {
   const open = Boolean(anchorEl);
 
   const [targetRow, setTargetRow] = useState([]);
+  const [id, domainValue] = targetRow;
 
   const handleMenu = event => setAnchorEl(event.currentTarget);
 
@@ -170,8 +177,7 @@ const ServerDomainsSection = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (currentServer.id)
-      dispatch(getAllServerDomainsSslStatusStart(currentServer.id));
+    dispatch(getAllServerDomainsSslStatusStart(currentServer.id));
   }, [currentServer.id, dispatch]);
 
   const columns = useMemo(() => {
@@ -195,9 +201,11 @@ const ServerDomainsSection = () => {
     };
 
     const ActionsColumn = (value, { rowData }) =>
-      (isUpdatingDomains && rowData[0] === targetRow[0]) ||
-      (isRemovingDomains && rowData[0] === targetRow[0]) ? (
-        <CircularProgress size={25} />
+      (isUpdatingDomains && rowData[0] === id) ||
+      (isRemovingDomains && rowData[0] === id) ? (
+        <div className={classes.rowLoader}>
+          <CircularProgress size={20} />
+        </div>
       ) : (
         <IconButton
           onClick={event => {
@@ -266,7 +274,7 @@ const ServerDomainsSection = () => {
         }
       }
     ];
-  }, [classes, isRemovingDomains, isUpdatingDomains, targetRow]);
+  }, [classes, isRemovingDomains, isUpdatingDomains, id]);
 
   const options = useMemo(
     () => ({
@@ -297,24 +305,13 @@ const ServerDomainsSection = () => {
           open,
           handleClose,
           handleUpdateDomain: () => {
-            dispatch(
-              setCurrentServerDomain({
-                id: targetRow[0],
-                value: targetRow[1]
-              })
-            );
+            dispatch(setCurrentServerDomain({ id, value: domainValue }));
             dispatch(setServerDomainUpdateModalOpen(true));
 
             handleClose();
           },
           handleRemoveDomain: () => {
-            dispatch(
-              setCurrentServerDomain({
-                id: targetRow[0],
-                value: targetRow[1]
-              })
-            );
-
+            dispatch(setCurrentServerDomain({ id, value: domainValue }));
             dispatch(setServerDomainRemovalConfirmationModalOpen(true));
 
             handleClose();

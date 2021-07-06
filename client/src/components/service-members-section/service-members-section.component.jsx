@@ -18,19 +18,25 @@ import { GroupAdd, MoreVert, Close, Check } from '@material-ui/icons';
 import {
   setServiceMemberAdditionModalOpen,
   setServiceMemberRemovalConfirmationModalOpen
-} from '../../redux/modal/modal.actions';
+} from 'redux/modal/modal.actions';
 import {
   setCurrentServiceMember,
   updateServiceMemberStart
-} from '../../redux/service/service.actions';
+} from 'redux/service/service.actions';
 
-import Section from '../section/section.component';
-import Table from '../table/table.component';
+import Section from 'components/section/section.component';
+import Table from 'components/table/table.component';
 
 const useStyles = makeStyles({
   circularProgress: {
     margin: 14,
     verticalAlign: 'middle'
+  },
+  rowLoader: {
+    width: 48,
+    height: 48,
+    textAlign: 'center',
+    padding: 12
   }
 });
 
@@ -85,10 +91,13 @@ const Subtitle = memo(({ memberCount }) => (
 ));
 
 const ServiceMembersSection = () => {
+  const classes = useStyles();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const [targetRow, setTargetRow] = useState([]);
+  const [id, fullName, username, githubUsername, role] = targetRow;
 
   const [editMode, setEditMode] = useState(false);
 
@@ -106,8 +115,8 @@ const ServiceMembersSection = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (targetRow.length) setMemberRole(targetRow[4]);
-  }, [targetRow]);
+    if (role) setMemberRole(role);
+  }, [role]);
 
   const handleMenu = event => setAnchorEl(event.currentTarget);
 
@@ -124,19 +133,19 @@ const ServiceMembersSection = () => {
       event.preventDefault();
 
       dispatch(
-        updateServiceMemberStart(currentService.id, targetRow[0], {
+        updateServiceMemberStart(currentService.id, id, {
           role: memberRole
         })
       );
 
       setEditMode(false);
     },
-    [dispatch, currentService.id, memberRole, targetRow]
+    [dispatch, currentService.id, id, memberRole]
   );
 
   const columns = useMemo(() => {
     const RoleColumn = (value, { rowData }) =>
-      editMode && rowData[0] === targetRow[0] ? (
+      editMode && rowData[0] === id ? (
         <FormControl variant='outlined'>
           <InputLabel>Role</InputLabel>
           <Select value={memberRole} onChange={handleChange} label='Role'>
@@ -149,7 +158,7 @@ const ServiceMembersSection = () => {
       );
 
     const ActionsColumn = (value, { rowData }) => {
-      if (editMode && rowData[0] === targetRow[0])
+      if (editMode && rowData[0] === id)
         return (
           <div>
             <Tooltip title='Cancel' arrow>
@@ -165,9 +174,11 @@ const ServiceMembersSection = () => {
           </div>
         );
 
-      return (isUpdatingMembers && rowData[0] === targetRow[0]) ||
-        (isRemovingMembers && rowData[0] === targetRow[0]) ? (
-        <CircularProgress size={25} />
+      return (isUpdatingMembers && rowData[0] === id) ||
+        (isRemovingMembers && rowData[0] === id) ? (
+        <div className={classes.rowLoader}>
+          <CircularProgress size={20} />
+        </div>
       ) : (
         <IconButton
           onClick={event => {
@@ -229,12 +240,13 @@ const ServiceMembersSection = () => {
       }
     ];
   }, [
+    classes.rowLoader,
     editMode,
     handleSubmit,
+    id,
     isRemovingMembers,
     isUpdatingMembers,
-    memberRole,
-    targetRow
+    memberRole
   ]);
 
   const options = useMemo(
@@ -252,10 +264,12 @@ const ServiceMembersSection = () => {
     >
       <Table
         columns={columns}
-        data={members.map(({ role, user: { role: systemRole, ...rest } }) => ({
-          role,
-          ...rest
-        }))}
+        data={members.map(
+          ({ role: memRole, user: { role: systemRole, ...rest } }) => ({
+            role: memRole,
+            ...rest
+          })
+        )}
         options={options}
         isLoading={isAddingMembers || isUpdatingMembers || isRemovingMembers}
       />
@@ -272,11 +286,11 @@ const ServiceMembersSection = () => {
           handleRemoveMember: () => {
             dispatch(
               setCurrentServiceMember({
-                id: targetRow[0],
-                fullName: targetRow[1],
-                username: targetRow[2],
-                githubUsername: targetRow[3],
-                role: targetRow[4]
+                id,
+                fullName,
+                username,
+                githubUsername,
+                role
               })
             );
 
