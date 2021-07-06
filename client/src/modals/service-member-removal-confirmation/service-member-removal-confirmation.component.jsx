@@ -43,8 +43,7 @@ const ServiceMemberRemovalConfirmationModal = () => {
         <DialogContent>
           <Typography gutterBottom>
             Once removed, <b>{currentMember.username}</b> will no longer have
-            access to the <b>{currentService.name}</b> and{' '}
-            <b>all repositories inside</b>.
+            access to the <b>{currentService.name}</b>.
             <br />
             Are you sure ?
           </Typography>

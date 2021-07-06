@@ -43,8 +43,7 @@ const ClusterMemberRemovalConfirmationModal = () => {
         <DialogContent>
           <Typography gutterBottom>
             Once removed, <b>{currentMember.username}</b> will no longer have
-            access to the <b>{currentCluster.name}</b> and{' '}
-            <b>all services inside</b>.
+            access to the <b>{currentCluster.name}</b>.
             <br />
             Are you sure ?
           </Typography>
