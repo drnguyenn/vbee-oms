@@ -126,7 +126,7 @@ export const updateAvatar = async avatar => {
   throw new Error(response.message);
 };
 
-export const searchUsers = async query => {
+export const searchUsers = async (query, githubSearch = false) => {
   const accessToken = getCookie('accessToken');
 
   const response = await customAxios({
@@ -135,7 +135,7 @@ export const searchUsers = async query => {
     headers: {
       Authorization: `Bearer ${accessToken}`
     },
-    params: query
+    params: { ...query, githubSearch }
   });
 
   if (response.status < 400) {
