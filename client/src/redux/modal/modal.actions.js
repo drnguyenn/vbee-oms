@@ -80,6 +80,16 @@ export const setServiceMemberRemovalConfirmationModalOpen = open => ({
   payload: open
 });
 
+export const setUserCreationModalOpen = open => ({
+  type: ModalActionTypes.SET_USER_CREATION_MODAL_OPEN,
+  payload: open
+});
+
+export const setUserDeleteConfirmationModalOpen = open => ({
+  type: ModalActionTypes.SET_USER_DELETE_CONFIRMATION_MODAL_OPEN,
+  payload: open
+});
+
 export const setDiagramNodeRemovalConfirmationModalOpen = open => ({
   type: ModalActionTypes.SET_CLUSTER_DIAGRAM_NODE_REMOVAL_CONFIRMATION_MODAL_OPEN,
   payload: open
