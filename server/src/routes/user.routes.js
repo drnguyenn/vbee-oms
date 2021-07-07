@@ -2,25 +2,20 @@ const router = require('express').Router();
 
 const asyncMiddleware = require('@middlewares/async.middlewares');
 
-const { auth, systemAdminCheck } = require('@middlewares/user.middlewares');
+const { auth, systemAdminCheck } = require('@middlewares/auth.middlewares');
 const {
-  loginValidator,
   createUserValidator,
-  searchUsersValidator
+  searchUsersValidator,
+  updateUserValidator
 } = require('@validators/user.validators');
 
 const UserController = require('@controllers/user.controller');
 
-router.post(
-  '/auth/login',
-  loginValidator,
-  asyncMiddleware(UserController.login)
-);
-
 router.get(
-  '/auth/verify',
+  '/users/:id',
   auth,
-  asyncMiddleware(UserController.verifyAccessToken)
+  systemAdminCheck,
+  asyncMiddleware(UserController.getUser)
 );
 
 router.get(
@@ -37,6 +32,42 @@ router.post(
   systemAdminCheck,
   createUserValidator,
   asyncMiddleware(UserController.createUser)
+);
+
+router.patch(
+  '/users/:id',
+  auth,
+  systemAdminCheck,
+  updateUserValidator,
+  asyncMiddleware(UserController.updateUser)
+);
+
+router.delete(
+  '/users/:id',
+  auth,
+  systemAdminCheck,
+  asyncMiddleware(UserController.deleteUser)
+);
+
+router.delete(
+  '/users/:id/clusters',
+  auth,
+  systemAdminCheck,
+  asyncMiddleware(UserController.removeUserFromAllClusters)
+);
+
+router.delete(
+  '/users/:id/repositories',
+  auth,
+  systemAdminCheck,
+  asyncMiddleware(UserController.removeUserFromAllRepositories)
+);
+
+router.delete(
+  '/users/:id/services',
+  auth,
+  systemAdminCheck,
+  asyncMiddleware(UserController.removeUserFromAllServices)
 );
 
 module.exports = router;

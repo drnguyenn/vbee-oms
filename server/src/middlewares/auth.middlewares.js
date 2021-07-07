@@ -1,6 +1,6 @@
 const CustomError = require('@errors/custom-error');
 const errorCodes = require('@errors/code');
-const UserService = require('@services/user.service');
+const AuthService = require('@services/auth.service');
 const asyncMiddleware = require('./async.middlewares');
 
 const auth = async (req, res, next) => {
@@ -11,7 +11,7 @@ const auth = async (req, res, next) => {
 
   if (tokenType !== 'Bearer') throw new CustomError(errorCodes.UNAUTHORIZED);
 
-  const user = await UserService.verifyAccessToken(accessToken);
+  const user = await AuthService.verifyAccessToken(accessToken);
 
   if (!user) throw new CustomError(errorCodes.UNAUTHORIZED);
 

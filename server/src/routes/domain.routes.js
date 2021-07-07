@@ -8,7 +8,7 @@ const {
 } = require('@validators/domain.validators');
 
 const asyncMiddleware = require('@middlewares/async.middlewares');
-const { auth, systemAdminCheck } = require('@middlewares/user.middlewares');
+const { auth, systemAdminCheck } = require('@middlewares/auth.middlewares');
 
 const DomainController = require('@controllers/domain.controller');
 

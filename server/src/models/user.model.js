@@ -34,4 +34,52 @@ UserSchema.index({
   githubUsername: 'text'
 });
 
+UserSchema.virtual('clusters', {
+  ref: 'ClusterMember',
+  localField: '_id',
+  foreignField: 'user'
+});
+
+UserSchema.virtual('clusterCount', {
+  ref: 'ClusterMember',
+  localField: '_id',
+  foreignField: 'user',
+  count: true
+});
+
+UserSchema.virtual('repositories', {
+  ref: 'RepositoryMember',
+  localField: '_id',
+  foreignField: 'user'
+});
+
+UserSchema.virtual('repositoryCount', {
+  ref: 'RepositoryMember',
+  localField: '_id',
+  foreignField: 'user',
+  count: true
+});
+
+UserSchema.virtual('services', {
+  ref: 'ServiceMember',
+  localField: '_id',
+  foreignField: 'user'
+});
+
+UserSchema.virtual('serviceCount', {
+  ref: 'ServiceMember',
+  localField: '_id',
+  foreignField: 'user',
+  count: true
+});
+
+UserSchema.pre('findOne', function populate() {
+  this.populate('clusterCount');
+  this.populate('repositoryCount');
+  this.populate('serviceCount');
+  this.populate({ path: 'clusters', populate: { path: 'cluster' } });
+  this.populate({ path: 'repositories', populate: { path: 'repository' } });
+  this.populate({ path: 'services', populate: { path: 'service' } });
+});
+
 module.exports = mongoose.model('User', UserSchema);

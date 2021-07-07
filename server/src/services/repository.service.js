@@ -374,9 +374,8 @@ const removeMember = async (
           repository: repository._id,
           user: user._id
         });
-        console.log(member);
 
-        return { member, statusCode: response.status };
+        return { member, statusCode: 200 };
       }
 
       const { message } = response.data;

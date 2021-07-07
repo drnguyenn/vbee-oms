@@ -9,7 +9,7 @@ const {
 } = require('@validators/service.validators');
 
 const asyncMiddleware = require('@middlewares/async.middlewares');
-const { auth, systemAdminCheck } = require('@middlewares/user.middlewares');
+const { auth, systemAdminCheck } = require('@middlewares/auth.middlewares');
 
 const ServiceController = require('@controllers/service.controller');
 

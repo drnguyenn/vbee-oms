@@ -1,20 +1,25 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
 const CustomError = require('@errors/custom-error');
 const errorCodes = require('@errors/code');
 
 const UserDao = require('@daos/user.dao');
+const ClusterMemberDao = require('@daos/cluster-member.dao');
+const ServiceMemberDao = require('@daos/service-member.dao');
 
 const GhAppInstallationService = require('@services/gh-app-installation.service');
+// const {
+//   removeMemberFromAllRepositories
+// } = require('@services/repository.service');
 const { sendMail } = require('@services/mail.service');
 
+const {
+  generateSalt,
+  hashBcrypt,
+  omitPasswordField
+} = require('@utils/user.utils');
 const { generateRandomString } = require('@utils/random.utils');
 const { getAccountRegistrationEmailTemplate } = require('@utils/mail.utils');
 const GithubUtils = require('@utils/github.utils');
 const { parseBoolean } = require('@utils');
-
-const { JWT_SECRET_KEY, JWT_EXPIRATION_TIME } = require('@configs');
 
 const { GOOGLE_APP_USER_EMAIL } = process.env;
 
@@ -131,16 +136,17 @@ const update = async (condition, data) => {
 };
 
 const remove = async condition => {
-  const user = await UserDao.remove(condition);
+  await removeUserFromAllClusters(condition);
+  await removeUserFromAllServices(condition);
 
-  if (!user) throw new CustomError(errorCodes.NOT_FOUND, 'User not found');
+  const user = await UserDao.remove(condition);
 
   return user;
 };
 
 const search = async (
   condition,
-  projection = '-password -createdAt -updatedAt'
+  projection = '-password -preferences -createdAt -updatedAt'
 ) => {
   if (condition.q) {
     if (parseBoolean(condition.githubSearch)) {
@@ -159,11 +165,12 @@ const search = async (
           condition.q
         );
 
-        return users.map(({ id, login, htmlUrl }) => ({
+        return users.map(({ id, login, htmlUrl, avatarUrl }) => ({
           source: 'GitHub',
           githubId: id,
           githubUsername: login,
-          url: htmlUrl
+          url: htmlUrl,
+          avatarUrl
         }));
       };
 
@@ -178,7 +185,7 @@ const search = async (
 
       const users = await Promise.all([getGitHubUsers(), getVbeeOMSUsers()]);
 
-      return users;
+      return users.flat();
     }
 
     const users = await UserDao.search(condition.q, projection);
@@ -189,55 +196,27 @@ const search = async (
   return users;
 };
 
-const login = async (email, password) => {
-  const user = await UserDao.findOne({ email });
-  if (!user) throw new CustomError(errorCodes.INVALID_CREDENTIALS);
+const removeUserFromAllClusters = async condition => {
+  const user = await get(condition);
 
-  const isCorrectPassword = await compareBcrypt(password, user.password);
-  if (!isCorrectPassword) throw new CustomError(errorCodes.INVALID_CREDENTIALS);
+  await ClusterMemberDao.removeMany({ user: user._id });
 
-  const accessToken = await generateAccessToken(user._id);
-  return accessToken;
+  return { statusCode: 200 };
 };
 
-const generateAccessToken = async userId => {
-  const accessToken = await jwt.sign({ userId }, JWT_SECRET_KEY, {
-    expiresIn: JWT_EXPIRATION_TIME
-  });
-  return accessToken;
+// const removeUserFromAllRepositories = async condition => {
+//   const { statusCode } = removeMemberFromAllRepositories(condition);
+
+//   return { statusCode };
+// };
+
+const removeUserFromAllServices = async condition => {
+  const user = await get(condition);
+
+  await ServiceMemberDao.removeMany({ user: user._id });
+
+  return { statusCode: 200 };
 };
-
-const verifyAccessToken = async accessToken => {
-  const data = jwt.verify(accessToken, JWT_SECRET_KEY);
-  const { userId } = data;
-
-  const user = await UserDao.findOne(userId);
-  return user;
-};
-
-const generateSalt = rounds => bcrypt.genSaltSync(rounds);
-
-const hashBcrypt = (text, salt) => {
-  const hashedBcrypt = new Promise((resolve, reject) => {
-    bcrypt.hash(text, salt, (err, hash) => {
-      if (err) reject(err);
-      resolve(hash);
-    });
-  });
-  return hashedBcrypt;
-};
-
-const compareBcrypt = async (data, hashed) => {
-  const isCorrect = await new Promise((resolve, reject) => {
-    bcrypt.compare(data, hashed, (err, same) => {
-      if (err) reject(err);
-      resolve(same);
-    });
-  });
-  return isCorrect;
-};
-
-const omitPasswordField = ({ password, ...rest }) => ({ ...rest });
 
 module.exports = {
   get,
@@ -245,6 +224,7 @@ module.exports = {
   create,
   update,
   remove,
-  login,
-  verifyAccessToken
+  removeUserFromAllClusters,
+  // removeUserFromAllRepositories,
+  removeUserFromAllServices
 };

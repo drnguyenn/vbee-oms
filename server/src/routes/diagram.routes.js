@@ -13,7 +13,7 @@ const {
 } = require('@validators/diagram.validators');
 
 const asyncMiddleware = require('@middlewares/async.middlewares');
-const { auth } = require('@middlewares/user.middlewares');
+const { auth } = require('@middlewares/auth.middlewares');
 
 const DiagramController = require('@controllers/diagram.controller');
 

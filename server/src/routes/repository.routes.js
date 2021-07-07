@@ -10,7 +10,7 @@ const {
 } = require('@validators/repository.validators');
 
 const asyncMiddleware = require('@middlewares/async.middlewares');
-const { auth, systemAdminCheck } = require('@middlewares/user.middlewares');
+const { auth, systemAdminCheck } = require('@middlewares/auth.middlewares');
 const {
   ghAppInstallationToken
 } = require('@middlewares/gh-app-installation.middlewares');

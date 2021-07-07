@@ -1,12 +1,5 @@
 const { Joi, validate } = require('express-validation');
 
-const loginValidation = {
-  body: Joi.object({
-    email: Joi.string().email().trim().lowercase().required(),
-    password: Joi.string().trim().required()
-  }).unknown(false)
-};
-
 const createUserValidation = {
   body: Joi.object({
     email: Joi.string().email().trim().lowercase().required(),
@@ -32,8 +25,17 @@ const searchUsersValidation = {
   }).unknown(false)
 };
 
+const updateUserValidation = {
+  query: Joi.object({
+    email: Joi.string().email().trim().lowercase(),
+    username: Joi.string().trim(),
+    role: Joi.string().trim().valid('admin', 'member'),
+    githubUsername: Joi.string().trim()
+  }).unknown(false)
+};
+
 module.exports = {
-  loginValidator: validate(loginValidation, { keyByField: true }),
   createUserValidator: validate(createUserValidation, { keyByField: true }),
+  updateUserValidator: validate(updateUserValidation, { keyByField: true }),
   searchUsersValidator: validate(searchUsersValidation, { keyByField: true })
 };
