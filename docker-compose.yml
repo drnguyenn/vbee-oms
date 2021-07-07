@@ -30,7 +30,6 @@ services:
       - ./server:/usr/src/app
       - /usr/src/app/node_modules
     env_file: ./server/.env
-    command: yarn dev
     networks:
       - vbee-oms-network
 
@@ -46,7 +45,6 @@ services:
     volumes:
       - ./client:/usr/src/app
       - /usr/src/app/node_modules
-    command: yarn start
     networks:
       - vbee-oms-network
 
