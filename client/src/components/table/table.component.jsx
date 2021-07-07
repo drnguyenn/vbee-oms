@@ -1,7 +1,12 @@
 import { memo } from 'react';
 import MUIDataTable from 'mui-datatables';
 
-import { LinearProgress, makeStyles } from '@material-ui/core';
+import {
+  CircularProgress,
+  LinearProgress,
+  Tooltip,
+  makeStyles
+} from '@material-ui/core';
 
 import { TableStyles } from './table.styles';
 
@@ -10,6 +15,16 @@ const useStyles = makeStyles({
     position: 'absolute',
     width: '100%',
     borderRadius: '8px 8px 0 0'
+  },
+  toolbarLoader: {
+    margin: 14,
+    verticalAlign: 'middle'
+  },
+  rowLoader: {
+    width: 48,
+    height: 48,
+    textAlign: 'center',
+    padding: 12
   }
 });
 
@@ -26,6 +41,28 @@ const initialOptions = {
       noMatch: 'No data found'
     }
   }
+};
+
+export const ToolbarLoader = ({ tooltipTitle = 'Processing...' }) => {
+  const classes = useStyles();
+
+  return (
+    <Tooltip title={tooltipTitle}>
+      <CircularProgress className={classes.toolbarLoader} size={20} />
+    </Tooltip>
+  );
+};
+
+export const RowLoader = ({ tooltipTitle = 'Processing...' }) => {
+  const classes = useStyles();
+
+  return (
+    <Tooltip title={tooltipTitle}>
+      <div className={classes.rowLoader}>
+        <CircularProgress size={20} />
+      </div>
+    </Tooltip>
+  );
 };
 
 const Table = ({

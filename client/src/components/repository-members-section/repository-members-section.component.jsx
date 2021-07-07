@@ -6,12 +6,10 @@ import {
   Menu,
   MenuItem,
   IconButton,
-  CircularProgress,
   Tooltip,
   FormControl,
   InputLabel,
   Select,
-  makeStyles,
   Typography
 } from '@material-ui/core';
 import { GroupAdd, MoreVert, Close, Check, Refresh } from '@material-ui/icons';
@@ -27,20 +25,10 @@ import {
 } from 'redux/repository/repository.actions';
 
 import Section from 'components/section/section.component';
-import Table from 'components/table/table.component';
-
-const useStyles = makeStyles({
-  circularProgress: {
-    margin: 14,
-    verticalAlign: 'middle'
-  },
-  rowLoader: {
-    width: 48,
-    height: 48,
-    textAlign: 'center',
-    padding: 12
-  }
-});
+import Table, {
+  RowLoader,
+  ToolbarLoader
+} from 'components/table/table.component';
 
 const menuPropsAreEqual = (prevProps, nextProps) =>
   prevProps.open === nextProps.open &&
@@ -69,8 +57,6 @@ const MemberActionMenu = memo(
 );
 
 const CustomToolbar = () => {
-  const classes = useStyles();
-
   const { currentRepository, isFetchingMembers, isAddingMembers } = useSelector(
     state => state.repository
   );
@@ -86,21 +72,17 @@ const CustomToolbar = () => {
   return (
     <>
       {isFetchingMembers ? (
-        <Tooltip title='Fetching data...'>
-          <CircularProgress className={classes.circularProgress} size={20} />
-        </Tooltip>
+        <ToolbarLoader tooltipTitle='Fetching data...' />
       ) : (
         <Tooltip title='Refresh'>
           <IconButton onClick={handleRefreshClick}>
-            <Refresh className={classes.toolbarIcon} />
+            <Refresh />
           </IconButton>
         </Tooltip>
       )}
 
       {isAddingMembers ? (
-        <Tooltip title='Processing...'>
-          <CircularProgress className={classes.circularProgress} size={20} />
-        </Tooltip>
+        <ToolbarLoader />
       ) : (
         <Tooltip title='Add new member'>
           <IconButton onClick={handleAddMemberClick}>
@@ -120,8 +102,6 @@ const Subtitle = memo(({ memberCount }) => (
 ));
 
 const RepositoryMembersSection = () => {
-  const classes = useStyles();
-
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -280,9 +260,7 @@ const RepositoryMembersSection = () => {
 
       return (isUpdatingInvitation && memberId === id) ||
         (isRemovingMembers && memberId === id) ? (
-        <div className={classes.rowLoader}>
-          <CircularProgress size={20} />
-        </div>
+        <RowLoader />
       ) : (
         <IconButton
           onClick={event => {
@@ -359,8 +337,7 @@ const RepositoryMembersSection = () => {
     memberPermission,
     handleSubmit,
     isUpdatingInvitation,
-    isRemovingMembers,
-    classes.rowLoader
+    isRemovingMembers
   ]);
 
   const options = useMemo(

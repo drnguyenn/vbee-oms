@@ -23,14 +23,14 @@ import {
 } from 'redux/modal/modal.actions';
 
 import Section from 'components/section/section.component';
-import Table from 'components/table/table.component';
+import Table, {
+  RowLoader,
+  ToolbarLoader
+} from 'components/table/table.component';
 
 import themes from 'themes';
 
 const useStyles = makeStyles(muiTheme => ({
-  textField: {
-    width: '70%'
-  },
   sslStatus: {
     display: 'flex',
     alignItems: 'center',
@@ -51,16 +51,6 @@ const useStyles = makeStyles(muiTheme => ({
     '&:hover': {
       color: muiTheme.palette.primary.main
     }
-  },
-  circularProgress: {
-    margin: 14,
-    verticalAlign: 'middle'
-  },
-  rowLoader: {
-    width: 48,
-    height: 48,
-    textAlign: 'center',
-    padding: 12
   }
 }));
 
@@ -96,9 +86,7 @@ const CustomToolbar = () => {
   return (
     <>
       {isGettingSslStatus ? (
-        <Tooltip title='Fetching data...'>
-          <CircularProgress className={classes.circularProgress} size={20} />
-        </Tooltip>
+        <ToolbarLoader tooltipTitle='Fetching data...' />
       ) : (
         <Tooltip title='Refresh'>
           <IconButton onClick={handleRefreshClick}>
@@ -203,9 +191,7 @@ const ServerDomainsSection = () => {
     const ActionsColumn = (value, { rowData }) =>
       (isUpdatingDomains && rowData[0] === id) ||
       (isRemovingDomains && rowData[0] === id) ? (
-        <div className={classes.rowLoader}>
-          <CircularProgress size={20} />
-        </div>
+        <RowLoader />
       ) : (
         <IconButton
           onClick={event => {

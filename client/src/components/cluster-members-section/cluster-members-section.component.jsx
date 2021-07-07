@@ -6,12 +6,10 @@ import {
   Menu,
   MenuItem,
   IconButton,
-  CircularProgress,
   Tooltip,
   FormControl,
   InputLabel,
-  Select,
-  makeStyles
+  Select
 } from '@material-ui/core';
 import { GroupAdd, MoreVert, Close, Check } from '@material-ui/icons';
 
@@ -25,20 +23,10 @@ import {
 } from 'redux/cluster/cluster.actions';
 
 import Section from 'components/section/section.component';
-import Table from 'components/table/table.component';
-
-const useStyles = makeStyles({
-  circularProgress: {
-    margin: 14,
-    verticalAlign: 'middle'
-  },
-  rowLoader: {
-    width: 48,
-    height: 48,
-    textAlign: 'center',
-    padding: 12
-  }
-});
+import Table, {
+  RowLoader,
+  ToolbarLoader
+} from 'components/table/table.component';
 
 const menuPropsAreEqual = (prevProps, nextProps) =>
   prevProps.open === nextProps.open &&
@@ -61,8 +49,6 @@ const MemberActionMenu = memo(
 );
 
 const CustomToolbar = () => {
-  const classes = useStyles();
-
   const { isAddingMembers } = useSelector(state => state.cluster);
 
   const dispatch = useDispatch();
@@ -71,9 +57,7 @@ const CustomToolbar = () => {
     dispatch(setClusterMemberAdditionModalOpen(true));
 
   return isAddingMembers ? (
-    <Tooltip title='Processing...'>
-      <CircularProgress className={classes.circularProgress} size={20} />
-    </Tooltip>
+    <ToolbarLoader />
   ) : (
     <Tooltip title='Add new member'>
       <IconButton onClick={handleAddMemberClick}>
@@ -91,8 +75,6 @@ const Subtitle = memo(({ memberCount }) => (
 ));
 
 const ClusterMembersSection = () => {
-  const classes = useStyles();
-
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -176,9 +158,7 @@ const ClusterMembersSection = () => {
 
       return (isUpdatingMembers && rowData[0] === id) ||
         (isRemovingMembers && rowData[0] === id) ? (
-        <div className={classes.rowLoader}>
-          <CircularProgress size={20} />
-        </div>
+        <RowLoader />
       ) : (
         <IconButton
           onClick={event => {
@@ -240,7 +220,6 @@ const ClusterMembersSection = () => {
       }
     ];
   }, [
-    classes.rowLoader,
     editMode,
     handleSubmit,
     id,
