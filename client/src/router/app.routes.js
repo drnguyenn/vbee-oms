@@ -38,7 +38,7 @@ const ServiceDetailsPage = lazy(() =>
   import('pages/service-details/service-details.component')
 );
 
-const MembersPage = lazy(() => import('pages/members/members.component'));
+const UsersPage = lazy(() => import('pages/users/users.component'));
 
 export default [
   {
@@ -141,8 +141,8 @@ export default [
   },
 
   {
-    path: ROUTE_PATHS.MEMBERS,
-    component: MembersPage,
+    path: ROUTE_PATHS.USERS,
+    component: UsersPage,
     exact: true,
     restricted: false,
     isPrivate: true

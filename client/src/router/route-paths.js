@@ -13,5 +13,6 @@ export default {
   SERVICE_DETAILS: '/services/:id',
   REPOSITORIES: '/repositories',
   REPOSITORY_DETAILS: '/repositories/:id',
-  MEMBERS: '/members'
+  USERS: '/users',
+  USER_DETAILS: '/users/:id'
 };
