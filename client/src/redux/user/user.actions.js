@@ -1,78 +1,80 @@
 import UserActionTypes from './user.types';
 
-export const getCurrentUser = () => ({
-  type: UserActionTypes.GET_CURRENT_USER
+export const fetchAllUsersStart = () => ({
+  type: UserActionTypes.FETCH_ALL_USERS_START
 });
 
-export const emailSignInStart = (email, password) => ({
-  type: UserActionTypes.EMAIL_SIGN_IN_START,
-  payload: { email, password }
+export const fetchAllUsersSuccess = users => ({
+  type: UserActionTypes.FETCH_ALL_USERS_SUCCESS,
+  payload: users
 });
 
-export const signInSuccess = user => ({
-  type: UserActionTypes.SIGN_IN_SUCCESS,
+export const fetchAllUsersFailure = error => ({
+  type: UserActionTypes.FETCH_ALL_USERS_FAILURE,
+  payload: error
+});
+
+export const fetchUserStart = id => ({
+  type: UserActionTypes.FETCH_USER_START,
+  payload: id
+});
+
+export const fetchUserSuccess = user => ({
+  type: UserActionTypes.FETCH_USER_SUCCESS,
   payload: user
 });
 
-export const signInFailure = error => ({
-  type: UserActionTypes.SIGN_IN_FAILURE,
+export const fetchUserFailure = error => ({
+  type: UserActionTypes.FETCH_USER_FAILURE,
   payload: error
 });
 
-export const signOutStart = () => ({
-  type: UserActionTypes.SIGN_OUT_START
+export const createUserStart = userInfo => ({
+  type: UserActionTypes.CREATE_USER_START,
+  payload: userInfo
 });
 
-export const signOutSuccess = () => ({
-  type: UserActionTypes.SIGN_OUT_SUCCESS
+export const createUserSuccess = user => ({
+  type: UserActionTypes.CREATE_USER_SUCCESS,
+  payload: user
 });
 
-export const signOutFailure = error => ({
-  type: UserActionTypes.SIGN_OUT_FAILURE,
+export const createUserFailure = error => ({
+  type: UserActionTypes.CREATE_USER_FAILURE,
   payload: error
 });
 
-export const signUpStart = userCredentials => ({
-  type: UserActionTypes.SIGN_UP_START,
-  payload: userCredentials
+export const updateUserStart = (id, data) => ({
+  type: UserActionTypes.UPDATE_USER_START,
+  payload: { id, data }
 });
 
-export const signUpSuccess = ({ email, password }) => ({
-  type: UserActionTypes.SIGN_UP_SUCCESS,
-  payload: { email, password }
+export const updateUserSuccess = user => ({
+  type: UserActionTypes.UPDATE_USER_SUCCESS,
+  payload: user
 });
 
-export const signUpFailure = error => ({
-  type: UserActionTypes.SIGN_UP_FAILURE,
+export const updateUserFailure = error => ({
+  type: UserActionTypes.UPDATE_USER_FAILURE,
   payload: error
 });
 
-export const updateProfileStart = userProfile => ({
-  type: UserActionTypes.UPDATE_PROFILE_START,
-  payload: userProfile
+export const deleteUserStart = id => ({
+  type: UserActionTypes.DELETE_USER_START,
+  payload: id
 });
 
-export const updateProfileSuccess = userProfile => ({
-  type: UserActionTypes.UPDATE_PROFILE_SUCCESS,
-  payload: userProfile
+export const deleteUserSuccess = id => ({
+  type: UserActionTypes.DELETE_USER_SUCCESS,
+  payload: id
 });
 
-export const updateProfileFailure = error => ({
-  type: UserActionTypes.UPDATE_AVATAR_FAILURE,
+export const deleteUserFailure = error => ({
+  type: UserActionTypes.DELETE_USER_FAILURE,
   payload: error
 });
 
-export const updateAvatarStart = userProfile => ({
-  type: UserActionTypes.UPDATE_AVATAR_START,
-  payload: userProfile
-});
-
-export const updateAvatarSuccess = userList => ({
-  type: UserActionTypes.UPDATE_AVATAR_SUCCESS,
-  payload: userList
-});
-
-export const updateAvatarFailure = error => ({
-  type: UserActionTypes.UPDATE_AVATAR_FAILURE,
-  payload: error
+export const setSelectedUser = user => ({
+  type: UserActionTypes.SET_SELECTED_USER,
+  payload: user
 });

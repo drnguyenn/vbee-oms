@@ -1,147 +1,114 @@
-import { takeLatest, all, call, put, select } from 'redux-saga/effects';
+import { takeLatest, all, call, put } from 'redux-saga/effects';
 
+import * as UserService from 'services/user.service';
+
+import { notify } from 'redux/notification/notification.actions';
 import {
-  signInSuccess,
-  signInFailure,
-  signOutSuccess,
-  signOutFailure,
-  signUpSuccess,
-  signUpFailure,
-  updateProfileSuccess,
-  updateProfileFailure,
-  updateAvatarSuccess,
-  updateAvatarFailure
+  setUserCreationModalOpen,
+  setUserDeleteConfirmationModalOpen
+} from 'redux/modal/modal.actions';
+import {
+  createUserFailure,
+  createUserSuccess,
+  deleteUserFailure,
+  deleteUserSuccess,
+  fetchAllUsersFailure,
+  fetchAllUsersSuccess,
+  fetchUserFailure,
+  fetchUserSuccess,
+  updateUserFailure,
+  updateUserSuccess
 } from './user.actions';
-import { notify } from '../notification/notification.actions';
-
-import * as UserServices from '../../services/user.service';
 
 import UserActionTypes from './user.types';
 
-import { getCookie, setCookie } from '../../utils/cookie.utils';
-
-function* getCurrentUser() {
+function* fetchAllUsers() {
   try {
-    const accessToken = getCookie('accessToken');
-    if (!accessToken) {
-      yield put(signInFailure(new Error('Access token not found')));
-      return;
-    }
+    const clusters = yield call(UserService.fetchAllUsers);
 
-    const user = yield call(UserServices.getCurrentUser);
-    if (!user) {
-      yield put(signInFailure(new Error('Can not get current user')));
-      return;
-    }
-
-    yield put(signInSuccess(user));
+    yield put(fetchAllUsersSuccess(clusters));
   } catch (error) {
-    yield put(signInFailure(error));
+    yield put(fetchAllUsersFailure(error));
     yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
-function* signInWithEmail({ payload: { email, password } }) {
+function* fetchUser({ payload }) {
   try {
-    const user = yield call(UserServices.signInWithEmail, email, password);
+    const cluster = yield call(UserService.fetchUser, payload);
 
-    if (!user) return;
-
-    yield put(signInSuccess(user));
-    yield put(notify(`Hi ${user.username}`, { variant: 'info' }));
+    yield put(fetchUserSuccess(cluster));
   } catch (error) {
-    yield put(signInFailure(error));
+    yield put(fetchUserFailure(error));
     yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
-function* signOut() {
+function* createUser({ payload }) {
   try {
-    setCookie('accessToken', null, 0);
+    const cluster = yield call(UserService.createUser, payload);
 
-    const { currentUser } = yield select(state => state.user);
-
-    yield put(signOutSuccess());
-    yield put(notify(`Goodbye ${currentUser.username}`, { variant: 'info' }));
+    yield put(createUserSuccess(cluster));
+    yield put(notify(`User "${cluster.name}" created`, { variant: 'success' }));
+    yield put(setUserCreationModalOpen(false));
   } catch (error) {
-    yield put(signOutFailure(error));
+    yield put(createUserFailure(error));
     yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
-function* signUp({ payload: { username, email, password } }) {
+function* updateUserStart({ payload: { id, data } }) {
   try {
-    const user = yield call(UserServices.signUp, username, email, password);
+    const cluster = yield call(UserService.updateUser, id, data);
 
-    if (!user) return;
-
-    yield put(signUpSuccess(user));
-    yield put(notify('User account created', { variant: 'success' }));
+    yield put(updateUserSuccess(cluster));
+    yield put(notify('Changes saved', { variant: 'success' }));
   } catch (error) {
-    yield put(signUpFailure(error));
+    yield put(updateUserFailure(error));
     yield put(notify(error.message, { variant: 'error' }));
   }
 }
 
-function* updateProfile({ payload }) {
+function* deleteUser({ payload }) {
   try {
-    const accessToken = getCookie('accessToken');
+    const cluster = yield call(UserService.deleteUser, payload);
 
-    const user = yield call(UserServices.updateProfile, accessToken, payload);
-
-    yield put(updateProfileSuccess(user));
-    yield put(notify('Profile updated', { variant: 'success' }));
+    yield put(deleteUserSuccess(cluster));
+    yield put(notify(`User "${cluster.name}" deleted`, { variant: 'success' }));
+    yield put(setUserDeleteConfirmationModalOpen(false));
   } catch (error) {
-    yield put(updateProfileFailure(error));
+    yield put(deleteUserFailure(error));
     yield put(notify(error.message, { variant: 'error' }));
+    yield put(setUserDeleteConfirmationModalOpen(false));
   }
 }
 
-function* updateAvatar({ payload }) {
-  try {
-    const accessToken = getCookie('accessToken');
-
-    const user = yield call(UserServices.updateAvatar, accessToken, payload);
-
-    yield put(updateAvatarSuccess(user));
-    yield put(notify('Avatar uploaded', { variant: 'success' }));
-  } catch (error) {
-    yield put(updateAvatarFailure(error));
-    yield put(notify(error.message, { variant: 'error' }));
-  }
+function* onFetchAllUsersStart() {
+  yield takeLatest(UserActionTypes.FETCH_ALL_USERS_START, fetchAllUsers);
 }
 
-function* onGetCurrentUser() {
-  yield takeLatest(UserActionTypes.GET_CURRENT_USER, getCurrentUser);
+function* onFetchUserStart() {
+  yield takeLatest(UserActionTypes.FETCH_USER_START, fetchUser);
 }
 
-function* onEmailSignInStart() {
-  yield takeLatest(UserActionTypes.EMAIL_SIGN_IN_START, signInWithEmail);
+function* onCreateUserStart() {
+  yield takeLatest(UserActionTypes.CREATE_USER_START, createUser);
 }
 
-function* onSignOutStart() {
-  yield takeLatest(UserActionTypes.SIGN_OUT_START, signOut);
+function* onUpdateUserStart() {
+  yield takeLatest(UserActionTypes.UPDATE_USER_START, updateUserStart);
 }
 
-function* onSignUpStart() {
-  yield takeLatest(UserActionTypes.SIGN_UP_START, signUp);
-}
-
-function* onUpdateProfileStart() {
-  yield takeLatest(UserActionTypes.UPDATE_PROFILE_START, updateProfile);
-}
-
-function* onupdateAvatarStart() {
-  yield takeLatest(UserActionTypes.UPDATE_AVATAR_START, updateAvatar);
+function* onDeleteUserStart() {
+  yield takeLatest(UserActionTypes.DELETE_USER_START, deleteUser);
 }
 
 export default function* userSagas() {
   yield all([
-    call(onGetCurrentUser),
-    call(onEmailSignInStart),
-    call(onSignOutStart),
-    call(onSignUpStart),
-    call(onUpdateProfileStart),
-    call(onupdateAvatarStart)
+    call(onFetchAllUsersStart),
+    call(onFetchUserStart),
+    call(onCreateUserStart),
+    call(onUpdateUserStart),
+    call(onDeleteUserStart)
   ]);
 }

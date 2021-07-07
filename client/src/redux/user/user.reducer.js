@@ -1,11 +1,13 @@
 import UserActionTypes from './user.types';
 
 const INITIAL_STATE = {
+  users: [],
   currentUser: null,
-  isLoading: true,
+  selectedUser: null,
+  isFetchingUsers: false,
+  isFetchingCurrentUser: false,
   isProcessing: false,
-  isUpdatingProfile: false,
-  isUpdatingAvatar: false,
+  isUpdatingInfo: false,
   error: null
 };
 
@@ -13,104 +15,131 @@ const userReducer = (state = INITIAL_STATE, action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case UserActionTypes.GET_CURRENT_USER:
+    case UserActionTypes.FETCH_ALL_USERS_START:
       return {
         ...state,
-        isLoading: true,
+        isFetchingUsers: true,
         error: null
       };
 
-    case UserActionTypes.EMAIL_SIGN_IN_START:
-    case UserActionTypes.SIGN_OUT_START:
+    case UserActionTypes.FETCH_ALL_USERS_SUCCESS:
+      return {
+        ...state,
+        users: payload,
+        isFetchingUsers: false,
+        error: null
+      };
+
+    case UserActionTypes.FETCH_ALL_USERS_FAILURE:
+      return {
+        ...state,
+        users: [],
+        isFetchingUsers: false,
+        error: payload
+      };
+
+    case UserActionTypes.FETCH_USER_START:
+      return {
+        ...state,
+        isFetchingCurrentUser: true,
+        error: null
+      };
+
+    case UserActionTypes.FETCH_USER_SUCCESS:
+      return {
+        ...state,
+        currentUser: payload,
+        isFetchingCurrentUser: false,
+        error: null
+      };
+
+    case UserActionTypes.FETCH_USER_FAILURE:
+      return {
+        ...state,
+        currentUser: null,
+        isFetchingCurrentUser: false,
+        error: payload
+      };
+
+    case UserActionTypes.CREATE_USER_START:
       return {
         ...state,
         isProcessing: true,
         error: null
       };
 
-    case UserActionTypes.SIGN_IN_SUCCESS:
+    case UserActionTypes.CREATE_USER_SUCCESS:
       return {
         ...state,
-        currentUser: payload,
-        isLoading: false,
+        users: [...state.users, payload],
         isProcessing: false,
         error: null
       };
 
-    case UserActionTypes.SIGN_IN_FAILURE:
+    case UserActionTypes.CREATE_USER_FAILURE:
+      return {
+        ...state,
+        isProcessing: false,
+        error: payload
+      };
+
+    case UserActionTypes.UPDATE_USER_START:
+      return {
+        ...state,
+        isUpdatingInfo: true,
+        error: null
+      };
+
+    case UserActionTypes.UPDATE_USER_SUCCESS: {
+      const { id, ...rest } = payload;
+
+      return {
+        ...state,
+        currentUser: { ...state.currentUser, ...rest },
+        users: state.users.map(user =>
+          user.id === payload.id ? { ...user, ...rest } : user
+        ),
+        isUpdatingInfo: false,
+        error: null
+      };
+    }
+
+    case UserActionTypes.UPDATE_USER_FAILURE:
+      return {
+        ...state,
+        isUpdatingInfo: false,
+        error: payload
+      };
+
+    case UserActionTypes.DELETE_USER_START:
+      return {
+        ...state,
+        isProcessing: true,
+        error: null
+      };
+
+    case UserActionTypes.DELETE_USER_SUCCESS:
       return {
         ...state,
         currentUser: null,
-        isLoading: false,
-        isProcessing: false,
-        error: payload
-      };
-
-    case UserActionTypes.SIGN_OUT_SUCCESS:
-      return {
-        ...state,
-        currentUser: null,
+        users: state.users.filter(user => user.id !== payload.id),
         isProcessing: false,
         error: null
       };
 
-    case UserActionTypes.SIGN_OUT_FAILURE:
+    case UserActionTypes.DELETE_USER_FAILURE:
       return {
         ...state,
         isProcessing: false,
         error: payload
       };
 
-    case UserActionTypes.SIGN_UP_FAILURE:
+    case UserActionTypes.SET_SELECTED_USER: {
       return {
         ...state,
-        isProcessing: false,
-        error: payload
+        selectedUser: payload
       };
-
-    case UserActionTypes.UPDATE_PROFILE_START:
-      return {
-        ...state,
-        isUpdatingProfile: true,
-        error: null
-      };
-
-    case UserActionTypes.UPDATE_PROFILE_SUCCESS:
-      return {
-        ...state,
-        currentUser: { ...state.currentUser, ...payload },
-        isUpdatingProfile: false,
-        error: null
-      };
-
-    case UserActionTypes.UPDATE_PROFILE_FAILURE:
-      return {
-        ...state,
-        isUpdatingProfile: false,
-        error: payload
-      };
-
-    case UserActionTypes.UPDATE_AVATAR_START:
-      return {
-        ...state,
-        isUpdatingAvatar: true,
-        error: null
-      };
-
-    case UserActionTypes.UPDATE_AVATAR_SUCCESS:
-      return {
-        ...state,
-        currentUser: { ...state.currentUser, ...payload },
-        isUpdatingAvatar: false,
-        error: null
-      };
-
-    case UserActionTypes.UPDATE_AVATAR_FAILURE:
-      return {
-        ...state,
-        isUpdatingAvatar: false,
-        error: payload
-      };
+    }
 
     default:
       return state;
