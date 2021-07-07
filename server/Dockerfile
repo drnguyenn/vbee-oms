@@ -10,4 +10,5 @@ WORKDIR /usr/src/app
 COPY package.json .
 RUN yarn install --production=true
 COPY . .
+ENV NODE_ENV=production
 CMD ["yarn", "start"]

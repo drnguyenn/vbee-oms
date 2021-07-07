@@ -41,7 +41,7 @@ services:
     working_dir: /usr/src/app
     restart: unless-stopped
     ports:
-      - ${CLIENT_PORT}:${CLIENT_PORT}
+      - ${CLIENT_HOST_PORT}:${CLIENT_CONTAINER_PORT}
     volumes:
       - ./client:/usr/src/app
       - /usr/src/app/node_modules
