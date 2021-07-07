@@ -15,7 +15,7 @@ const initialSetup = async () => {
     const admins = await UserService.search({ role: 'admin' });
 
     if (!admins.length)
-      await UserService.create({
+      await UserService.create('0', {
         email: INITIAL_ADMIN_EMAIL,
         username: INITIAL_ADMIN_USERNAME,
         password: INITIAL_ADMIN_PASSWORD,
