@@ -16,7 +16,12 @@ const handleInstallationEvent = async (
   switch (action) {
     case 'created': {
       await GhAppInstallationService.create({ ...data, status: 'available' });
-      addRepositories(repositories, githubId, deliveryId);
+
+      try {
+        addRepositories(repositories, githubId, deliveryId);
+      } catch (error) {
+        console.error(error);
+      }
 
       return { statusCode: 201 };
     }
@@ -41,7 +46,12 @@ const handleInstallationEvent = async (
 
     case 'deleted':
       await GhAppInstallationService.remove({ githubId });
-      removeRepositories(repositories);
+
+      try {
+        removeRepositories(repositories);
+      } catch (error) {
+        console.error(error);
+      }
 
       return { statusCode: 200 };
 
@@ -64,11 +74,21 @@ const handleInstallationRepositoriesEvent = async (
 
   switch (action) {
     case 'added':
-      addRepositories(addedRepositories, ghAppInstallationId, deliveryId);
+      try {
+        addRepositories(addedRepositories, ghAppInstallationId, deliveryId);
+      } catch (error) {
+        console.error(error);
+      }
+
       return { statusCode: 202 };
 
     case 'removed':
-      removeRepositories(removedRepositories);
+      try {
+        removeRepositories(removedRepositories);
+      } catch (error) {
+        console.error(error);
+      }
+
       return { statusCode: 202 };
 
     default:
