@@ -10,7 +10,7 @@ const mongodbObjectIdValidator = (value, helpers) => {
   return helpers.error('any.custom');
 };
 
-const searchRepositoriesValidation = {
+const searchRepositoriesValidationSchema = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
     name: Joi.string().trim(),
@@ -26,7 +26,7 @@ const searchRepositoriesValidation = {
   }).unknown(false)
 };
 
-const createRepositoryValidation = {
+const createRepositoryValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim().required(),
     owner: Joi.string().trim().required(),
@@ -34,7 +34,7 @@ const createRepositoryValidation = {
   }).unknown(false)
 };
 
-const updateRepositoryValidation = {
+const updateRepositoryValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim(),
     owner: Joi.string().trim(),
@@ -42,23 +42,23 @@ const updateRepositoryValidation = {
   }).unknown(false)
 };
 
-const addMemberValidation = {
+const addMemberValidationSchema = {
   body: Joi.object({
     permission: Joi.string().trim().valid('read', 'write', 'admin')
   }).unknown(false)
 };
 
-const updateInvitationValidation = {
+const updateInvitationValidationSchema = {
   body: Joi.object({
     permission: Joi.string().trim().valid('read', 'write', 'admin').required()
   }).unknown(false)
 };
 
-const updatePRReviewProtectionValidation = {
+const updatePRReviewProtectionValidationSchema = {
   body: Joi.object({
     dismissalRestrictions: Joi.object({
-      users: Joi.array().items(Joi.string()),
-      teams: Joi.array().items(Joi.string())
+      users: Joi.array().items(Joi.string().trim()),
+      teams: Joi.array().items(Joi.string().trim())
     }).unknown(false),
     dismissStaleReviews: Joi.boolean(),
     requireCodeOwnerReviews: Joi.boolean(),
@@ -67,25 +67,31 @@ const updatePRReviewProtectionValidation = {
 };
 
 module.exports = {
-  createRepositoryValidator: validate(createRepositoryValidation, {
-    keyByField: true
+  createRepositoryValidator: validate(createRepositoryValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  searchRepositoriesValidator: validate(searchRepositoriesValidation, {
-    keyByField: true
+  searchRepositoriesValidator: validate(searchRepositoriesValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateRepositoryValidator: validate(updateRepositoryValidation, {
-    keyByField: true
+  updateRepositoryValidator: validate(updateRepositoryValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  addMemberValidator: validate(addMemberValidation, {
-    keyByField: true
+  addMemberValidator: validate(addMemberValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateInvitationValidator: validate(updateInvitationValidation, {
-    keyByField: true
+  updateInvitationValidator: validate(updateInvitationValidationSchema, {
+    keyByField: true,
+    context: true
   }),
   updatePRReviewProtectionValidator: validate(
-    updatePRReviewProtectionValidation,
+    updatePRReviewProtectionValidationSchema,
     {
-      keyByField: true
+      keyByField: true,
+      context: true
     }
   )
 };

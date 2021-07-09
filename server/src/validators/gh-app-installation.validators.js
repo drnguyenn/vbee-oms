@@ -1,6 +1,6 @@
 const { Joi, validate } = require('express-validation');
 
-const createGhAppInstallationValidation = {
+const createGhAppInstallationValidationSchema = {
   body: Joi.object({
     githubId: Joi.string().trim().required(),
     account: Joi.string().trim().required(),
@@ -13,7 +13,7 @@ const createGhAppInstallationValidation = {
   }).unknown(false)
 };
 
-const updateGhAppInstallationValidation = {
+const updateGhAppInstallationValidationSchema = {
   body: Joi.object({
     githubId: Joi.string().trim(),
     account: Joi.string().trim(),
@@ -28,15 +28,17 @@ const updateGhAppInstallationValidation = {
 
 module.exports = {
   createGhAppInstallationValidator: validate(
-    createGhAppInstallationValidation,
+    createGhAppInstallationValidationSchema,
     {
-      keyByField: true
+      keyByField: true,
+      context: true
     }
   ),
   updateGhAppInstallationValidator: validate(
-    updateGhAppInstallationValidation,
+    updateGhAppInstallationValidationSchema,
     {
-      keyByField: true
+      keyByField: true,
+      context: true
     }
   )
 };

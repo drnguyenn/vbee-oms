@@ -1,6 +1,6 @@
 const { Joi, validate } = require('express-validation');
 
-const searchClustersValidation = {
+const searchClustersValidationSchema = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
     name: Joi.string().trim(),
@@ -9,46 +9,51 @@ const searchClustersValidation = {
   }).unknown(false)
 };
 
-const createClusterValidation = {
+const createClusterValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim().required(),
     description: Joi.string().trim().allow('')
   }).unknown(false)
 };
 
-const updateClusterValidation = {
+const updateClusterValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim(),
     description: Joi.string().trim().allow('')
   }).unknown(false)
 };
 
-const addMemberValidation = {
+const addMemberValidationSchema = {
   body: Joi.object({
     role: Joi.string().trim().valid('member', 'admin')
   }).unknown(false)
 };
 
-const updateMemberValidation = {
+const updateMemberValidationSchema = {
   body: Joi.object({
     role: Joi.string().trim().valid('member', 'admin')
   }).unknown(false)
 };
 
 module.exports = {
-  createClusterValidator: validate(createClusterValidation, {
-    keyByField: true
+  createClusterValidator: validate(createClusterValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  searchClustersValidator: validate(searchClustersValidation, {
-    keyByField: true
+  searchClustersValidator: validate(searchClustersValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateClusterValidator: validate(updateClusterValidation, {
-    keyByField: true
+  updateClusterValidator: validate(updateClusterValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  addMemberValidator: validate(addMemberValidation, {
-    keyByField: true
+  addMemberValidator: validate(addMemberValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateMemberValidator: validate(updateMemberValidation, {
-    keyByField: true
+  updateMemberValidator: validate(updateMemberValidationSchema, {
+    keyByField: true,
+    context: true
   })
 };

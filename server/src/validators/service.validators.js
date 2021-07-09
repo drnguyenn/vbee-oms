@@ -10,7 +10,7 @@ const mongodbObjectIdValidator = (value, helpers) => {
   return helpers.error('any.custom');
 };
 
-const searchServicesValidation = {
+const searchServicesValidationSchema = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
     name: Joi.string().trim(),
@@ -28,7 +28,7 @@ const searchServicesValidation = {
   }).unknown(false)
 };
 
-const createServiceValidation = {
+const createServiceValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim().required(),
     description: Joi.string().trim().allow(''),
@@ -51,7 +51,7 @@ const createServiceValidation = {
   }).unknown(false)
 };
 
-const updateServiceValidation = {
+const updateServiceValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim(),
     description: Joi.string().trim().allow(''),
@@ -73,32 +73,37 @@ const updateServiceValidation = {
   }).unknown(false)
 };
 
-const addMemberValidation = {
+const addMemberValidationSchema = {
   body: Joi.object({
     role: Joi.string().trim().valid('member', 'admin')
   }).unknown(false)
 };
 
-const updateMemberValidation = {
+const updateMemberValidationSchema = {
   body: Joi.object({
     role: Joi.string().trim().valid('member', 'admin')
   }).unknown(false)
 };
 
 module.exports = {
-  createServiceValidator: validate(createServiceValidation, {
-    keyByField: true
+  createServiceValidator: validate(createServiceValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  searchServicesValidator: validate(searchServicesValidation, {
-    keyByField: true
+  searchServicesValidator: validate(searchServicesValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateServiceValidator: validate(updateServiceValidation, {
-    keyByField: true
+  updateServiceValidator: validate(updateServiceValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  addMemberValidator: validate(addMemberValidation, {
-    keyByField: true
+  addMemberValidator: validate(addMemberValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateMemberValidator: validate(updateMemberValidation, {
-    keyByField: true
+  updateMemberValidator: validate(updateMemberValidationSchema, {
+    keyByField: true,
+    context: true
   })
 };

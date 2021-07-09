@@ -10,7 +10,7 @@ const mongodbObjectIdValidator = (value, helpers) => {
   return helpers.error('any.custom');
 };
 
-const searchDomainsValidation = {
+const searchDomainsValidationSchema = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
     value: Joi.string().trim().domain(),
@@ -22,7 +22,7 @@ const searchDomainsValidation = {
   }).unknown(false)
 };
 
-const createDomainValidation = {
+const createDomainValidationSchema = {
   body: Joi.object({
     domains: Joi.array()
       .unique()
@@ -35,7 +35,7 @@ const createDomainValidation = {
   }).unknown(false)
 };
 
-const updateDomainValidation = {
+const updateDomainValidationSchema = {
   body: Joi.object({
     value: Joi.string().trim().domain(),
     serverId: Joi.string()
@@ -44,23 +44,27 @@ const updateDomainValidation = {
   }).unknown(false)
 };
 
-const getDomainsSslStatusValidation = {
+const getDomainsSslStatusValidationSchema = {
   query: Joi.object({
     domains: Joi.array().unique().items(Joi.string().trim().domain()).required()
   }).unknown(false)
 };
 
 module.exports = {
-  searchDomainsValidator: validate(searchDomainsValidation, {
-    keyByField: true
+  searchDomainsValidator: validate(searchDomainsValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  createDomainValidator: validate(createDomainValidation, {
-    keyByField: true
+  createDomainValidator: validate(createDomainValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateDomainValidator: validate(updateDomainValidation, {
-    keyByField: true
+  updateDomainValidator: validate(updateDomainValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  getDomainsSslStatusValidator: validate(getDomainsSslStatusValidation, {
-    keyByField: true
+  getDomainsSslStatusValidator: validate(getDomainsSslStatusValidationSchema, {
+    keyByField: true,
+    context: true
   })
 };

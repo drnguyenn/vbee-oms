@@ -1,12 +1,15 @@
 const { Joi, validate } = require('express-validation');
 
-const loginValidation = {
+const loginValidationSchema = {
   body: Joi.object({
-    email: Joi.string().email().trim().lowercase().required(),
+    email: Joi.string().trim().email().lowercase().required(),
     password: Joi.string().trim().required()
   }).unknown(false)
 };
 
 module.exports = {
-  loginValidator: validate(loginValidation, { keyByField: true })
+  loginValidator: validate(loginValidationSchema, {
+    keyByField: true,
+    context: true
+  })
 };

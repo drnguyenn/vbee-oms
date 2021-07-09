@@ -1,8 +1,8 @@
 const { Joi, validate } = require('express-validation');
 
-const createUserValidation = {
+const createUserValidationSchema = {
   body: Joi.object({
-    email: Joi.string().email().trim().lowercase().required(),
+    email: Joi.string().trim().email().lowercase().required(),
     username: Joi.string().trim().required(),
     role: Joi.string().trim().valid('admin', 'member').required(),
     fullName: Joi.string().trim(),
@@ -10,11 +10,11 @@ const createUserValidation = {
   }).unknown(false)
 };
 
-const searchUsersValidation = {
+const searchUsersValidationSchema = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
     githubSearch: Joi.boolean(),
-    email: Joi.string().email().trim().lowercase(),
+    email: Joi.string().trim().email().lowercase(),
     username: Joi.string().trim(),
     role: Joi.string().trim().valid('admin', 'member'),
     fullName: Joi.string().trim(),
@@ -25,9 +25,9 @@ const searchUsersValidation = {
   }).unknown(false)
 };
 
-const updateUserValidation = {
+const updateUserValidationSchema = {
   query: Joi.object({
-    email: Joi.string().email().trim().lowercase(),
+    email: Joi.string().trim().email().lowercase(),
     username: Joi.string().trim(),
     role: Joi.string().trim().valid('admin', 'member'),
     githubUsername: Joi.string().trim()
@@ -35,7 +35,16 @@ const updateUserValidation = {
 };
 
 module.exports = {
-  createUserValidator: validate(createUserValidation, { keyByField: true }),
-  updateUserValidator: validate(updateUserValidation, { keyByField: true }),
-  searchUsersValidator: validate(searchUsersValidation, { keyByField: true })
+  createUserValidator: validate(createUserValidationSchema, {
+    keyByField: true,
+    context: true
+  }),
+  updateUserValidator: validate(updateUserValidationSchema, {
+    keyByField: true,
+    context: true
+  }),
+  searchUsersValidator: validate(searchUsersValidationSchema, {
+    keyByField: true,
+    context: true
+  })
 };

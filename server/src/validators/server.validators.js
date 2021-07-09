@@ -10,17 +10,19 @@ const mongodbObjectIdValidator = (value, helpers) => {
   return helpers.error('any.custom');
 };
 
-const searchServersValidation = {
+const searchServersValidationSchema = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
     name: Joi.string().trim(),
     ipAddress: Joi.string()
       .trim()
+      .lowercase()
       .ip({
         version: ['ipv4', 'ipv6', 'ipvfuture']
       }),
     macAddress: Joi.string()
       .trim()
+      .lowercase()
       .regex(
         /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\\.[0-9a-fA-F]{4}\\.[0-9a-fA-F]{4})$/
       ),
@@ -32,17 +34,19 @@ const searchServersValidation = {
   }).unknown(false)
 };
 
-const createServerValidation = {
+const createServerValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim().required(),
     ipAddress: Joi.string()
       .trim()
+      .lowercase()
       .ip({
         version: ['ipv4', 'ipv6', 'ipvfuture']
       })
       .required(),
     macAddress: Joi.string()
       .trim()
+      .lowercase()
       .regex(
         /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\\.[0-9a-fA-F]{4}\\.[0-9a-fA-F]{4})$/
       )
@@ -54,16 +58,18 @@ const createServerValidation = {
   }).unknown(false)
 };
 
-const updateServerValidation = {
+const updateServerValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim(),
     ipAddress: Joi.string()
       .trim()
+      .lowercase()
       .ip({
         version: ['ipv4', 'ipv6', 'ipvfuture']
       }),
     macAddress: Joi.string()
       .trim()
+      .lowercase()
       .regex(
         /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\\.[0-9a-fA-F]{4}\\.[0-9a-fA-F]{4})$/
       ),
@@ -74,19 +80,19 @@ const updateServerValidation = {
   }).unknown(false)
 };
 
-const addDomainValidation = {
+const addDomainValidationSchema = {
   body: Joi.object({
     value: Joi.string().trim().domain().required()
   }).unknown(false)
 };
 
-const updateDomainValidation = {
+const updateDomainValidationSchema = {
   body: Joi.object({
     value: Joi.string().trim().domain()
   }).unknown(false)
 };
 
-const getServersMetricsValidation = {
+const getServersMetricsValidationSchema = {
   query: Joi.object({
     ids: Joi.array()
       .items(
@@ -99,22 +105,28 @@ const getServersMetricsValidation = {
 };
 
 module.exports = {
-  searchServersValidator: validate(searchServersValidation, {
-    keyByField: true
+  searchServersValidator: validate(searchServersValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  createServerValidator: validate(createServerValidation, {
-    keyByField: true
+  createServerValidator: validate(createServerValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateServerValidator: validate(updateServerValidation, {
-    keyByField: true
+  updateServerValidator: validate(updateServerValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  addDomainValidator: validate(addDomainValidation, {
-    keyByField: true
+  addDomainValidator: validate(addDomainValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateDomainValidator: validate(updateDomainValidation, {
-    keyByField: true
+  updateDomainValidator: validate(updateDomainValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  getServersMetricsValidator: validate(getServersMetricsValidation, {
-    keyByField: true
+  getServersMetricsValidator: validate(getServersMetricsValidationSchema, {
+    keyByField: true,
+    context: true
   })
 };

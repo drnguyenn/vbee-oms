@@ -10,7 +10,7 @@ const mongodbObjectIdValidator = (value, helpers) => {
   return helpers.error('any.custom');
 };
 
-const searchDiagramsValidation = {
+const searchDiagramsValidationSchema = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
     cluster: Joi.string()
@@ -21,7 +21,7 @@ const searchDiagramsValidation = {
   }).unknown(false)
 };
 
-const updateDiagramElementsValidation = {
+const updateDiagramElementsValidationSchema = {
   body: Joi.object({
     nodes: Joi.object().pattern(
       Joi.string()
@@ -72,7 +72,7 @@ const updateDiagramElementsValidation = {
   }).unknown(false)
 };
 
-const removeDiagramElementsValidation = {
+const removeDiagramElementsValidationSchema = {
   body: Joi.object({
     nodes: Joi.array().items(
       Joi.string()
@@ -85,15 +85,14 @@ const removeDiagramElementsValidation = {
         .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
     ),
     links: Joi.array().items(
-      Joi.string().custom(
-        mongodbObjectIdValidator,
-        'MongoDB ObjectID Validator'
-      )
+      Joi.string()
+        .trim()
+        .custom(mongodbObjectIdValidator, 'MongoDB ObjectID Validator')
     )
   }).unknown(false)
 };
 
-const addNodeValidation = {
+const addNodeValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim(),
     position: Joi.object({
@@ -112,7 +111,7 @@ const addNodeValidation = {
   }).unknown(false)
 };
 
-const updateNodeValidation = {
+const updateNodeValidationSchema = {
   body: Joi.object({
     name: Joi.string().trim().allow(''),
     position: Joi.object({
@@ -128,7 +127,7 @@ const updateNodeValidation = {
   }).unknown(false)
 };
 
-const addPortValidation = {
+const addPortValidationSchema = {
   body: Joi.object({
     options: Joi.object({
       in: Joi.boolean(),
@@ -142,7 +141,7 @@ const addPortValidation = {
   }).unknown(false)
 };
 
-const updatePortValidation = {
+const updatePortValidationSchema = {
   body: Joi.object({
     options: Joi.object({
       in: Joi.boolean()
@@ -154,7 +153,7 @@ const updatePortValidation = {
   }).unknown(false)
 };
 
-const addLinkValidation = {
+const addLinkValidationSchema = {
   body: Joi.object({
     sourcePortId: Joi.string().trim(),
     targetPortId: Joi.string().trim(),
@@ -175,7 +174,7 @@ const addLinkValidation = {
   }).unknown(false)
 };
 
-const updateLinkValidation = {
+const updateLinkValidationSchema = {
   body: Joi.object({
     sourcePortId: Joi.string().trim(),
     targetPortId: Joi.string().trim(),
@@ -196,31 +195,46 @@ const updateLinkValidation = {
 };
 
 module.exports = {
-  searchDiagramsValidator: validate(searchDiagramsValidation, {
-    keyByField: true
+  searchDiagramsValidator: validate(searchDiagramsValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateDiagramElementsValidator: validate(updateDiagramElementsValidation, {
-    keyByField: true
+  updateDiagramElementsValidator: validate(
+    updateDiagramElementsValidationSchema,
+    {
+      keyByField: true,
+      context: true
+    }
+  ),
+  removeDiagramElementsValidator: validate(
+    removeDiagramElementsValidationSchema,
+    {
+      keyByField: true,
+      context: true
+    }
+  ),
+  addNodeValidator: validate(addNodeValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  removeDiagramElementsValidator: validate(removeDiagramElementsValidation, {
-    keyByField: true
+  updateNodeValidator: validate(updateNodeValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  addNodeValidator: validate(addNodeValidation, {
-    keyByField: true
+  addPortValidator: validate(addPortValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updateNodeValidator: validate(updateNodeValidation, {
-    keyByField: true
+  updatePortValidator: validate(updatePortValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  addPortValidator: validate(addPortValidation, {
-    keyByField: true
+  addLinkValidator: validate(addLinkValidationSchema, {
+    keyByField: true,
+    context: true
   }),
-  updatePortValidator: validate(updatePortValidation, {
-    keyByField: true
-  }),
-  addLinkValidator: validate(addLinkValidation, {
-    keyByField: true
-  }),
-  updateLinkValidator: validate(updateLinkValidation, {
-    keyByField: true
+  updateLinkValidator: validate(updateLinkValidationSchema, {
+    keyByField: true,
+    context: true
   })
 };

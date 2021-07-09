@@ -1,18 +1,19 @@
 const { Joi, validate } = require('express-validation');
 
-const webhookValidation = {
+const webhookValidationSchema = {
   headers: Joi.object({
-    'x-github-delivery': Joi.string().guid().required(),
-    'x-hub-signature-256': Joi.string().required(),
-    'x-github-event': Joi.string().required()
+    'x-github-delivery': Joi.string().trim().guid().required(),
+    'x-hub-signature-256': Joi.string().trim().required(),
+    'x-github-event': Joi.string().trim().required()
   })
 };
 
 module.exports = {
   webhookValidator: validate(
-    webhookValidation,
+    webhookValidationSchema,
     {
-      keyByField: true
+      keyByField: true,
+      context: true
     },
     {
       allowUnknown: true
