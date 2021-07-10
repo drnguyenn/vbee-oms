@@ -43,11 +43,29 @@ app.use(errorHandler);
 
 const initialSetup = require('@services');
 
-const server = app.listen(SERVER_PORT, async () => {
-  await initialSetup();
+let server;
 
-  console.info(`Server is running on port ${SERVER_PORT}`);
-});
+if (process.env.NODE_ENV === 'production') {
+  const https = require('https');
+  const fs = require('fs');
+
+  const options = {
+    cert: fs.readFileSync('/certs/oms-solution.crt'),
+    key: fs.readFileSync('/certs/oms-solution.key')
+  };
+
+  server = https.createServer(options, app).listen(SERVER_PORT, async () => {
+    await initialSetup();
+
+    console.info(`Server is running on port ${SERVER_PORT}`);
+  });
+} else {
+  server = app.listen(SERVER_PORT, async () => {
+    await initialSetup();
+
+    console.info(`Server is running on port ${SERVER_PORT}`);
+  });
+}
 
 const gracefulShutdown = () => {
   console.info('SIGTERM/SIGINT signal received: closing HTTP server');
