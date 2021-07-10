@@ -35,23 +35,31 @@ const create = async (
   requesterId,
   { email, username, role, fullName, githubUsername }
 ) => {
-  if (email && (await UserDao.findOne({ email })))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      'Email has already been taken'
-    );
+  const condition = [{ githubUsername }];
+  if (email) condition.push({ email });
+  if (username) condition.push({ username });
 
-  if (username && (await UserDao.findOne({ username })))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      'Username has already been taken'
-    );
+  let user = await UserDao.findOne({ $or: condition });
 
-  if (await UserDao.findOne({ githubUsername }))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      `A user with the GitHub username "${githubUsername}" already exists`
-    );
+  if (user) {
+    if (email === user.email)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        'Email has already been taken'
+      );
+
+    if (username === user.username)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        'Username has already been taken'
+      );
+
+    if (githubUsername === user.githubUsername)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `A user with the GitHub username "${githubUsername}" already exists`
+      );
+  }
 
   let ghAppInstallationToken;
 
@@ -73,7 +81,7 @@ const create = async (
     if (response.status < 400) {
       ({ id: githubId, name, email: githubEmail } = response.data);
 
-      const user = await UserDao.findOne({ githubId });
+      user = await UserDao.findOne({ githubId });
       if (user)
         throw new CustomError(
           errorCodes.CONFLICT,
@@ -116,7 +124,7 @@ const create = async (
     )
   });
 
-  const user = await UserDao.create({
+  user = await UserDao.create({
     email: email || githubEmail || undefined,
     username: accountUsername,
     password: hashedPassword,

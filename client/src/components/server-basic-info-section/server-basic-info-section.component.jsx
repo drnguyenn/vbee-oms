@@ -146,10 +146,8 @@ const ServerBasicInfoSection = () => {
                 type='text'
                 value={ipAddress}
                 onChange={handleChange}
-                label='Description'
+                label='IP Address'
                 variant='outlined'
-                multiline
-                rows={4}
               />
             </Fade>
           </SectionRowStyles>
@@ -164,10 +162,8 @@ const ServerBasicInfoSection = () => {
                 type='text'
                 value={macAddress}
                 onChange={handleChange}
-                label='Description'
+                label='MAC Address'
                 variant='outlined'
-                multiline
-                rows={4}
               />
             </Fade>
           </SectionRowStyles>
