@@ -1,6 +1,12 @@
 import PropTypes from 'prop-types';
 
-import { Tooltip, IconButton, useTheme, makeStyles } from '@material-ui/core';
+import {
+  Tooltip,
+  IconButton,
+  useMediaQuery,
+  useTheme,
+  makeStyles
+} from '@material-ui/core';
 import { ArrowBackIosOutlined } from '@material-ui/icons';
 
 import {
@@ -10,14 +16,18 @@ import {
   SubtitleStyles
 } from './base.styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   iconButton: {
     position: 'fixed',
     top: 52,
     left: 85,
-    zIndex: 99
+    zIndex: 1099,
+
+    [theme.breakpoints.down('sm')]: {
+      left: 65
+    }
   }
-});
+}));
 
 const BasePage = ({
   title,
@@ -31,6 +41,7 @@ const BasePage = ({
 }) => {
   const theme = useTheme();
   const classes = useStyles();
+  const matches = useMediaQuery('(max-width:440px)');
 
   return (
     <BasePageStyles textAlign={textAlign}>
@@ -46,6 +57,7 @@ const BasePage = ({
           <IconButton
             className={classes.iconButton}
             onClick={headerButtonOnClick}
+            size={matches ? 'small' : 'medium'}
           >
             {headerButtonIcon}
           </IconButton>
