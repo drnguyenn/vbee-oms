@@ -3,11 +3,11 @@ import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
+  Chip,
   CircularProgress,
   Grid,
   Tooltip,
   Fab,
-  Typography,
   makeStyles
 } from '@material-ui/core';
 import { Add, People, Refresh } from '@material-ui/icons';
@@ -40,8 +40,10 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center'
   },
-  version: {
-    margin: '0.6rem 0'
+  cardTitle: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   icon: {
     marginRight: '0.625rem'
@@ -51,7 +53,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const handleLinkClick = event => event.stopPropagation();
+const handleCardItemClick = event => event.stopPropagation();
 
 const ServicesPage = () => {
   const classes = useStyles();
@@ -90,7 +92,18 @@ const ServicesPage = () => {
           ({ id, name, cluster, version, memberCount = 0, ...rest }, index) => (
             <Grid key={id || index} item>
               <BaseCard
-                title={name}
+                title={
+                  <div className={classes.cardTitle}>
+                    <span>{name}</span>
+                    {version && (
+                      <Chip
+                        label={`v${version}`}
+                        color='primary'
+                        onClick={handleCardItemClick}
+                      />
+                    )}
+                  </div>
+                }
                 subtitle={
                   cluster &&
                   cluster.name && (
@@ -98,7 +111,7 @@ const ServicesPage = () => {
                       of{' '}
                       <Link
                         to={`${ROUTE_PATHS.CLUSTERS}/${cluster.id}`}
-                        onClick={handleLinkClick}
+                        onClick={handleCardItemClick}
                       >
                         <b>{cluster.name}</b>
                       </Link>
@@ -111,9 +124,6 @@ const ServicesPage = () => {
                 }
                 {...rest}
               >
-                <Typography className={classes.version} color='primary'>
-                  {version && `v${version}`}
-                </Typography>
                 <Grid container spacing={1}>
                   <Grid item xs={6} className={classes.gridItem}>
                     <People className={classes.icon} color='primary' />

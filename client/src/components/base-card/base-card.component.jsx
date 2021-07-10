@@ -27,13 +27,13 @@ const useStyles = makeStyles(theme => ({
     zIndex: 1
   },
   title: {
-    fontWeight: 'bold'
-  },
-  subtitle: {
-    marginBottom: '1rem'
+    fontSize: 'initial',
+    fontWeight: 'bold',
+    marginBottom: '0.35rem'
   },
   description: {
     height: 60,
+    margin: '1rem 0',
     opacity: 0.9,
     whiteSpace: 'pre-wrap'
   }
@@ -71,12 +71,8 @@ const BaseCard = ({
         />
 
         <CardContent className={classes.cardContent}>
-          <Typography className={classes.title} gutterBottom>
-            {title}
-          </Typography>
-          <Typography className={classes.subtitle} variant='body2'>
-            {subtitle}
-          </Typography>
+          <div className={classes.title}>{title}</div>
+          <Typography variant='body2'>{subtitle}</Typography>
           <Typography
             className={classes.description}
             variant='body2'
