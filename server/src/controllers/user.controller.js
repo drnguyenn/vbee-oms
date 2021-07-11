@@ -17,9 +17,9 @@ const createUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
 
-  const { user, statusCode } = await UserService.update(id, req.body);
+  const user = await UserService.update(id, req.body);
 
-  return res.status(statusCode).json({ status: 1, result: { user } });
+  return res.json({ status: 1, result: { user } });
 };
 
 const deleteUser = async (req, res) => {
