@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 });
 
 const handleSearch = debounce(async (query = {}, callback = () => {}) => {
-  const users = await searchUsers(query, true);
+  const users = await searchUsers(query, { githubSearch: true });
 
   callback(users);
 }, DEBOUNCE_SEARCH_WAIT_TIME);
