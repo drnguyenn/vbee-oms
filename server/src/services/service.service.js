@@ -107,11 +107,14 @@ const update = async (
         'Invalid service condition'
       );
 
-  if (await ServiceDao.findOne(conditionAndException))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      'Service name already exists'
-    );
+  let service = await ServiceDao.findOne(conditionAndException);
+  if (service) {
+    if (service.name === name)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Service with name "${name}" already exists`
+      );
+  }
 
   if (clusterId && !(await ClusterDao.findOne(clusterId)))
     throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
@@ -132,7 +135,7 @@ const update = async (
   if (repositoryId && !(await RepositoryDao.findOne(repositoryId)))
     throw new CustomError(errorCodes.NOT_FOUND, 'Repository not found');
 
-  const service = await ServiceDao.update(condition, {
+  service = await ServiceDao.update(condition, {
     name,
     cluster: clusterId,
     server: serverId || null,

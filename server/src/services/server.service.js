@@ -137,7 +137,6 @@ const update = async (
       throw new CustomError(errorCodes.BAD_REQUEST, 'Invalid server condition');
 
   let server = await ServerDao.findOne(conditionAndException);
-
   if (server) {
     if (server.name === name)
       throw new CustomError(

@@ -81,13 +81,18 @@ const update = async (condition, data) => {
         'Invalid GitHub app installation condition'
       );
 
-  if (await GhAppInstallationDao.findOne(conditionAndException))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      'GitHub app installation already exists'
-    );
+  let ghAppInstallation = await GhAppInstallationDao.findOne(
+    conditionAndException
+  );
+  if (ghAppInstallation) {
+    if (ghAppInstallation.githubId === data.githubId)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `GitHub app installation with GitHub ID ${data.githubId} already exists`
+      );
+  }
 
-  const ghAppInstallation = await GhAppInstallationDao.update(condition, data);
+  ghAppInstallation = await GhAppInstallationDao.update(condition, data);
 
   return {
     statusCode:

@@ -92,10 +92,16 @@ const update = async (condition, { serverId, value, ...rest }) => {
         'Invalid domain condition.\nDomain condition can only be either a MongoDB ObjectID or an object containing "_id" or "value" field.'
       );
 
-  if (await DomainDao.findOne(conditionAndException))
-    throw new CustomError(errorCodes.BAD_REQUEST, 'Domain already exists');
+  let domain = await DomainDao.findOne(conditionAndException);
+  if (domain) {
+    if (domain.value === value)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Domain "${value}" already exists`
+      );
+  }
 
-  const domain = await DomainDao.update(condition, {
+  domain = await DomainDao.update(condition, {
     server: serverId,
     value,
     ...rest

@@ -82,13 +82,16 @@ const update = async (condition, data) => {
         'Invalid cluster condition'
       );
 
-  if (await ClusterDao.findOne(conditionAndException))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      'Cluster name already exists'
-    );
+  let cluster = await ClusterDao.findOne(conditionAndException);
+  if (cluster) {
+    if (cluster.name === data.name)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Cluster with name "${data.name}" already exists`
+      );
+  }
 
-  const cluster = await ClusterDao.update(condition, data);
+  cluster = await ClusterDao.update(condition, data);
 
   await DiagramDao.update({ cluster: cluster._id }, {});
 
