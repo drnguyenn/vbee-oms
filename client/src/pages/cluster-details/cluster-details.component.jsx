@@ -23,9 +23,6 @@ import ClusterServicesSection from 'components/cluster-services-section/cluster-
 import ClusterMembersSection from 'components/cluster-members-section/cluster-members-section.component';
 
 const useStyles = makeStyles({
-  textField: {
-    width: '70%'
-  },
   button: {
     display: 'flex',
     margin: '0 auto'
@@ -70,7 +67,7 @@ const ClusterDetailsPage = () => {
         title={currentCluster.name}
         subtitle='Manage cluster’s basic info, architecture, services and more'
         showHeaderButton
-        tooltipTitle='Back to Cluster Page'
+        tooltipTitle='Back to Clusters Page'
         headerButtonOnClick={handleHeaderButtonClick}
       >
         <ClusterBasicInfoSection />

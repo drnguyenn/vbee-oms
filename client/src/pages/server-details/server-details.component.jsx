@@ -22,9 +22,6 @@ import ServerServicesSection from 'components/server-services-section/server-ser
 import ServerDomainsSection from 'components/server-domains-section/server-domains-section.component';
 
 const useStyles = makeStyles({
-  textField: {
-    width: '70%'
-  },
   button: {
     display: 'flex',
     margin: '0 auto'
@@ -69,7 +66,7 @@ const ServerDetailsPage = () => {
         title={currentServer.name}
         subtitle='Manage server’s basic info, services, domains, metrics and more'
         showHeaderButton
-        tooltipTitle='Back to Server Page'
+        tooltipTitle='Back to Servers Page'
         headerButtonOnClick={handleHeaderButtonClick}
       >
         <ServerBasicInfoSection />

@@ -64,7 +64,7 @@ const ServiceDetailsPage = () => {
         title={currentService.name}
         subtitle='Manage service’s basic info, repositories, servers and more'
         showHeaderButton
-        tooltipTitle='Back to Service Page'
+        tooltipTitle='Back to Services Page'
         headerButtonOnClick={handleHeaderButtonClick}
       >
         <ServiceBasicInfoSection />

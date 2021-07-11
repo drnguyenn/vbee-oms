@@ -49,7 +49,7 @@ const RepositoryDetailsPage = () => {
         title={currentRepository.name}
         subtitle='Manage repository’s basic info, architecture, services and more'
         showHeaderButton
-        tooltipTitle='Back to Repository Page'
+        tooltipTitle='Back to Repositories Page'
         headerButtonOnClick={handleHeaderButtonClick}
       >
         <RepositoryBasicInfoSection />
