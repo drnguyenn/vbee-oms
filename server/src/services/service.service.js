@@ -24,14 +24,14 @@ const get = async (condition, projection) => {
 };
 
 const create = async ({ name, clusterId, serverId, repositoryId, ...rest }) => {
-  if (!(await ClusterDao.findOne(clusterId)))
-    throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
-
   if (await ServiceDao.findOne({ name }))
     throw new CustomError(
       errorCodes.BAD_REQUEST,
       `Service with name "${name}" already exists`
     );
+
+  if (!(await ClusterDao.findOne(clusterId)))
+    throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
 
   if (serverId) {
     const server = await ServerDao.findOne(serverId);
@@ -64,33 +64,17 @@ const update = async (
   condition,
   { name, clusterId, serverId, repositoryId, ...rest }
 ) => {
-  if (clusterId && !(await ClusterDao.findOne(clusterId)))
-    throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
-
-  if (serverId) {
-    const server = await ServerDao.findOne(serverId);
-    if (!server)
-      throw new CustomError(errorCodes.NOT_FOUND, 'Server not found');
-
-    const servers = await ServerDao.findAll({ cluster: clusterId }, '_id');
-    if (!servers.map(({ _id }) => _id.toString()).includes(serverId))
-      throw new CustomError(
-        errorCodes.BAD_REQUEST,
-        `Server "${server.name}" does not belong to the specified cluster`
-      );
-  }
-
-  if (repositoryId && !(await RepositoryDao.findOne(repositoryId)))
-    throw new CustomError(errorCodes.NOT_FOUND, 'Repository not found');
-
   // Find out whether any service has the same `name` with the `name`
   // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
+  const orCondition = [];
 
-  if (name)
+  if (name) orCondition.push({ name });
+
+  if (orCondition.length)
     if (ObjectId.isValid(condition))
       conditionAndException = {
-        $or: [{ name }],
+        $or: orCondition,
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
@@ -106,7 +90,7 @@ const update = async (
       });
 
       conditionAndException = {
-        $or: [{ name }],
+        $or: orCondition,
         $and: [
           Object.keys(condition).reduce(
             (accumulator, currentValue) => ({
@@ -128,6 +112,25 @@ const update = async (
       errorCodes.BAD_REQUEST,
       'Service name already exists'
     );
+
+  if (clusterId && !(await ClusterDao.findOne(clusterId)))
+    throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
+
+  if (serverId) {
+    const server = await ServerDao.findOne(serverId);
+    if (!server)
+      throw new CustomError(errorCodes.NOT_FOUND, 'Server not found');
+
+    const servers = await ServerDao.findAll({ cluster: clusterId }, '_id');
+    if (!servers.map(({ _id }) => _id.toString()).includes(serverId))
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Server "${server.name}" does not belong to the specified cluster`
+      );
+  }
+
+  if (repositoryId && !(await RepositoryDao.findOne(repositoryId)))
+    throw new CustomError(errorCodes.NOT_FOUND, 'Repository not found');
 
   const service = await ServiceDao.update(condition, {
     name,

@@ -23,15 +23,15 @@ const create = async ({ serverId, domains }) => {
   if (!(await ServerDao.findOne(serverId)))
     throw new CustomError(errorCodes.NOT_FOUND, 'Server not found');
 
-  const existDomains = await DomainDao.findAll(
+  const existingDomains = await DomainDao.findAll(
     { value: { $in: domains } },
     'value'
   );
 
-  if (existDomains.length)
+  if (existingDomains.length)
     throw new CustomError(
       errorCodes.BAD_REQUEST,
-      `Domains already exist:${existDomains.map(({ value }) => ` ${value}`)}`
+      `Domains already exist:${existingDomains.map(({ value }) => ` ${value}`)}`
     );
 
   const newDomains = await DomainDao.create(
@@ -52,11 +52,14 @@ const update = async (condition, { serverId, value, ...rest }) => {
   // Find out whether any domain has the same `value` with the `value`
   // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
+  const orCondition = [];
 
-  if (value)
+  if (value) orCondition.push({ value });
+
+  if (orCondition.length)
     if (ObjectId.isValid(condition))
       conditionAndException = {
-        $or: [{ value }],
+        $or: orCondition,
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
@@ -72,7 +75,7 @@ const update = async (condition, { serverId, value, ...rest }) => {
       });
 
       conditionAndException = {
-        $or: [{ value }],
+        $or: orCondition,
         $and: [
           Object.keys(condition).reduce(
             (accumulator, currentValue) => ({

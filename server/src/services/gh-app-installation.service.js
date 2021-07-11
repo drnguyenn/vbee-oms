@@ -41,11 +41,14 @@ const update = async (condition, data) => {
   // Find out whether any GitHub app installation has the same `githubID` with the `githubID`
   // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
+  const orCondition = [];
 
-  if (data.githubId)
+  if (data.githubId) orCondition.push({ githubId: data.githubId });
+
+  if (orCondition.length)
     if (ObjectId.isValid(condition))
       conditionAndException = {
-        $or: [{ githubId: data.githubId }],
+        $or: orCondition,
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
@@ -61,7 +64,7 @@ const update = async (condition, data) => {
       });
 
       conditionAndException = {
-        $or: [{ githubId: data.githubId }],
+        $or: orCondition,
         $and: [
           Object.keys(condition).reduce(
             (accumulator, currentValue) => ({

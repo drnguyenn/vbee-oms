@@ -42,10 +42,14 @@ const update = async (condition, data) => {
   // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
 
-  if (data.name)
+  const orCondition = [];
+
+  if (data.name) orCondition.push({ name: data.name });
+
+  if (orCondition.length)
     if (ObjectId.isValid(condition))
       conditionAndException = {
-        $or: [{ name: data.name }],
+        $or: orCondition,
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
@@ -61,7 +65,7 @@ const update = async (condition, data) => {
       });
 
       conditionAndException = {
-        $or: [{ name: data.name }],
+        $or: orCondition,
         $and: [
           Object.keys(condition).reduce(
             (accumulator, currentValue) => ({

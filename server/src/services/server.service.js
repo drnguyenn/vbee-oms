@@ -31,40 +31,44 @@ const create = async ({
   domains = [],
   ...rest
 }) => {
-  if (await ServerDao.findOne({ name }))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      `Server with name "${name}" already exists`
-    );
+  let server = await ServerDao.findOne({
+    $or: [{ name }, { ipAddress }, { macAddress }]
+  });
 
-  if (await ServerDao.findOne({ ipAddress }))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      `Server with IP address "${ipAddress}" already exists`
-    );
-
-  if (await ServerDao.findOne({ macAddress }))
-    throw new CustomError(
-      errorCodes.BAD_REQUEST,
-      `Server with MAC address "${macAddress}" already exists`
-    );
+  if (server) {
+    if (server.name === name)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Server with name "${name}" already exists`
+      );
+    if (server.ipAddress === ipAddress)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Server with IP address "${ipAddress}" already exists`
+      );
+    if (server.macAddress === macAddress)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Server with MAC address "${macAddress}" already exists`
+      );
+  }
 
   if (clusterId)
     if (!(await ClusterDao.findOne(clusterId)))
       throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
 
-  const existDomains = await DomainDao.findAll(
+  const existingDomains = await DomainDao.findAll(
     { value: { $in: domains } },
     'value'
   );
 
-  if (existDomains.length)
+  if (existingDomains.length)
     throw new CustomError(
       errorCodes.BAD_REQUEST,
-      `Domains already exist:${existDomains.map(({ value }) => ` ${value}`)}`
+      `Domains already exist:${existingDomains.map(({ value }) => ` ${value}`)}`
     );
 
-  let server = await ServerDao.create({
+  server = await ServerDao.create({
     name,
     ipAddress,
     macAddress,
@@ -92,14 +96,17 @@ const update = async (
     if (!(await ClusterDao.findOne(clusterId)))
       throw new CustomError(errorCodes.NOT_FOUND, 'Cluster not found');
 
-  // Find out whether any server has the same `ipAddress` with the `ipAddress`
-  // that is requested to be changed to, except the one that matched the `condition`
   let conditionAndException;
+  const orCondition = [];
 
-  if (name || ipAddress || macAddress)
+  if (name) orCondition.push({ name });
+  if (ipAddress) orCondition.push({ ipAddress });
+  if (macAddress) orCondition.push({ macAddress });
+
+  if (orCondition.length)
     if (ObjectId.isValid(condition))
       conditionAndException = {
-        $or: [{ name }, { ipAddress }, { macAddress }],
+        $or: orCondition,
         $and: [{ _id: { $ne: condition } }]
       };
     else if (typeof condition === 'object' && condition) {
@@ -115,7 +122,7 @@ const update = async (
       });
 
       conditionAndException = {
-        $or: [{ name }, { ipAddress }, { macAddress }],
+        $or: orCondition,
         $and: [
           Object.keys(condition).reduce(
             (accumulator, currentValue) => ({
@@ -129,10 +136,27 @@ const update = async (
     } else
       throw new CustomError(errorCodes.BAD_REQUEST, 'Invalid server condition');
 
-  if (await ServerDao.findOne(conditionAndException))
-    throw new CustomError(errorCodes.BAD_REQUEST, 'Server already exists');
+  let server = await ServerDao.findOne(conditionAndException);
 
-  const server = await ServerDao.update(condition, {
+  if (server) {
+    if (server.name === name)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Server with name "${name}" already exists`
+      );
+    if (server.ipAddress === ipAddress)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Server with IP address "${ipAddress}" already exists`
+      );
+    if (server.macAddress === macAddress)
+      throw new CustomError(
+        errorCodes.BAD_REQUEST,
+        `Server with MAC address "${macAddress}" already exists`
+      );
+  }
+
+  server = await ServerDao.update(condition, {
     name,
     ipAddress,
     macAddress,
