@@ -42,7 +42,10 @@ export const fetchUser = async id => {
   throw new Error(message);
 };
 
-export const searchUsers = async (query, githubSearch = false) => {
+export const searchUsers = async (
+  query,
+  options = { vbeeSearch: true, githubSearch: false }
+) => {
   const accessToken = getCookie('accessToken');
 
   const response = await customAxios({
@@ -51,7 +54,7 @@ export const searchUsers = async (query, githubSearch = false) => {
     headers: {
       Authorization: `Bearer ${accessToken}`
     },
-    params: { ...query, githubSearch }
+    params: { ...query, ...options }
   });
 
   if (response.status < 400) {
@@ -63,7 +66,7 @@ export const searchUsers = async (query, githubSearch = false) => {
   throw new Error(message);
 };
 
-export const createUser = async ({ name, description }) => {
+export const createUser = async data => {
   const accessToken = getCookie('accessToken');
 
   const response = await customAxios({
@@ -72,7 +75,7 @@ export const createUser = async ({ name, description }) => {
     headers: {
       Authorization: `Bearer ${accessToken}`
     },
-    data: { name, description }
+    data
   });
 
   if (response.status < 400) {
@@ -88,7 +91,7 @@ export const updateUser = async (id, data) => {
   const accessToken = getCookie('accessToken');
 
   const response = await customAxios({
-    method: 'PUT',
+    method: 'PATCH',
     url: `/users/${id}`,
     headers: {
       Authorization: `Bearer ${accessToken}`
@@ -120,6 +123,23 @@ export const deleteUser = async id => {
     const { user } = response.data.result;
     return user;
   }
+
+  const { message } = response.data;
+  throw new Error(message);
+};
+
+export const removeUserFromAllClusters = async id => {
+  const accessToken = getCookie('accessToken');
+
+  const response = await customAxios({
+    method: 'DELETE',
+    url: `/users/${id}/clusters`,
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (response.status < 400) return response.data.result;
 
   const { message } = response.data;
   throw new Error(message);
