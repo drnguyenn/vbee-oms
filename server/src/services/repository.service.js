@@ -327,15 +327,17 @@ const removeMember = async (
 ) => {
   const repository = await get(repoCondition);
 
-  const user = await UserService.get(memberCondition);
+  const user = await UserDao.findOne(memberCondition);
+  if (!user) throw new CustomError(errorCodes.NOT_FOUND, 'User not found');
 
   if (ghAppInstallationToken) {
     let member = await RepositoryMemberDao.findOne({
       repository: repository._id,
       user: user._id
     });
+
     if (!member)
-      throw new CustomError(errorCodes.BAD_REQUEST, 'Member not found');
+      throw new CustomError(errorCodes.NOT_FOUND, 'Member not found');
 
     const { name, owner } = repository;
     const { invitation } = member;
@@ -392,29 +394,6 @@ const removeMember = async (
   return { member, statusCode: 200 };
 };
 
-const removeMemberFromAllRepositories = async memberCondition => {
-  const user = await UserService.get(memberCondition);
-
-  const repositories = await RepositoryMemberDao.findAll(
-    { user: user._id },
-    'repository'
-  );
-
-  await Promise.all(
-    repositories.map(async ({ repository }) =>
-      removeMember(
-        repository._id,
-        memberCondition,
-        await GhAppInstallationService.getGhAppInstallationToken({
-          githubId: repository.ghAppInstallationId
-        })
-      )
-    )
-  );
-
-  return { statusCode: 200 };
-};
-
 const updateInvitation = async (
   repoCondition,
   memberCondition,
@@ -431,7 +410,7 @@ const updateInvitation = async (
       user: user._id
     });
     if (!member)
-      throw new CustomError(errorCodes.BAD_REQUEST, 'Member not found');
+      throw new CustomError(errorCodes.NOT_FOUND, 'Member not found');
 
     const { name, owner } = repository;
     const { invitation } = member;
@@ -524,7 +503,6 @@ module.exports = {
   addMember,
   updateMember,
   removeMember,
-  removeMemberFromAllRepositories,
   updateInvitation,
   updatePRReviewProtection
 };

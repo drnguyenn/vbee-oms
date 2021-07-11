@@ -4,11 +4,10 @@ const errorCodes = require('@errors/code');
 const UserDao = require('@daos/user.dao');
 const ClusterMemberDao = require('@daos/cluster-member.dao');
 const ServiceMemberDao = require('@daos/service-member.dao');
+const RepositoryMemberDao = require('@daos/repository-member.dao');
 
 const GhAppInstallationService = require('@services/gh-app-installation.service');
-// const {
-//   removeMemberFromAllRepositories
-// } = require('@services/repository.service');
+const { removeMember } = require('@services/repository.service');
 const { sendMail } = require('@services/mail.service');
 
 const {
@@ -137,17 +136,39 @@ const create = async (
   return omitPasswordField(user._doc);
 };
 
-const update = async (condition, data) => {
-  const user = await UserDao.update(condition, data);
+const update = async (requester, condition, data) => {
+  let user = await get(condition);
+
+  if (user.username === process.env.INITIAL_ADMIN_USERNAME)
+    throw new CustomError(
+      errorCodes.FORBIDDEN,
+      'Can not alter the initial administrator account'
+    );
+
+  user = await UserDao.update(condition, data);
 
   return user;
 };
 
-const remove = async condition => {
+const remove = async (requester, condition) => {
+  const user = await get(condition);
+
+  if (user.username === process.env.INITIAL_ADMIN_USERNAME)
+    throw new CustomError(
+      errorCodes.FORBIDDEN,
+      'Can not delete the initial administrator account'
+    );
+
+  if (requester._id === user._id)
+    throw new CustomError(
+      errorCodes.UNPROCESSABLE_ENTITY,
+      'Can not delete your own account'
+    );
+
+  await removeUserFromAllRepositories(condition);
   await removeUserFromAllClusters(condition);
   await removeUserFromAllServices(condition);
-
-  const user = await UserDao.remove(condition);
+  await UserDao.remove(condition);
 
   return user;
 };
@@ -156,8 +177,25 @@ const search = async (
   condition,
   projection = '-password -preferences -createdAt -updatedAt'
 ) => {
+  const { vbeeSearch = true, githubSearch = false, ...others } = condition;
+
   if (condition.q) {
-    if (parseBoolean(condition.githubSearch)) {
+    const promises = [];
+
+    if (parseBoolean(vbeeSearch)) {
+      const getVbeeOMSUsers = async () => {
+        const users = await UserDao.search(condition.q, projection);
+
+        return users.map(({ _doc: { preferences, role, ...rest } }) => ({
+          source: 'Vbee OMS',
+          ...rest
+        }));
+      };
+
+      promises.push(getVbeeOMSUsers());
+    }
+
+    if (parseBoolean(githubSearch)) {
       let ghAppInstallationToken;
 
       const ghAppInstallations = await GhAppInstallationService.search();
@@ -182,25 +220,19 @@ const search = async (
         }));
       };
 
-      const getVbeeOMSUsers = async () => {
-        const users = await UserDao.search(condition.q, projection);
+      promises.push(getGitHubUsers());
+    }
 
-        return users.map(({ _doc: { preferences, role, ...rest } }) => ({
-          source: 'Vbee OMS',
-          ...rest
-        }));
-      };
-
-      const users = await Promise.all([getGitHubUsers(), getVbeeOMSUsers()]);
+    if (promises.length) {
+      const users = await Promise.all(promises);
 
       return users.flat();
     }
 
-    const users = await UserDao.search(condition.q, projection);
-    return users;
+    return [];
   }
 
-  const users = await UserDao.findAll(condition, projection);
+  const users = await UserDao.findAll({ ...others }, projection);
   return users;
 };
 
@@ -212,11 +244,28 @@ const removeUserFromAllClusters = async condition => {
   return { statusCode: 200 };
 };
 
-// const removeUserFromAllRepositories = async condition => {
-//   const { statusCode } = removeMemberFromAllRepositories(condition);
+const removeUserFromAllRepositories = async condition => {
+  const user = await get(condition);
 
-//   return { statusCode };
-// };
+  const members = await RepositoryMemberDao.findAll(
+    { user: user._id },
+    'repository'
+  );
+
+  await Promise.all(
+    members.map(async ({ repository }) => {
+      return removeMember(
+        repository._id,
+        condition,
+        await GhAppInstallationService.getGhAppInstallationToken({
+          githubId: repository.ghAppInstallationId
+        })
+      );
+    })
+  );
+
+  return { statusCode: 200 };
+};
 
 const removeUserFromAllServices = async condition => {
   const user = await get(condition);
@@ -233,6 +282,6 @@ module.exports = {
   update,
   remove,
   removeUserFromAllClusters,
-  // removeUserFromAllRepositories,
+  removeUserFromAllRepositories,
   removeUserFromAllServices
 };

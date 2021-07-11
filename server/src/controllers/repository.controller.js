@@ -73,15 +73,6 @@ const removeMember = async (req, res) => {
   });
 };
 
-const removeMemberFromAllRepositories = async (req, res) => {
-  const { userId } = req.params;
-
-  const { statusCode } =
-    await RepositoryService.removeMemberFromAllRepositories(userId);
-
-  return res.status(statusCode).json({ status: statusCode < 400 ? 1 : 0 });
-};
-
 const updateInvitation = async (req, res) => {
   const { id, userId } = req.params;
   const { permission } = req.body;
@@ -121,7 +112,6 @@ module.exports = {
   addMember,
   addMemberFromGitHub,
   removeMember,
-  removeMemberFromAllRepositories,
   updateInvitation,
   updatePRReviewProtection
 };

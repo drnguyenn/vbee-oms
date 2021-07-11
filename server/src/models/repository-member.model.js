@@ -13,7 +13,10 @@ const RepositoryMemberSchema = new mongoose.Schema(
     repository: {
       type: mongoose.Types.ObjectId,
       required: true,
-      ref: 'Repository'
+      ref: 'Repository',
+      autopopulate: {
+        select: 'ghAppInstallationId'
+      }
     },
     permission: {
       type: String,

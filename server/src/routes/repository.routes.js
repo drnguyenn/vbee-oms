@@ -80,12 +80,6 @@ router.delete(
   asyncMiddleware(RepositoryController.removeMember)
 );
 
-router.delete(
-  '/repositories/members/:userId',
-  auth,
-  asyncMiddleware(RepositoryController.removeMemberFromAllRepositories)
-);
-
 router.patch(
   '/repositories/:id/members/:userId',
   auth,
