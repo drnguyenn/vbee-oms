@@ -80,6 +80,16 @@ export const setServiceMemberRemovalConfirmationModalOpen = open => ({
   payload: open
 });
 
+export const setDiagramNodeRemovalConfirmationModalOpen = open => ({
+  type: ModalActionTypes.SET_CLUSTER_DIAGRAM_NODE_REMOVAL_CONFIRMATION_MODAL_OPEN,
+  payload: open
+});
+
+export const setDiagramElementsRemovalConfirmationModalOpen = open => ({
+  type: ModalActionTypes.SET_CLUSTER_DIAGRAM_ELEMENTS_REMOVAL_CONFIRMATION_MODAL_OPEN,
+  payload: open
+});
+
 export const setUserCreationModalOpen = open => ({
   type: ModalActionTypes.SET_USER_CREATION_MODAL_OPEN,
   payload: open
@@ -90,12 +100,17 @@ export const setUserDeleteConfirmationModalOpen = open => ({
   payload: open
 });
 
-export const setDiagramNodeRemovalConfirmationModalOpen = open => ({
-  type: ModalActionTypes.SET_CLUSTER_DIAGRAM_NODE_REMOVAL_CONFIRMATION_MODAL_OPEN,
+export const setRemovingUserFromAllClustersConfirmationModalOpen = open => ({
+  type: ModalActionTypes.SET_REMOVING_USER_FROM_ALL_CLUSTERS_CONFIRMATION_MODAL_OPEN,
   payload: open
 });
 
-export const setDiagramElementsRemovalConfirmationModalOpen = open => ({
-  type: ModalActionTypes.SET_CLUSTER_DIAGRAM_ELEMENTS_REMOVAL_CONFIRMATION_MODAL_OPEN,
+export const setRemovingUserFromAllServicesConfirmationModalOpen = open => ({
+  type: ModalActionTypes.SET_REMOVING_USER_FROM_ALL_SERVICES_CONFIRMATION_MODAL_OPEN,
+  payload: open
+});
+
+export const setRemovingUserFromAllReposConfirmationModalOpen = open => ({
+  type: ModalActionTypes.SET_REMOVING_USER_FROM_ALL_REPOS_CONFIRMATION_MODAL_OPEN,
   payload: open
 });

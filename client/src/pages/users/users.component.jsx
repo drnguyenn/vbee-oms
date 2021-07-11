@@ -18,28 +18,22 @@ import {
 } from '@material-ui/core';
 import { Add, MoreVert, Close, Check, Refresh } from '@material-ui/icons';
 
-import {
-  fetchAllUsersStart,
-  setSelectedUser,
-  updateUserStart
-} from 'redux/user/user.actions';
-import {
-  setUserCreationModalOpen,
-  setUserDeleteConfirmationModalOpen
-} from 'redux/modal/modal.actions';
+import { fetchAllUsersStart, updateUserStart } from 'redux/user/user.actions';
+import { setUserCreationModalOpen } from 'redux/modal/modal.actions';
 
 import BasePage from 'pages/base/base.component';
 
-import Table from 'components/table/table.component';
+import Table, { RowLoader } from 'components/table/table.component';
 
-// import ROUTE_PATHS from 'router/route-paths';
+import ROUTE_PATHS from 'router/route-paths';
 
 const useStyles = makeStyles(theme => ({
   fabGroup: {
     position: 'fixed',
     width: 'fit-content',
     bottom: theme.spacing(4),
-    right: theme.spacing(4)
+    right: theme.spacing(4),
+    zIndex: 100
   },
   refreshButton: {
     display: 'flex',
@@ -68,12 +62,12 @@ const MemberActionMenu = memo(
     open,
     anchorEl,
     handleClose,
-    handleChangeMemberRole,
-    handleRemoveMember
+    handleChangeUserRole,
+    handleViewDetails
   }) => (
     <Menu anchorEl={anchorEl} keepMounted open={open} onClose={handleClose}>
-      <MenuItem onClick={handleChangeMemberRole}>Change role</MenuItem>
-      <MenuItem onClick={handleRemoveMember}>Remove</MenuItem>
+      <MenuItem onClick={handleViewDetails}>View details</MenuItem>
+      <MenuItem onClick={handleChangeUserRole}>Change role</MenuItem>
     </Menu>
   ),
   menuPropsAreEqual
@@ -112,7 +106,7 @@ const UsersPage = () => {
     state => state.user
   );
 
-  // const history = useHistory();
+  const history = useHistory();
 
   const dispatch = useDispatch();
 
@@ -120,7 +114,7 @@ const UsersPage = () => {
   const open = Boolean(anchorEl);
 
   const [targetRow, setTargetRow] = useState([]);
-  const [id, fullName, username, githubUsername, role] = targetRow;
+  const [id, , , , , role] = targetRow;
 
   const [editMode, setEditMode] = useState(false);
 
@@ -195,9 +189,7 @@ const UsersPage = () => {
         );
 
       return isUpdatingInfo && rowData[0] === id ? (
-        <div className={classes.rowLoader}>
-          <CircularProgress size={20} />
-        </div>
+        <RowLoader />
       ) : (
         <IconButton
           onClick={event => {
@@ -215,6 +207,13 @@ const UsersPage = () => {
       {
         name: 'id',
         label: 'UID',
+        options: {
+          filter: true
+        }
+      },
+      {
+        name: 'email',
+        label: 'Email',
         options: {
           filter: true
         }
@@ -258,14 +257,7 @@ const UsersPage = () => {
         }
       }
     ];
-  }, [
-    classes.rowLoader,
-    editMode,
-    handleSubmit,
-    id,
-    isUpdatingInfo,
-    memberRole
-  ]);
+  }, [editMode, handleSubmit, id, isUpdatingInfo, memberRole]);
 
   const options = useMemo(
     () => ({
@@ -295,23 +287,12 @@ const UsersPage = () => {
           anchorEl,
           open,
           handleClose,
-          handleChangeMemberRole: () => {
+          handleChangeUserRole: () => {
             setEditMode(true);
             handleClose();
           },
-          handleRemoveMember: () => {
-            dispatch(
-              setSelectedUser({
-                id,
-                fullName,
-                username,
-                githubUsername,
-                role
-              })
-            );
-
-            dispatch(setUserDeleteConfirmationModalOpen(true));
-
+          handleViewDetails: () => {
+            history.push(`${ROUTE_PATHS.USERS}/${id}`);
             handleClose();
           }
         }}

@@ -23,7 +23,13 @@ const INITIAL_STATE = {
   openServiceMemberRemovalConfirmationModal: false,
 
   openClusterDiagramNodeRemovalConfirmationModal: false,
-  openClusterDiagramElementsRemovalConfirmationModal: false
+  openClusterDiagramElementsRemovalConfirmationModal: false,
+
+  openUserCreationModal: false,
+  openUserDeleteConfirmationModal: false,
+  openRemovingUserFromAllClustersConfirmationModal: false,
+  openRemovingUserFromAllServicesConfirmationModal: false,
+  openRemovingUserFromAllReposConfirmationModal: false
 };
 
 const modalReducer = (state = INITIAL_STATE, action) => {
@@ -136,6 +142,36 @@ const modalReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         openClusterDiagramElementsRemovalConfirmationModal: payload
+      };
+
+    case ModalActionTypes.SET_USER_CREATION_MODAL_OPEN:
+      return {
+        ...state,
+        openUserCreationModal: payload
+      };
+
+    case ModalActionTypes.SET_USER_DELETE_CONFIRMATION_MODAL_OPEN:
+      return {
+        ...state,
+        openUserDeleteConfirmationModal: payload
+      };
+
+    case ModalActionTypes.SET_REMOVING_USER_FROM_ALL_CLUSTERS_CONFIRMATION_MODAL_OPEN:
+      return {
+        ...state,
+        openRemovingUserFromAllClustersConfirmationModal: payload
+      };
+
+    case ModalActionTypes.SET_REMOVING_USER_FROM_ALL_SERVICES_CONFIRMATION_MODAL_OPEN:
+      return {
+        ...state,
+        openRemovingUserFromAllServicesConfirmationModal: payload
+      };
+
+    case ModalActionTypes.SET_REMOVING_USER_FROM_ALL_REPOS_CONFIRMATION_MODAL_OPEN:
+      return {
+        ...state,
+        openRemovingUserFromAllReposConfirmationModal: payload
       };
 
     default:
