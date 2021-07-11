@@ -21,7 +21,6 @@ router.get(
 router.get(
   '/users',
   auth,
-  systemAdminCheck,
   searchUsersValidator,
   asyncMiddleware(UserController.searchUsers)
 );

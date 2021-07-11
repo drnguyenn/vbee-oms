@@ -13,7 +13,8 @@ const createUserValidationSchema = {
 const searchUsersValidationSchema = {
   query: Joi.object({
     q: Joi.string().trim().lowercase(),
-    githubSearch: Joi.boolean(),
+    vbeeSearch: Joi.boolean().default(true),
+    githubSearch: Joi.boolean().default(false),
     email: Joi.string().trim().email().lowercase(),
     username: Joi.string().trim(),
     role: Joi.string().trim().valid('admin', 'member'),
