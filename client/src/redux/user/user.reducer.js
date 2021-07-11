@@ -2,7 +2,6 @@ import UserActionTypes from './user.types';
 
 const INITIAL_STATE = {
   users: [],
-  currentUser: null,
   selectedUser: null,
   isFetchingUsers: false,
   isFetchingCurrentUser: false,
@@ -48,7 +47,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
     case UserActionTypes.FETCH_USER_SUCCESS:
       return {
         ...state,
-        currentUser: payload,
+        selectedUser: payload,
         isFetchingCurrentUser: false,
         error: null
       };
@@ -56,7 +55,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
     case UserActionTypes.FETCH_USER_FAILURE:
       return {
         ...state,
-        currentUser: null,
+        selectedUser: null,
         isFetchingCurrentUser: false,
         error: payload
       };
@@ -95,7 +94,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
 
       return {
         ...state,
-        currentUser: { ...state.currentUser, ...rest },
+        selectedUser: { ...state.selectedUser, ...rest },
         users: state.users.map(user =>
           user.id === payload.id ? { ...user, ...rest } : user
         ),
@@ -121,7 +120,7 @@ const userReducer = (state = INITIAL_STATE, action) => {
     case UserActionTypes.DELETE_USER_SUCCESS:
       return {
         ...state,
-        currentUser: null,
+        selectedUser: null,
         users: state.users.filter(user => user.id !== payload.id),
         isProcessing: false,
         error: null
@@ -140,6 +139,28 @@ const userReducer = (state = INITIAL_STATE, action) => {
         selectedUser: payload
       };
     }
+
+    case UserActionTypes.REMOVE_USER_FROM_ALL_CLUSTERS_START:
+      return {
+        ...state,
+        isProcessing: true,
+        error: null
+      };
+
+    case UserActionTypes.REMOVE_USER_FROM_ALL_CLUSTERS_SUCCESS:
+      return {
+        ...state,
+        selectedUser: { ...state.selectedUser, clusters: [], clusterCount: 0 },
+        isProcessing: false,
+        error: null
+      };
+
+    case UserActionTypes.REMOVE_USER_FROM_ALL_CLUSTERS_FAILURE:
+      return {
+        ...state,
+        isProcessing: false,
+        error: payload
+      };
 
     default:
       return state;

@@ -78,3 +78,17 @@ export const setSelectedUser = user => ({
   type: UserActionTypes.SET_SELECTED_USER,
   payload: user
 });
+
+export const removeUserFromAllClustersStart = id => ({
+  type: UserActionTypes.REMOVE_USER_FROM_ALL_CLUSTERS_START,
+  payload: id
+});
+
+export const removeUserFromAllClustersSuccess = () => ({
+  type: UserActionTypes.REMOVE_USER_FROM_ALL_CLUSTERS_SUCCESS
+});
+
+export const removeUserFromAllClustersFailure = error => ({
+  type: UserActionTypes.REMOVE_USER_FROM_ALL_CLUSTERS_FAILURE,
+  payload: error
+});
