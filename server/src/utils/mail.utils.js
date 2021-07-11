@@ -103,6 +103,7 @@ const getAccountRegistrationEmailTemplate = (
         .footer-content {
           color: #fafafa;
           text-align: right;
+          line-height: 1.5;
         }
 
         .footer-content > a {
@@ -124,9 +125,9 @@ const getAccountRegistrationEmailTemplate = (
     <body>
       <div id="body">
         <div class="header">
-          <a href="https://oms.vbee.vn/" target="_blank">
+          <a href="https://vbee.oms-solution.com/" target="_blank">
             <img
-              src="https://oms.vbee.vn/static/media/vbee-oms-logo-landscape-dark.72f9267f.svg"
+              src="https://vbee.oms-solution.com/static/media/vbee-oms-logo-landscape-dark.72f9267f.svg"
               alt="Vbee OMS"
               title="Vbee OMS"
               width="300"
@@ -174,7 +175,11 @@ const getAccountRegistrationEmailTemplate = (
               <td>${capitalize(role)}</td>
             </tr>
           </table>
-          <a href="https://oms.vbee.vn/" target="_blank" class="login-button">
+          <a
+            href="https://vbee.oms-solution.com/"
+            target="_blank"
+            class="login-button"
+          >
             <strong>Log in now</strong>
           </a>
         </div>
@@ -183,7 +188,7 @@ const getAccountRegistrationEmailTemplate = (
           <tr>
             <td>
               <img
-                src="https://oms.vbee.vn/static/media/vbee-oms-logo-landscape-dark.72f9267f.svg"
+                src="https://vbee.oms-solution.com/static/media/vbee-oms-logo-landscape-dark.72f9267f.svg"
                 alt="Vbee OMS"
                 title="Vbee OMS"
                 width="150"
@@ -194,10 +199,10 @@ const getAccountRegistrationEmailTemplate = (
                 <strong>Contact for support</strong>
                 <br />
                 <a
-                  href="mailto:longnguyen25111998@gmail.com"
+                  href="mailto:longnd@vbee.vn"
                   target="_blank"
                   rel="noopener"
-                  >longnguyen25111998@gmail.com</a
+                  >longnd@vbee.vn</a
                 >
               </p>
             </td>
