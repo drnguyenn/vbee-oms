@@ -50,8 +50,8 @@ if (process.env.NODE_ENV === 'production') {
   const fs = require('fs');
 
   const options = {
-    cert: fs.readFileSync('/certs/oms-solution.crt'),
-    key: fs.readFileSync('/certs/oms-solution.key')
+    cert: fs.readFileSync('/etc/ssl/certs/web-server.crt'),
+    key: fs.readFileSync('/etc/ssl/certs/web-server.key')
   };
 
   server = https.createServer(options, app).listen(SERVER_PORT, async () => {

@@ -2,3 +2,4 @@
 .env.staging
 .env.production
 /mongo-data
+/certs

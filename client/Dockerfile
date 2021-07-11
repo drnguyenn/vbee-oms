@@ -9,3 +9,4 @@ CMD ["yarn", "start"]
 FROM nginx AS production
 COPY --from=development /usr/src/app/build/ /usr/share/nginx/html
 COPY --from=development /usr/src/app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 443

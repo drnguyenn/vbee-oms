@@ -29,7 +29,7 @@ services:
     volumes:
       - ./server:/usr/src/app
       - /usr/src/app/node_modules
-      # - /path-to-certificate:/usr/src/app/certs
+      - ./certs:/etc/ssl/certs
     env_file: ./server/.env
     networks:
       - vbee-oms-network
@@ -46,6 +46,7 @@ services:
     volumes:
       - ./client:/usr/src/app
       - /usr/src/app/node_modules
+      - ./certs:/etc/ssl/certs
     networks:
       - vbee-oms-network
 

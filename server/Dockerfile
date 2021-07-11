@@ -10,5 +10,6 @@ WORKDIR /usr/src/app
 COPY package.json .
 RUN yarn --production=true
 COPY . .
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+  NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca.crt
 CMD ["yarn", "start"]
