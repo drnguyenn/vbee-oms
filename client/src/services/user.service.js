@@ -144,3 +144,37 @@ export const removeUserFromAllClusters = async id => {
   const { message } = response.data;
   throw new Error(message);
 };
+
+export const removeUserFromAllServices = async id => {
+  const accessToken = getCookie('accessToken');
+
+  const response = await customAxios({
+    method: 'DELETE',
+    url: `/users/${id}/services`,
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (response.status < 400) return response.data.result;
+
+  const { message } = response.data;
+  throw new Error(message);
+};
+
+export const removeUserFromAllRepositories = async id => {
+  const accessToken = getCookie('accessToken');
+
+  const response = await customAxios({
+    method: 'DELETE',
+    url: `/users/${id}/repositories`,
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
+
+  if (response.status < 400) return response.data.result;
+
+  const { message } = response.data;
+  throw new Error(message);
+};
