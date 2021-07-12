@@ -92,3 +92,31 @@ export const removeUserFromAllClustersFailure = error => ({
   type: UserActionTypes.REMOVE_USER_FROM_ALL_CLUSTERS_FAILURE,
   payload: error
 });
+
+export const removeUserFromAllServicesStart = id => ({
+  type: UserActionTypes.REMOVE_USER_FROM_ALL_SERVICES_START,
+  payload: id
+});
+
+export const removeUserFromAllServicesSuccess = () => ({
+  type: UserActionTypes.REMOVE_USER_FROM_ALL_SERVICES_SUCCESS
+});
+
+export const removeUserFromAllServicesFailure = error => ({
+  type: UserActionTypes.REMOVE_USER_FROM_ALL_SERVICES_FAILURE,
+  payload: error
+});
+
+export const removeUserFromAllRepositoriesStart = id => ({
+  type: UserActionTypes.REMOVE_USER_FROM_ALL_REPOS_START,
+  payload: id
+});
+
+export const removeUserFromAllRepositoriesSuccess = () => ({
+  type: UserActionTypes.REMOVE_USER_FROM_ALL_REPOS_SUCCESS
+});
+
+export const removeUserFromAllRepositoriesFailure = error => ({
+  type: UserActionTypes.REMOVE_USER_FROM_ALL_REPOS_FAILURE,
+  payload: error
+});

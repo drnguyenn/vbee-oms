@@ -20,6 +20,8 @@ import DiagramNodeRemovalConfirmationModal from 'modals/diagram-node-removal-con
 import DiagramElementsRemovalConfirmationModal from 'modals/diagram-elements-removal-confirmation/diagram-elements-removal-confirmation.component';
 import UserCreationModal from 'modals/user-creation/user-creation.component';
 import RemovingUserFromAllClustersConfirmationModal from './removing-user-from-all-clusters-confirmation/removing-user-from-all-clusters-confirmation.component';
+import RemovingUserFromAllServicesConfirmationModal from './removing-user-from-all-services-confirmation/removing-user-from-all-services-confirmation.component';
+import RemovingUserFromAllReposConfirmationModal from './removing-user-from-all-repos-confirmation/removing-user-from-all-repos-confirmation.component';
 
 const ModalRegistrar = () => {
   const {
@@ -48,7 +50,9 @@ const ModalRegistrar = () => {
     openClusterDiagramElementsRemovalConfirmationModal,
 
     openUserCreationModal,
-    openRemovingUserFromAllClustersConfirmationModal
+    openRemovingUserFromAllClustersConfirmationModal,
+    openRemovingUserFromAllServicesConfirmationModal,
+    openRemovingUserFromAllReposConfirmationModal
   } = useSelector(state => state.modal);
 
   return (
@@ -92,6 +96,12 @@ const ModalRegistrar = () => {
       {openUserCreationModal && <UserCreationModal />}
       {openRemovingUserFromAllClustersConfirmationModal && (
         <RemovingUserFromAllClustersConfirmationModal />
+      )}
+      {openRemovingUserFromAllServicesConfirmationModal && (
+        <RemovingUserFromAllServicesConfirmationModal />
+      )}
+      {openRemovingUserFromAllReposConfirmationModal && (
+        <RemovingUserFromAllReposConfirmationModal />
       )}
     </>
   );

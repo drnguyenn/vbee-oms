@@ -162,6 +162,54 @@ const userReducer = (state = INITIAL_STATE, action) => {
         error: payload
       };
 
+    case UserActionTypes.REMOVE_USER_FROM_ALL_SERVICES_START:
+      return {
+        ...state,
+        isProcessing: true,
+        error: null
+      };
+
+    case UserActionTypes.REMOVE_USER_FROM_ALL_SERVICES_SUCCESS:
+      return {
+        ...state,
+        selectedUser: { ...state.selectedUser, services: [], serviceCount: 0 },
+        isProcessing: false,
+        error: null
+      };
+
+    case UserActionTypes.REMOVE_USER_FROM_ALL_SERVICES_FAILURE:
+      return {
+        ...state,
+        isProcessing: false,
+        error: payload
+      };
+
+    case UserActionTypes.REMOVE_USER_FROM_ALL_REPOS_START:
+      return {
+        ...state,
+        isProcessing: true,
+        error: null
+      };
+
+    case UserActionTypes.REMOVE_USER_FROM_ALL_REPOS_SUCCESS:
+      return {
+        ...state,
+        selectedUser: {
+          ...state.selectedUser,
+          repositories: [],
+          repositoryCount: 0
+        },
+        isProcessing: false,
+        error: null
+      };
+
+    case UserActionTypes.REMOVE_USER_FROM_ALL_REPOS_FAILURE:
+      return {
+        ...state,
+        isProcessing: false,
+        error: payload
+      };
+
     default:
       return state;
   }

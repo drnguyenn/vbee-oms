@@ -5,6 +5,8 @@ import * as UserService from 'services/user.service';
 import { notify } from 'redux/notification/notification.actions';
 import {
   setRemovingUserFromAllClustersConfirmationModalOpen,
+  setRemovingUserFromAllReposConfirmationModalOpen,
+  setRemovingUserFromAllServicesConfirmationModalOpen,
   setUserCreationModalOpen,
   setUserDeleteConfirmationModalOpen
 } from 'redux/modal/modal.actions';
@@ -20,7 +22,11 @@ import {
   updateUserSuccess,
   updateUserFailure,
   removeUserFromAllClustersSuccess,
-  removeUserFromAllClustersFailure
+  removeUserFromAllClustersFailure,
+  removeUserFromAllServicesSuccess,
+  removeUserFromAllServicesFailure,
+  removeUserFromAllRepositoriesSuccess,
+  removeUserFromAllRepositoriesFailure
 } from './user.actions';
 
 import UserActionTypes from './user.types';
@@ -104,6 +110,36 @@ function* removeFromAllClustersStart({ payload }) {
   }
 }
 
+function* removeFromAllServicesStart({ payload }) {
+  try {
+    yield call(UserService.removeUserFromAllServices, payload);
+
+    yield put(removeUserFromAllServicesSuccess());
+    yield put(notify('Removed user from all services', { variant: 'success' }));
+    yield put(setRemovingUserFromAllServicesConfirmationModalOpen(false));
+  } catch (error) {
+    yield put(removeUserFromAllServicesFailure(error));
+    yield put(notify(error.message, { variant: 'error' }));
+    yield put(setRemovingUserFromAllServicesConfirmationModalOpen(false));
+  }
+}
+
+function* removeFromAllRepositoriesStart({ payload }) {
+  try {
+    yield call(UserService.removeUserFromAllRepositories, payload);
+
+    yield put(removeUserFromAllRepositoriesSuccess());
+    yield put(
+      notify('Removed user from all repositories', { variant: 'success' })
+    );
+    yield put(setRemovingUserFromAllReposConfirmationModalOpen(false));
+  } catch (error) {
+    yield put(removeUserFromAllRepositoriesFailure(error));
+    yield put(notify(error.message, { variant: 'error' }));
+    yield put(setRemovingUserFromAllReposConfirmationModalOpen(false));
+  }
+}
+
 function* onFetchAllUsersStart() {
   yield takeLatest(UserActionTypes.FETCH_ALL_USERS_START, fetchAllUsers);
 }
@@ -131,6 +167,20 @@ function* onRemoveFromAllClustersStart() {
   );
 }
 
+function* onRemoveFromAllServicesStart() {
+  yield takeLatest(
+    UserActionTypes.REMOVE_USER_FROM_ALL_SERVICES_START,
+    removeFromAllServicesStart
+  );
+}
+
+function* onRemoveFromAllRepositoriesStart() {
+  yield takeLatest(
+    UserActionTypes.REMOVE_USER_FROM_ALL_REPOS_START,
+    removeFromAllRepositoriesStart
+  );
+}
+
 export default function* userSagas() {
   yield all([
     call(onFetchAllUsersStart),
@@ -138,6 +188,8 @@ export default function* userSagas() {
     call(onCreateUserStart),
     call(onUpdateUserStart),
     call(onDeleteUserStart),
-    call(onRemoveFromAllClustersStart)
+    call(onRemoveFromAllClustersStart),
+    call(onRemoveFromAllServicesStart),
+    call(onRemoveFromAllRepositoriesStart)
   ]);
 }
