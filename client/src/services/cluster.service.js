@@ -63,7 +63,7 @@ export const searchClusters = async query => {
   throw new Error(message);
 };
 
-export const createCluster = async ({ name, description }) => {
+export const createCluster = async data => {
   const accessToken = getCookie('accessToken');
 
   const response = await customAxios({
@@ -72,7 +72,7 @@ export const createCluster = async ({ name, description }) => {
     headers: {
       Authorization: `Bearer ${accessToken}`
     },
-    data: { name, description }
+    data
   });
 
   if (response.status < 400) {
