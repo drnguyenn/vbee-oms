@@ -39,6 +39,9 @@ const ServiceDetailsPage = lazy(() =>
 );
 
 const UsersPage = lazy(() => import('pages/users/users.component'));
+const UserDetailsPage = lazy(() =>
+  import('pages/user-details/user-details.component')
+);
 
 export default [
   {
@@ -139,10 +142,16 @@ export default [
     restricted: false,
     isPrivate: true
   },
-
   {
     path: ROUTE_PATHS.USERS,
     component: UsersPage,
+    exact: true,
+    restricted: false,
+    isPrivate: true
+  },
+  {
+    path: ROUTE_PATHS.USER_DETAILS,
+    component: UserDetailsPage,
     exact: true,
     restricted: false,
     isPrivate: true
