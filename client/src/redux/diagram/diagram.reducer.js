@@ -1,5 +1,5 @@
-import DiagramActionTypes from './diagram.types';
-import ServerActionTypes from '../server/server.types';
+import DiagramActionTypes from 'redux/diagram/diagram.types';
+import ServerActionTypes from 'redux/server/server.types';
 
 const INITIAL_STATE = {
   currentDiagram: null,
@@ -53,7 +53,7 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
       };
 
     case DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_ELEMENTS_START: {
-      const { nodes = {}, links = {} } = payload.elements;
+      const { nodes = {}, links = {} } = payload;
 
       return {
         ...state,
@@ -79,7 +79,7 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
       };
 
     case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_ELEMENTS_START: {
-      const { nodes = [], ports = [], links = [] } = payload.elements;
+      const { nodes = [], ports = [], links = [] } = payload;
 
       return {
         ...state,
@@ -110,13 +110,10 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
 
     case DiagramActionTypes.ADD_CLUSTER_DIAGRAM_NODE_START:
     case DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_NODE_START:
-    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_NODE_START:
     case DiagramActionTypes.ADD_CLUSTER_DIAGRAM_PORT_START:
     case DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_PORT_START:
-    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_PORT_START:
     case DiagramActionTypes.ADD_CLUSTER_DIAGRAM_LINK_START:
     case DiagramActionTypes.UPDATE_CLUSTER_DIAGRAM_LINK_START:
-    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_LINK_START:
       return {
         ...state,
         isSynchronizing: true,
@@ -157,12 +154,10 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
       };
     }
 
-    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_NODE_SUCCESS: {
-      const removedPortIds = payload.ports.map(port => port.id);
-
+    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_NODE_START:
       return {
         ...state,
-        isSynchronizing: false,
+        isSynchronizing: true,
         currentDiagram: {
           ...state.currentDiagram,
           nodes: state.currentDiagram.nodes.filter(
@@ -170,14 +165,27 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
           ),
           links: state.currentDiagram.links.filter(
             link =>
-              !removedPortIds.includes(link.sourcePort) &&
-              !removedPortIds.includes(link.targetPort)
+              !Object.prototype.hasOwnProperty.call(
+                payload.ports,
+                link.sourcePort
+              ) &&
+              !Object.prototype.hasOwnProperty.call(
+                payload.ports,
+                link.targetPort
+              )
           )
         },
         selectedNode: null,
         error: null
       };
-    }
+
+    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_NODE_SUCCESS:
+      return {
+        ...state,
+        isSynchronizing: false,
+        selectedNode: null,
+        error: null
+      };
 
     case DiagramActionTypes.ADD_CLUSTER_DIAGRAM_PORT_SUCCESS:
       return {
@@ -214,10 +222,10 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
         error: null
       };
 
-    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_PORT_SUCCESS:
+    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_PORT_START:
       return {
         ...state,
-        isSynchronizing: false,
+        isSynchronizing: true,
         currentDiagram: {
           ...state.currentDiagram,
           nodes: state.currentDiagram.nodes.map(node =>
@@ -233,6 +241,13 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
               link.sourcePort !== payload.id && link.targetPort !== payload.id
           )
         },
+        error: null
+      };
+
+    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_PORT_SUCCESS:
+      return {
+        ...state,
+        isSynchronizing: false,
         error: null
       };
 
@@ -260,16 +275,23 @@ const diagramReducer = (state = INITIAL_STATE, action) => {
         error: null
       };
 
-    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_LINK_SUCCESS:
+    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_LINK_START:
       return {
         ...state,
-        isSynchronizing: false,
+        isSynchronizing: true,
         currentDiagram: {
           ...state.currentDiagram,
           links: state.currentDiagram.links.filter(
             link => link.id !== payload.id
           )
         },
+        error: null
+      };
+
+    case DiagramActionTypes.REMOVE_CLUSTER_DIAGRAM_LINK_SUCCESS:
+      return {
+        ...state,
+        isSynchronizing: false,
         error: null
       };
 

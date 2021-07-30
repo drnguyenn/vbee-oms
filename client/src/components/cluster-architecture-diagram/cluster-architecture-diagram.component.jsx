@@ -8,28 +8,27 @@ import {
   addClusterDiagramLinkStart,
   addClusterDiagramNodeStart,
   setShowDrawer
-} from '../../redux/diagram/diagram.actions';
+} from 'redux/diagram/diagram.actions';
+import { fetchServersMetricsStart } from 'redux/server/server.actions';
 
 import {
   debouncedUpdateDiagram,
   getDiagramChanges,
   setDiagramChanges
-} from '../../utils/diagram.utils';
+} from 'utils/diagram.utils';
 
-import CustomDefaultState from '../diagram/custom-state/custom-default.state';
+import CustomDefaultState from 'components/diagram/custom-state/custom-default.state';
 
-import CustomDeleteItemsAction from '../diagram/custom-action/custom-delete-items/custom-delete-items.action';
-import CustomClearSelectionAction from '../diagram/custom-action/custom-clear-selection/custom-clear-selection.action';
-import CustomZoomAction from '../diagram/custom-action/custom-zoom/custom-zoom.action';
-import CustomMoveCanvasAction from '../diagram/custom-action/custom-move-canvas/custom-move-canvas.action';
+import CustomDeleteItemsAction from 'components/diagram/custom-action/custom-delete-items/custom-delete-items.action';
+import CustomClearSelectionAction from 'components/diagram/custom-action/custom-clear-selection/custom-clear-selection.action';
+import CustomZoomAction from 'components/diagram/custom-action/custom-zoom/custom-zoom.action';
+import CustomMoveCanvasAction from 'components/diagram/custom-action/custom-move-canvas/custom-move-canvas.action';
 
-import CustomNodeFactory from '../diagram/custom-node/custom-node.factory';
-import CustomLinkFactory from '../diagram/custom-link/custom-link.factory';
-import CustomNodeModel from '../diagram/custom-node/custom-node.model';
-import CustomPortModel from '../diagram/custom-port/custom-port.model';
-import CustomLinkModel from '../diagram/custom-link/custom-link.model';
-
-import { fetchServersMetricsStart } from '../../redux/server/server.actions';
+import CustomNodeFactory from 'components/diagram/custom-node/custom-node.factory';
+import CustomLinkFactory from 'components/diagram/custom-link/custom-link.factory';
+import CustomNodeModel from 'components/diagram/custom-node/custom-node.model';
+import CustomPortModel from 'components/diagram/custom-port/custom-port.model';
+import CustomLinkModel from 'components/diagram/custom-link/custom-link.model';
 
 import { ClusterArchitectureDiagramStyles } from './cluster-architecture-diagram.styles';
 

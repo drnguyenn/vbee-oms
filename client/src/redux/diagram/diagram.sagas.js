@@ -47,9 +47,9 @@ function* fetchClusterDiagram({ payload }) {
   }
 }
 
-function* updateClusterDiagramElements({ payload: { elements } }) {
+function* updateClusterDiagramElements({ payload }) {
   try {
-    yield call(DiagramService.updateClusterDiagramElements, elements);
+    yield call(DiagramService.updateClusterDiagramElements, payload);
 
     yield put(updateClusterDiagramElementsSuccess());
   } catch (error) {
@@ -58,11 +58,10 @@ function* updateClusterDiagramElements({ payload: { elements } }) {
   }
 }
 
-function* removeClusterDiagramElements({ payload: { elements, callback } }) {
+function* removeClusterDiagramElements({ payload }) {
   try {
-    yield call(DiagramService.removeClusterDiagramElements, elements);
+    yield call(DiagramService.removeClusterDiagramElements, payload);
 
-    yield call(callback);
     yield put(removeClusterDiagramElementsSuccess());
   } catch (error) {
     yield put(removeClusterDiagramElementsFailure(error));
@@ -96,15 +95,11 @@ function* updateClusterDiagramNode({ payload: { nodeId, data } }) {
   }
 }
 
-function* removeClusterDiagramNode({ payload: { nodeId, callback } }) {
+function* removeClusterDiagramNode({ payload }) {
   try {
-    const diagramNode = yield call(
-      DiagramService.removeClusterDiagramNode,
-      nodeId
-    );
+    yield call(DiagramService.removeClusterDiagramNode, payload.id);
 
-    yield call(callback);
-    yield put(removeClusterDiagramNodeSuccess(diagramNode));
+    yield put(removeClusterDiagramNodeSuccess());
   } catch (error) {
     yield put(removeClusterDiagramNodeFailure(error));
     yield put(notify('Something went wrong', { variant: 'error' }));
@@ -137,15 +132,11 @@ function* updateClusterDiagramPort({ payload: { portId, data } }) {
   }
 }
 
-function* removeClusterDiagramPort({ payload: { portId, callback } }) {
+function* removeClusterDiagramPort({ payload }) {
   try {
-    const diagramPort = yield call(
-      DiagramService.removeClusterDiagramPort,
-      portId
-    );
+    yield call(DiagramService.removeClusterDiagramPort, payload.id);
 
-    yield call(callback);
-    yield put(removeClusterDiagramPortSuccess(diagramPort));
+    yield put(removeClusterDiagramPortSuccess());
   } catch (error) {
     yield put(removeClusterDiagramPortFailure(error));
     yield put(notify('Something went wrong', { variant: 'error' }));
@@ -179,15 +170,11 @@ function* updateClusterDiagramLink({ payload: { linkId, data } }) {
   }
 }
 
-function* removeClusterDiagramLink({ payload: { linkId, callback } }) {
+function* removeClusterDiagramLink({ payload }) {
   try {
-    const diagramLink = yield call(
-      DiagramService.removeClusterDiagramLink,
-      linkId
-    );
+    yield call(DiagramService.removeClusterDiagramLink, payload.id);
 
-    yield call(callback);
-    yield put(removeClusterDiagramLinkSuccess(diagramLink));
+    yield put(removeClusterDiagramLinkSuccess());
   } catch (error) {
     yield put(removeClusterDiagramLinkFailure(error));
     yield put(notify('Something went wrong', { variant: 'error' }));

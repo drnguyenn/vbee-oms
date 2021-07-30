@@ -2,23 +2,23 @@ import { Action, InputType } from '@projectstorm/react-canvas-core';
 import { DefaultLinkModel } from '@projectstorm/react-diagrams-defaults';
 import { PointModel } from '@projectstorm/react-diagrams-core';
 
-import store from '../../../../redux/store';
+import store from 'redux/store';
 
 import {
   removeClusterDiagramElementsStart,
   removeClusterDiagramLinkStart,
   setSelectedDiagramElements,
   setSelectedDiagramNode
-} from '../../../../redux/diagram/diagram.actions';
+} from 'redux/diagram/diagram.actions';
 import {
   setDiagramElementsRemovalConfirmationModalOpen,
   setDiagramNodeRemovalConfirmationModalOpen
-} from '../../../../redux/modal/modal.actions';
+} from 'redux/modal/modal.actions';
 
-import { removeElementsChanges } from '../../../../utils/diagram.utils';
+import { removeElementsChanges } from 'utils/diagram.utils';
 
-import CustomNodeModel from '../../custom-node/custom-node.model';
-import CustomLinkModel from '../../custom-link/custom-link.model';
+import CustomNodeModel from 'components/diagram/custom-node/custom-node.model';
+import CustomLinkModel from 'components/diagram/custom-link/custom-link.model';
 
 const removeItem = item => {
   if (!item.isLocked()) item.remove();
@@ -68,13 +68,10 @@ class CustomDeleteItemsAction extends Action {
               return;
             }
 
-            store.dispatch(
-              removeClusterDiagramElementsStart(itemsToRemove, () =>
-                selectedEntities.forEach(item => removeItem(item))
-              )
-            );
+            store.dispatch(removeClusterDiagramElementsStart(itemsToRemove));
 
             removeElementsChanges(links.map(linkId => `links.${linkId}`));
+            selectedEntities.forEach(item => removeItem(item));
           } else if (selectedEntities.length === 1) {
             const item = selectedEntities[0];
 
@@ -95,11 +92,10 @@ class CustomDeleteItemsAction extends Action {
               }
 
             if (item instanceof CustomLinkModel) {
-              store.dispatch(
-                removeClusterDiagramLinkStart(item.id, () => removeItem(item))
-              );
+              store.dispatch(removeClusterDiagramLinkStart(item));
 
               removeElementsChanges([`links.${item.id}`]);
+              removeItem(item);
 
               return;
             }

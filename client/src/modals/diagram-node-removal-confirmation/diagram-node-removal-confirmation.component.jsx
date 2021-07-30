@@ -9,10 +9,10 @@ import {
   Button
 } from '@material-ui/core';
 
-import { setDiagramNodeRemovalConfirmationModalOpen } from '../../redux/modal/modal.actions';
-import { removeClusterDiagramNodeStart } from '../../redux/diagram/diagram.actions';
+import { setDiagramNodeRemovalConfirmationModalOpen } from 'redux/modal/modal.actions';
+import { removeClusterDiagramNodeStart } from 'redux/diagram/diagram.actions';
 
-import { removeElementsChanges } from '../../utils/diagram.utils';
+import { removeElementsChanges } from 'utils/diagram.utils';
 
 const DiagramNodeRemovalConfirmationModal = () => {
   const { openClusterDiagramNodeRemovalConfirmationModal } = useSelector(
@@ -31,12 +31,12 @@ const DiagramNodeRemovalConfirmationModal = () => {
   const handleSubmit = async event => {
     event.preventDefault();
 
-    if (selectedNode.id)
-      dispatch(
-        removeClusterDiagramNodeStart(selectedNode.id, selectedNode.callback)
-      );
+    if (selectedNode.id) {
+      dispatch(removeClusterDiagramNodeStart(selectedNode));
 
-    removeElementsChanges([`nodes.${selectedNode.id}`]);
+      removeElementsChanges([`nodes.${selectedNode.id}`]);
+      selectedNode.callback();
+    }
 
     handleClose();
   };

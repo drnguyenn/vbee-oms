@@ -33,15 +33,14 @@ const DiagramElementsRemovalConfirmationModal = () => {
     event.preventDefault();
 
     if (selectedElements)
-      dispatch(
-        removeClusterDiagramElementsStart({ nodes, ports, links }, callback)
-      );
+      dispatch(removeClusterDiagramElementsStart({ nodes, ports, links }));
 
     removeElementsChanges([
       ...nodes.map(nodeId => `nodes.${nodeId}`),
       ...ports.map(portId => `ports.${portId}`),
       ...links.map(linkId => `links.${linkId}`)
     ]);
+    callback();
 
     handleClose();
   };
