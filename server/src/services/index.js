@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+const fs = require('fs');
+
 const UserService = require('./user.service');
 
 const {
@@ -12,6 +14,8 @@ const {
 
 const initialSetup = async () => {
   try {
+    if (!fs.existsSync('credentials')) fs.mkdirSync('credentials');
+
     const admins = await UserService.search({ role: 'admin' });
 
     if (!admins.length)
