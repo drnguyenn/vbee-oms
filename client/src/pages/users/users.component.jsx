@@ -212,6 +212,13 @@ const UsersPage = () => {
         }
       },
       {
+        name: 'username',
+        label: 'Username',
+        options: {
+          filter: true
+        }
+      },
+      {
         name: 'email',
         label: 'Email',
         options: {
@@ -221,13 +228,6 @@ const UsersPage = () => {
       {
         name: 'fullName',
         label: 'Full name',
-        options: {
-          filter: true
-        }
-      },
-      {
-        name: 'username',
-        label: 'Username',
         options: {
           filter: true
         }
