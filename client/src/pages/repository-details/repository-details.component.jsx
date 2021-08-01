@@ -36,7 +36,7 @@ const RepositoryDetailsPage = () => {
   useEffect(() => {
     if (error)
       if (error.message === 'Repository not found')
-        history.push(ROUTE_PATHS.NOT_FOUND);
+        history.replace(ROUTE_PATHS.NOT_FOUND);
   }, [error, history]);
 
   const handleHeaderButtonClick = () => history.push(ROUTE_PATHS.REPOSITORIES);

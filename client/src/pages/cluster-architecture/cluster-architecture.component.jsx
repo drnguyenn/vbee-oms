@@ -30,7 +30,7 @@ const ClusterArchitecturePage = () => {
   useEffect(() => {
     if (error)
       if (error.message === 'Cluster diagram not found')
-        history.push(ROUTE_PATHS.NOT_FOUND);
+        history.replace(ROUTE_PATHS.NOT_FOUND);
   }, [error, history]);
 
   const handleHeaderButtonClick = () =>

@@ -48,7 +48,7 @@ const ServiceDetailsPage = () => {
   useEffect(() => {
     if (error)
       if (error.message === 'Service not found')
-        history.push(ROUTE_PATHS.NOT_FOUND);
+        history.replace(ROUTE_PATHS.NOT_FOUND);
   }, [error, history]);
 
   const handleDeleteButtonClick = () =>
