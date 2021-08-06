@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { capitalize } from 'lodash';
 
@@ -158,6 +158,30 @@ const UsersPage = () => {
   };
 
   const columns = useMemo(() => {
+    const UsernameColumn = (value, { rowData }) => (
+      <Link to={`${ROUTE_PATHS.USERS}/${rowData[0]}`}>{value}</Link>
+    );
+
+    const EmailColumn = (value, { rowData }) => (
+      <a
+        href={`mailto:${rowData[2]}`}
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        {value}
+      </a>
+    );
+
+    const GhUsernameColumn = (value, { rowData }) => (
+      <a
+        href={`https://github.com/${rowData[4]}`}
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        {value}
+      </a>
+    );
+
     const RoleColumn = (value, { rowData }) =>
       editMode && rowData[0] === id ? (
         <FormControl variant='outlined'>
@@ -215,14 +239,16 @@ const UsersPage = () => {
         name: 'username',
         label: 'Username',
         options: {
-          filter: true
+          filter: true,
+          customBodyRender: UsernameColumn
         }
       },
       {
         name: 'email',
         label: 'Email',
         options: {
-          filter: true
+          filter: true,
+          customBodyRender: EmailColumn
         }
       },
       {
@@ -236,7 +262,8 @@ const UsersPage = () => {
         name: 'githubUsername',
         label: 'GitHub username',
         options: {
-          filter: true
+          filter: true,
+          customBodyRender: GhUsernameColumn
         }
       },
       {
