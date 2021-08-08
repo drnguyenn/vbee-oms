@@ -236,6 +236,11 @@ const search = async (
   return users;
 };
 
+const countAll = async () => {
+  const userCount = await UserDao.countAll();
+  return userCount;
+};
+
 const removeUserFromAllClusters = async condition => {
   const user = await get(condition);
 
@@ -281,6 +286,7 @@ module.exports = {
   create,
   update,
   remove,
+  countAll,
   removeUserFromAllClusters,
   removeUserFromAllRepositories,
   removeUserFromAllServices

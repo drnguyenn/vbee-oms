@@ -41,7 +41,7 @@ require('@routes')(app);
 
 app.use(errorHandler);
 
-const initialSetup = require('@services');
+const { initialSetup } = require('@services');
 
 let server;
 

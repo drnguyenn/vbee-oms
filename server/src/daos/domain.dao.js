@@ -71,11 +71,4 @@ const removeMany = async condition => {
   return domains;
 };
 
-module.exports = {
-  create,
-  findOne,
-  findAll,
-  update,
-  removeOne,
-  removeMany
-};
+module.exports = { create, findOne, findAll, update, removeOne, removeMany };

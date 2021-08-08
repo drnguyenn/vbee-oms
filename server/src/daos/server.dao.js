@@ -80,11 +80,17 @@ const removeMany = async condition => {
   return servers;
 };
 
+const countAll = async () => {
+  const serverCount = await ServerModel.estimatedDocumentCount();
+  return serverCount;
+};
+
 module.exports = {
   create,
   findOne,
   findAll,
   update,
   removeOne,
-  removeMany
+  removeMany,
+  countAll
 };

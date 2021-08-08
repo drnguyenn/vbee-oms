@@ -67,4 +67,9 @@ const remove = async condition => {
   return null;
 };
 
-module.exports = { create, findOne, findAll, search, update, remove };
+const countAll = async () => {
+  const userCount = await UserModel.estimatedDocumentCount();
+  return userCount;
+};
+
+module.exports = { create, findOne, findAll, search, update, remove, countAll };

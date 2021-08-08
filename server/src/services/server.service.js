@@ -214,6 +214,11 @@ const search = async (
   return servers;
 };
 
+const countAll = async () => {
+  const serverCount = await ServerDao.countAll();
+  return serverCount;
+};
+
 const getAllServerDomainsSslStatus = async serverCondition => {
   const server = await get(serverCondition);
 
@@ -254,6 +259,7 @@ module.exports = {
   update,
   removeOne,
   removeMany,
+  countAll,
   getAllServerDomainsSslStatus,
   getMetrics
 };

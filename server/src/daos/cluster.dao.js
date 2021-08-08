@@ -81,11 +81,9 @@ const remove = async condition => {
   return null;
 };
 
-module.exports = {
-  create,
-  findOne,
-  findAll,
-  search,
-  update,
-  remove
+const countAll = async () => {
+  const clusterCount = await ClusterModel.estimatedDocumentCount();
+  return clusterCount;
 };
+
+module.exports = { create, findOne, findAll, search, update, remove, countAll };

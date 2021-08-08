@@ -81,11 +81,17 @@ const remove = async condition => {
   return null;
 };
 
+const countAll = async () => {
+  const repositoryCount = await RepositoryModel.estimatedDocumentCount();
+  return repositoryCount;
+};
+
 module.exports = {
   create,
   findOne,
   findAll,
   search,
   update,
-  remove
+  remove,
+  countAll
 };

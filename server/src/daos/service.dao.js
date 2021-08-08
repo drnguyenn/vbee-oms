@@ -95,6 +95,11 @@ const removeMany = async condition => {
   return services;
 };
 
+const countAll = async () => {
+  const serviceCount = await ServiceModel.estimatedDocumentCount();
+  return serviceCount;
+};
+
 module.exports = {
   create,
   findOne,
@@ -102,5 +107,6 @@ module.exports = {
   search,
   update,
   removeOne,
-  removeMany
+  removeMany,
+  countAll
 };

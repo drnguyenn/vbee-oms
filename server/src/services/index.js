@@ -34,4 +34,4 @@ const initialSetup = async () => {
   return null;
 };
 
-module.exports = initialSetup;
+module.exports = { initialSetup };

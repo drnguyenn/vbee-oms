@@ -129,6 +129,11 @@ const search = async (condition, projection = { name: 1, description: 1 }) => {
   return clusters;
 };
 
+const countAll = async () => {
+  const clusterCount = await ClusterDao.countAll();
+  return clusterCount;
+};
+
 const addMember = async (clusterCondition, memberCondition, data) => {
   const cluster = await get(clusterCondition);
 
@@ -191,6 +196,7 @@ module.exports = {
   create,
   update,
   remove,
+  countAll,
   addMember,
   updateMember,
   removeMember,

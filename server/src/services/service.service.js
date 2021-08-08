@@ -181,6 +181,11 @@ const search = async (
   return services;
 };
 
+const countAll = async () => {
+  const serviceCount = await ServiceDao.countAll();
+  return serviceCount;
+};
+
 const addMember = async (serviceCondition, memberCondition, data) => {
   const service = await get(serviceCondition);
 
@@ -244,6 +249,7 @@ module.exports = {
   update,
   removeOne,
   removeMany,
+  countAll,
   addMember,
   updateMember,
   removeMember,

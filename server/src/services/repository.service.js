@@ -122,6 +122,11 @@ const search = async (
   return repositories;
 };
 
+const countAll = async () => {
+  const repositoryCount = await RepositoryDao.countAll();
+  return repositoryCount;
+};
+
 const listMembers = async repoCondition => {
   const repository = await get(repoCondition);
 
@@ -499,6 +504,7 @@ module.exports = {
   search,
   update,
   remove,
+  countAll,
   listMembers,
   addMember,
   updateMember,
