@@ -1,6 +1,7 @@
 import { all, call } from 'redux-saga/effects';
 
 import authSagas from './auth/auth.sagas';
+import dashboardSagas from './dashboard/dashboard.sagas';
 import clusterSagas from './cluster/cluster.sagas';
 import serverSagas from './server/server.sagas';
 import repositorySagas from './repository/repository.sagas';
@@ -11,6 +12,7 @@ import diagramSagas from './diagram/diagram.sagas';
 export default function* rootSaga() {
   yield all([
     call(authSagas),
+    call(dashboardSagas),
     call(clusterSagas),
     call(serverSagas),
     call(repositorySagas),

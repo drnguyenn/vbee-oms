@@ -4,6 +4,7 @@ import themeReducer from './theme/theme.reducer';
 import modalReducer from './modal/modal.reducer';
 import notificationReducer from './notification/notification.reducer';
 import authReducer from './auth/auth.reducer';
+import dashboardReducer from './dashboard/dashboard.reducer';
 import clusterReducer from './cluster/cluster.reducer';
 import serverReducer from './server/server.reducer';
 import repositoryReducer from './repository/repository.reducer';
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   modal: modalReducer,
   notification: notificationReducer,
   auth: authReducer,
+  dashboard: dashboardReducer,
   cluster: clusterReducer,
   server: serverReducer,
   repository: repositoryReducer,
