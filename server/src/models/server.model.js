@@ -50,10 +50,14 @@ ServerSchema.virtual('serviceCount', {
 });
 
 ServerSchema.pre('findOne', function populate() {
-  this.populate({ path: 'domains' });
   this.populate({ path: 'domainCount' });
-  this.populate({ path: 'services' });
   this.populate({ path: 'serviceCount' });
+  this.populate({ path: 'domains' });
+  this.populate({
+    path: 'services',
+    select: 'name description version -server',
+    populate: { path: 'memberCount' }
+  });
   this.populate({ path: 'cluster', select: 'name description' });
 });
 
