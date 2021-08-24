@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import pluralize from 'pluralize';
 
 import {
   CircularProgress,
@@ -33,7 +34,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 64
+    minHeight: 64,
+    minWidth: 64
   },
   gridItem: {
     display: 'flex',
@@ -71,9 +73,11 @@ const ClustersPage = () => {
   return (
     <BasePage
       title='Clusters'
-      subtitle={`There are total of ${clusters.length} cluster${
-        clusters.length > 1 ? 's' : ''
-      } here`}
+      subtitle={`There are total of ${pluralize(
+        'cluster',
+        clusters.length,
+        true
+      )} here`}
     >
       {isFetchingClusters && <Spinner backdropClasses={classes.spinner} />}
 
@@ -104,15 +108,15 @@ const ClustersPage = () => {
                 <Grid container spacing={1}>
                   <Grid item xs={6} className={classes.gridItem}>
                     <People className={classes.icon} color='primary' />
-                    {memberCount} member{memberCount > 1 && 's'}
+                    {pluralize('member', memberCount, true)}
                   </Grid>
                   <Grid item xs={6} className={classes.gridItem}>
                     <Storage className={classes.icon} color='primary' />
-                    {serverCount} server{serverCount > 1 && 's'}
+                    {pluralize('server', serverCount, true)}
                   </Grid>
                   <Grid item xs={6} className={classes.gridItem}>
                     <Web className={classes.icon} color='primary' />
-                    {serviceCount} service{serviceCount > 1 && 's'}
+                    {pluralize('service', serviceCount, true)}
                   </Grid>
                 </Grid>
               </BaseCard>

@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { capitalize, kebabCase } from 'lodash';
+import pluralize from 'pluralize';
 
 import {
   Menu,
@@ -96,8 +97,8 @@ const CustomToolbar = () => {
 
 const Subtitle = memo(({ memberCount }) => (
   <span>
-    <b>{memberCount}</b> member
-    {memberCount > 1 ? 's ' : ' '}joined this repository
+    <b>{memberCount}</b> {pluralize('member', memberCount)} joined this
+    repository
   </span>
 ));
 

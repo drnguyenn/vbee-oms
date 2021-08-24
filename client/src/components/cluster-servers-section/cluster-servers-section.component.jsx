@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import pluralize from 'pluralize';
 
 import {
   CircularProgress,
@@ -128,11 +129,11 @@ const ClusterServersSection = () => {
                   <Grid container spacing={1}>
                     <Grid item xs={6} className={classes.gridItem}>
                       <Web className={classes.icon} color='primary' />
-                      {serviceCount} service{serviceCount > 1 && 's'}
+                      {pluralize('service', serviceCount, true)}
                     </Grid>
                     <Grid item xs={6} className={classes.gridItem}>
                       <List className={classes.icon} color='primary' />
-                      {domainCount} domain{domainCount > 1 && 's'}
+                      {pluralize('domain', domainCount, true)}
                     </Grid>
                   </Grid>
                 </BaseCard>

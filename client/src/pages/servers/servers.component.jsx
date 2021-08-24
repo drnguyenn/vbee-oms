@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import pluralize from 'pluralize';
 
 import {
   CircularProgress,
@@ -33,7 +34,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 64
+    minHeight: 64,
+    minWidth: 64
   },
   gridItem: {
     display: 'flex',
@@ -73,9 +75,11 @@ const ServersPage = () => {
   return (
     <BasePage
       title='Servers'
-      subtitle={`There are total of ${servers.length} server${
-        servers.length > 1 ? 's' : ''
-      } here`}
+      subtitle={`There are total of ${pluralize(
+        'server',
+        servers.length,
+        true
+      )} here`}
     >
       {isFetchingServers && <Spinner backdropClasses={classes.spinner} />}
 
@@ -121,11 +125,11 @@ const ServersPage = () => {
                 <Grid container spacing={1}>
                   <Grid item xs={6} className={classes.gridItem}>
                     <Web className={classes.icon} color='primary' />
-                    {serviceCount} service{serviceCount > 1 && 's'}
+                    {pluralize('service', serviceCount, true)}
                   </Grid>
                   <Grid item xs={6} className={classes.gridItem}>
                     <List className={classes.icon} color='primary' />
-                    {domainCount} domain{domainCount > 1 && 's'}
+                    {pluralize('domain', domainCount, true)}
                   </Grid>
                 </Grid>
               </BaseCard>

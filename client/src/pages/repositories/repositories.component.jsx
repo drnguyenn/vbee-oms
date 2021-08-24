@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import pluralize from 'pluralize';
 
 import {
   CircularProgress,
@@ -32,7 +33,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 64
+    minHeight: 64,
+    minWidth: 64
   },
   gridItem: {
     display: 'flex',
@@ -68,9 +70,11 @@ const RepositoriesPage = () => {
   return (
     <BasePage
       title='Repositories'
-      subtitle={`There are total of ${repositories.length} ${
-        repositories.length > 1 ? 'repositories' : 'repository'
-      } here`}
+      subtitle={`There are total of ${pluralize(
+        'repository',
+        repositories.length,
+        true
+      )} here`}
     >
       {isFetchingRepositories && <Spinner backdropClasses={classes.spinner} />}
 
@@ -125,11 +129,11 @@ const RepositoriesPage = () => {
                 <Grid container spacing={1}>
                   <Grid item xs={6} className={classes.gridItem}>
                     <People className={classes.icon} color='primary' />
-                    {memberCount} member{memberCount > 1 && 's'}
+                    {pluralize('member', memberCount, true)}
                   </Grid>
                   <Grid item xs={6} className={classes.gridItem}>
                     <Web className={classes.icon} color='primary' />
-                    {serviceCount} service{serviceCount > 1 && 's'}
+                    {pluralize('service', serviceCount, true)}
                   </Grid>
                 </Grid>
               </BaseCard>

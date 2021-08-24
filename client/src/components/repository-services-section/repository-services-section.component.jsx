@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import pluralize from 'pluralize';
 
 import {
   CircularProgress,
@@ -63,9 +64,8 @@ const HeaderOptions = () => {
 
 const Subtitle = memo(({ serviceCount }) => (
   <span>
-    <b>{serviceCount}</b>{' '}
-    {serviceCount > 1 ? 'services are developed' : 'service is developed'} in
-    this repository
+    <b>{serviceCount}</b> {serviceCount > 1 ? 'services are' : 'service is'}{' '}
+    developed in this repository
   </span>
 ));
 
@@ -103,7 +103,7 @@ const RepositoryServicesSection = () => {
                 <Grid container spacing={1}>
                   <Grid item xs={6} className={classes.gridItem}>
                     <People className={classes.icon} color='primary' />
-                    {memberCount} member{memberCount > 1 && 's'}
+                    {pluralize('member', memberCount, true)}
                   </Grid>
                 </Grid>
               </BaseCard>

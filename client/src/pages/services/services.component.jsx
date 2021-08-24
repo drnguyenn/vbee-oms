@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import pluralize from 'pluralize';
 
 import {
   Chip,
@@ -34,7 +35,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 64
+    minHeight: 64,
+    minWidth: 64
   },
   gridItem: {
     display: 'flex',
@@ -79,9 +81,11 @@ const ServicesPage = () => {
   return (
     <BasePage
       title='Services'
-      subtitle={`There are total of ${services.length} service${
-        services.length > 1 ? 's' : ''
-      } here`}
+      subtitle={`There are total of ${pluralize(
+        'service',
+        services.length,
+        true
+      )} here`}
     >
       {isFetchingServices && <Spinner backdropClasses={classes.spinner} />}
 
@@ -127,7 +131,7 @@ const ServicesPage = () => {
                 <Grid container spacing={1}>
                   <Grid item xs={6} className={classes.gridItem}>
                     <People className={classes.icon} color='primary' />
-                    {memberCount} member{memberCount > 1 && 's'}
+                    {pluralize('member', memberCount, true)}
                   </Grid>
                 </Grid>
               </BaseCard>

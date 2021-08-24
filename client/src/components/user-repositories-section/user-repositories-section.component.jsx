@@ -1,6 +1,7 @@
 import { memo, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { kebabCase } from 'lodash';
+import pluralize from 'pluralize';
 
 import {
   Button,
@@ -26,8 +27,8 @@ const useStyles = makeStyles({
 
 const Subtitle = memo(({ repositoryCount }) => (
   <span>
-    This user has joined <b>{repositoryCount}</b> repository
-    {repositoryCount > 1 ? 's ' : ' '}
+    This user has joined <b>{repositoryCount}</b>{' '}
+    {pluralize('repository', repositoryCount)}
   </span>
 ));
 

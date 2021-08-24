@@ -2,12 +2,12 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { capitalize } from 'lodash';
+import pluralize from 'pluralize';
 
 import {
   Menu,
   MenuItem,
   IconButton,
-  CircularProgress,
   Tooltip,
   FormControl,
   InputLabel,
@@ -23,7 +23,10 @@ import { setUserCreationModalOpen } from 'redux/modal/modal.actions';
 
 import BasePage from 'pages/base/base.component';
 
-import Table, { RowLoader } from 'components/table/table.component';
+import Table, {
+  RowLoader,
+  ToolbarLoader
+} from 'components/table/table.component';
 
 import ROUTE_PATHS from 'router/route-paths';
 
@@ -39,7 +42,8 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 64
+    minHeight: 64,
+    minWidth: 64
   },
   gridItem: {
     display: 'flex',
@@ -74,8 +78,6 @@ const MemberActionMenu = memo(
 );
 
 const CustomToolbar = () => {
-  const classes = useStyles();
-
   const { isFetchingUsers } = useSelector(state => state.user);
 
   const dispatch = useDispatch();
@@ -85,9 +87,7 @@ const CustomToolbar = () => {
   return (
     <>
       {isFetchingUsers ? (
-        <Tooltip title='Fetching data...'>
-          <CircularProgress className={classes.circularProgress} size={20} />
-        </Tooltip>
+        <ToolbarLoader tooltipTitle='Fetching data...' />
       ) : (
         <Tooltip title='Refresh'>
           <IconButton onClick={handleRefreshClick}>
@@ -298,9 +298,11 @@ const UsersPage = () => {
   return (
     <BasePage
       title='Users'
-      subtitle={`There are total of ${users.length} user${
-        users.length > 1 ? 's' : ''
-      } here`}
+      subtitle={`There are total of ${pluralize(
+        'user',
+        users.length,
+        true
+      )} here`}
     >
       <Table
         columns={columns}
