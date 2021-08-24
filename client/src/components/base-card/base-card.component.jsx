@@ -71,7 +71,9 @@ const BaseCard = ({
         />
 
         <CardContent className={classes.cardContent}>
-          <div className={classes.title}>{title}</div>
+          <Typography className={classes.title} component='span'>
+            {title}
+          </Typography>
           <Typography variant='body2'>{subtitle}</Typography>
           <Typography
             className={classes.description}
