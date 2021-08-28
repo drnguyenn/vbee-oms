@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
 const fs = require('fs');
+const schedule = require('node-schedule');
 
 const UserService = require('./user.service');
+const RepositoryService = require('./repository.service');
 
 const {
   INITIAL_ADMIN_EMAIL,
@@ -13,9 +15,17 @@ const {
 } = process.env;
 
 const initialSetup = async () => {
-  try {
-    if (!fs.existsSync('credentials')) fs.mkdirSync('credentials');
+  createCredentialsDirectory();
+  createInitialAdminAccount();
+  scheduleExpiredGhRepoInvitationsClearing();
+};
 
+const createCredentialsDirectory = () => {
+  if (!fs.existsSync('credentials')) fs.mkdirSync('credentials');
+};
+
+const createInitialAdminAccount = async () => {
+  try {
     const admins = await UserService.search({ role: 'admin' });
 
     if (!admins.length)
@@ -30,8 +40,17 @@ const initialSetup = async () => {
   } catch (error) {
     console.error(error);
   }
+};
 
-  return null;
+const scheduleExpiredGhRepoInvitationsClearing = async () => {
+  try {
+    schedule.scheduleJob(
+      { hour: 0 },
+      RepositoryService.clearExpiredInvitations
+    );
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 module.exports = { initialSetup };

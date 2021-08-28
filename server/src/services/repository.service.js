@@ -466,6 +466,54 @@ const updateInvitation = async (
   return { member, statusCode: 200 };
 };
 
+const clearExpiredInvitations = async () => {
+  console.info('Clearing expired invitations...');
+
+  const members = await RepositoryMemberDao.findAll({
+    $and: [
+      {
+        'invitation.githubId': { $ne: null },
+        'invitation.expiresAt': { $lte: Date.now() }
+      }
+    ]
+  });
+
+  const results = await Promise.allSettled(
+    members.map(async ({ repository, user, invitation }) => {
+      const response = await GitHubUtils.repository.deleteInvitation(
+        await GhAppInstallationService.getGhAppInstallationToken({
+          githubId: repository.ghAppInstallationId
+        }),
+        repository.owner,
+        repository.name,
+        invitation.githubId
+      );
+
+      if (response.status) {
+        if (response.status < 400 || response.status === 404) {
+          await RepositoryMemberDao.removeOne({
+            repository: repository._id,
+            user: user._id
+          });
+
+          return response.status;
+        }
+
+        const { message } = response.data;
+        console.error(message);
+
+        return response.status;
+      }
+
+      return 500;
+    })
+  );
+
+  console.info('Finish clearing expired invitations');
+
+  return results;
+};
+
 const updatePRReviewProtection = async (
   repoCondition,
   branch,
@@ -510,5 +558,6 @@ module.exports = {
   updateMember,
   removeMember,
   updateInvitation,
+  clearExpiredInvitations,
   updatePRReviewProtection
 };
